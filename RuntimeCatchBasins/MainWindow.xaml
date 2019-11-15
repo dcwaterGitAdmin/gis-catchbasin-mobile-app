@@ -1,0 +1,75 @@
+﻿<Window x:Class="RuntimeCatchBasins.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:usercontrol="clr-namespace:RuntimeCatchBasins.controls"
+        xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013"
+        xmlns:local="clr-namespace:RuntimeCatchBasins"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="525" Width="790">
+    <Window.Resources>
+        <local:MapViewModel x:Key="MapViewModel" />
+    </Window.Resources>
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <Ribbon DockPanel.Dock="Top">
+                <Ribbon.ApplicationMenu>
+                    <RibbonApplicationMenu Visibility="Collapsed"></RibbonApplicationMenu>
+                </Ribbon.ApplicationMenu>
+                <RibbonTab Header="Map" KeyTip="H" >
+
+                    <RibbonGroup x:Name="RibbonMapGroup" Header="Map">
+                        <RibbonButton LargeImageSource="images\identify.png" Label="Identify"  x:Name="identifyButton" Click="IdentifyButton_Click" />
+
+                        <RibbonButton LargeImageSource="images\measure.png" Label="Measure"  x:Name="measureButton" Click="MeasureButton_Click" />
+                        <RibbonButton LargeImageSource="images\tableOfContent.png" Label="Table of Content" x:Name="tableOfContentButton" Click="TableOfContentButton_Click" />
+                        <RibbonButton LargeImageSource="images\zoomToFullExtent.png" Label="Zoom to Full Extent"   x:Name="zoomToFullExtentButton" Click="ZoomToFullExtentButton_Click" />
+                    </RibbonGroup>
+
+                    <RibbonGroup x:Name="GPSRibbonGroup" Header="GPS">
+                        <RibbonButton LargeImageSource="images\keepGPSInView.png" Label="Keep GPS in View"  x:Name="keepGPSInViewButton" Click="KeepGPSInViewButton_Click" />
+                        <RibbonButton LargeImageSource="images\showGPSInfo.png" Label="Show GPS Info"       x:Name="showGPSInfoButton"   Click="ShowGPSInfoButton_Click"/>
+                        <RibbonButton LargeImageSource="images\panTOGPS.png" Label="Pan to GPS"             x:Name="panToGPSButton"      Click="PanToGPSButton_Click"/>
+                    </RibbonGroup>
+
+                    <RibbonGroup x:Name="MaximoRibbonGroup" Header="Maximo">
+                        <RibbonButton LargeImageSource="images\login.png"  Label="Login"  x:Name="loginButton" Click="LoginButton_Click" />
+                        <RibbonButton LargeImageSource="images\sync.png" Label="Sync"  IsEnabled="False"     x:Name="syncButton"   Click="SyncButton_Click"/>
+                        <RibbonButton LargeImageSource="images\workOrderList.png" Label="Work Order List"        IsEnabled="False"     x:Name="workOrderListButton"      Click="WorkOrderListButton_Click"/>
+                    </RibbonGroup>
+
+                </RibbonTab>
+            </Ribbon>
+           
+            <StatusBar DockPanel.Dock="Bottom" >
+                <Label HorizontalAlignment="Left" x:Name="statusLabel">DC Water</Label>
+            </StatusBar>
+
+            <usercontrol:WorkOrderList x:Name="woList" DockPanel.Dock="Left" Visibility="Collapsed"></usercontrol:WorkOrderList>
+            <usercontrol:WorkOrderDetail x:Name="woDetail" DockPanel.Dock="Left" Visibility="Collapsed"></usercontrol:WorkOrderDetail>
+            <esri:TableOfContents Visibility="Collapsed" x:Name="toc" DockPanel.Dock="Left" Width="300"
+                  LayerContentContextMenuOpening="toc_LayerContentContextMenuOpening"
+                              GeoView="{Binding ElementName=mapView}" ShowLegend="True" />
+
+
+            <!--User Controls-->
+            <usercontrol:Identify x:Name="identifyControl" DockPanel.Dock="Left" Visibility="Collapsed" MapView="{Binding ElementName=mapView}" Width="300" />
+
+            <esri:MeasureToolbar Visibility="Collapsed" x:Name="measure"
+            DockPanel.Dock="Bottom"
+                             MapView="{Binding ElementName=mapView}" />
+
+            <esri:MapView DockPanel.Dock="Left" Map="{Binding Map, Source={StaticResource MapViewModel}}" Margin="0,0,0,0" x:Name="mapView" />
+
+         
+        </DockPanel>
+       
+
+
+       
+     
+
+    
+    </Grid>
+</Window>

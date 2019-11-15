@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="RuntimeCatchBasins.controls.WorkOrderDetail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RuntimeCatchBasins.controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="300">
+    <Grid>
+        <!--<TextBlock Width="300" x:Name="test" TextWrapping="Wrap"></TextBlock>-->
+        <ListView  Width="300" x:Name="listView">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="280">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding assetattrid}"></TextBlock>
+                        <TextBox  Grid.Column="1" Grid.Row="0" Text="{Binding alnvalue}"></TextBox>
+                    </Grid>
+                   
+                   
+                  
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>
