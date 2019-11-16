@@ -68,7 +68,6 @@
     <Compile Include="controls\WorkOrderList.xaml.cs">
       <DependentUpon>WorkOrderList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="helpers\MaximoRestService.cs" />
     <Compile Include="windows\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -175,6 +174,15 @@
   <ItemGroup>
     <Resource Include="images\startWatch.png" />
     <Resource Include="images\stopWatch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="helpers" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MaximoServiceLibrary\MaximoServiceLibrary.csproj">
+      <Project>{8553bb8e-d82d-4877-97ac-492167219f18}</Project>
+      <Name>MaximoServiceLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

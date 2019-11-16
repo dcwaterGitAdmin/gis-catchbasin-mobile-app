@@ -39,7 +39,7 @@ namespace RuntimeCatchBasins.controls
             {
                 case System.Windows.Visibility.Visible:
               
-                        listView.ItemsSource = MainWindow.maximoRestService.getWorkOrders();
+                        listView.ItemsSource = MainWindow.maximoService.getWorkOrders();
                       
                     break;
                 case System.Windows.Visibility.Hidden:

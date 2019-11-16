@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MaximoServiceLibrary;
 
 namespace RuntimeCatchBasins.windows
 {
@@ -20,10 +21,10 @@ namespace RuntimeCatchBasins.windows
     public partial class Login : Window
     {
 
-        private helpers.MaximoRestService maximoRestService;
-        public Login(helpers.MaximoRestService _maximoRestService)
+        private MaximoService maximoService;
+        public Login(MaximoService _maximoService)
         {
-            maximoRestService = _maximoRestService;
+            maximoService = _maximoService;
             InitializeComponent();
         }
 
@@ -31,7 +32,7 @@ namespace RuntimeCatchBasins.windows
         {
             string username = usernameTextBox.Text;
             string password = passwordBox.Password;
-            var resilt = maximoRestService.login(username, password);
+            var resilt = maximoService.login(username, password);
 
             if (resilt)
             {

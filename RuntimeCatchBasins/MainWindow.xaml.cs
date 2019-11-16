@@ -20,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MaximoServiceLibrary;
 
 
 namespace RuntimeCatchBasins
@@ -33,15 +34,15 @@ namespace RuntimeCatchBasins
     public partial class MainWindow : Window
     {
 
-        public static helpers.MaximoRestService maximoRestService = new helpers.MaximoRestService();
+        public static MaximoService maximoService = new MaximoService();
 
 
         public MainWindow()
         {
             InitializeComponent();
 
-            maximoRestService.loginDelegate += changeStatusLabel;
-            maximoRestService.loginDelegate += enableButton;
+            maximoService.loginDelegate += changeStatusLabel;
+            maximoService.loginDelegate += enableButton;
             woList.listView.SelectionChanged += workOrderSelectedChange;
         }
 
@@ -157,7 +158,7 @@ namespace RuntimeCatchBasins
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             
-            (new windows.Login(maximoRestService)).Show();
+            (new windows.Login(maximoService)).Show();
 
 
 
@@ -185,7 +186,7 @@ namespace RuntimeCatchBasins
         public void changeStatusLabel()
         {
             
-            statusLabel.Content = maximoRestService.mxuser.displayName;
+            statusLabel.Content = maximoService.mxuser.displayName;
         }
 
         public void enableButton()

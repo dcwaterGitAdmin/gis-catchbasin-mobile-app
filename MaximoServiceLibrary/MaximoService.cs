@@ -1,19 +1,17 @@
-﻿using RestSharp;
-using Newtonsoft.Json;
-using RestSharp.Deserializers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Json;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using RestSharp;
 
-namespace RuntimeCatchBasins.helpers
+namespace MaximoServiceLibrary
 {
-
-    public class MaximoRestService
+    public class MaximoService
     {
+        //private static readonly string BASE_URL = "http://localhost:8080";
+        private static readonly string BASE_URL = "https://bpl-max-test.dcwasa.com/maxrest/oslc";
+        
         // private 
         private RestClient restClient;
         private string token;
@@ -31,10 +29,10 @@ namespace RuntimeCatchBasins.helpers
         public delegate void LogoutDelegateHandler();
 
         // cons
-        public MaximoRestService()
+        public MaximoService()
         {
             // todo : put app config
-            restClient = new RestClient("https://bpl-max-test.dcwasa.com/maxrest");
+            restClient = new RestClient(BASE_URL);
             loginDelegate = new LoginDelegateHandler(whoami);
           //  loginDelegate += getWorkOrders;
             logoutDelegate = new LogoutDelegateHandler(clearUserData);
@@ -52,7 +50,7 @@ namespace RuntimeCatchBasins.helpers
 
         public void whoami()
         {
-            var request = createRequest("oslc/whoami");
+            var request = createRequest("/whoami");
 
             var response = restClient.Execute(request);
 
@@ -72,7 +70,7 @@ namespace RuntimeCatchBasins.helpers
         {
             var persongrops = "\"CB00\"";
 
-            var request = createRequest("oslc/os/mxl_pergrp");
+            var request = createRequest("/os/mxl_pergrp");
             request.AddQueryParameter("oslc.select", "*");
             request.AddQueryParameter("oslc.where", "allpersongroupteam.resppartygroup=\"" + mxuser.personId + "\"");
 
@@ -140,7 +138,7 @@ namespace RuntimeCatchBasins.helpers
 
             string where = "failurecode=\"CATCHBASIN\" and siteid=\"DWS_DSS\" and service=\"DSS\" and historyflag=0 and status=\"DISPTCHD\" and worktype in [\"INV\",\"EMERG\",\"PM\"] and persongroup in [" + findPersonGroup() + "] and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
           
-            var request = createRequest("oslc/os/mxwo");
+            var request = createRequest("/os/mxwo");
             request.AddQueryParameter("oslc.where", where);
             request.AddQueryParameter("oslc.select", "*");
             //todo delete
@@ -161,7 +159,7 @@ namespace RuntimeCatchBasins.helpers
         public MaximoAsset getAsset(string assetnum)
         {
             if (assetnum == null) return null;
-            var request = createRequest("oslc/os/mxasset");
+            var request = createRequest("/os/mxasset");
             request.AddQueryParameter("oslc.where", "assetnum="+assetnum);
             request.AddQueryParameter("oslc.select", "*");
             var response = restClient.Execute(request);
@@ -455,5 +453,4 @@ namespace RuntimeCatchBasins.helpers
         public string href { get; set; }
         public double assetspecid { get; set; }
         public double linearassetspecid { get; set; }
-    }
-}
+    }}
