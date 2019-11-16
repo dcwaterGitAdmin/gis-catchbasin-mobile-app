@@ -10,8 +10,8 @@ namespace MaximoServiceLibrary
 {
     public class MaximoService
     {
-        //private static readonly string BASE_URL = "http://localhost:8080";
-        private static readonly string BASE_URL = "https://bpl-max-test.dcwasa.com/maxrest/oslc";
+        private static readonly string BASE_URL = "http://localhost:8080/maxrest/oslc";
+        //private static readonly string BASE_URL = "https://bpl-max-test.dcwasa.com/maxrest/oslc";
         
         // private 
         private RestClient restClient;
@@ -56,7 +56,6 @@ namespace MaximoServiceLibrary
             var response = restClient.Execute(request);
 
             mxuser = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
-
         }
 
         public void clearUserData()
@@ -91,7 +90,7 @@ namespace MaximoServiceLibrary
         public bool login(string username, string password)
         {
             string maxauth = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(username + ":" + password));
-            var request = new RestRequest("rest/login");
+            var request = new RestRequest("/rest/login");
 
             request.AddHeader("Authorization", "Basic " + maxauth);
             request.Method = Method.GET;
@@ -137,7 +136,14 @@ namespace MaximoServiceLibrary
         public List<MaximoWorkOrder> getWorkOrders()
         {
 
-            string where = "failurecode=\"CATCHBASIN\" and siteid=\"DWS_DSS\" and service=\"DSS\" and historyflag=0 and status=\"DISPTCHD\" and worktype in [\"INV\",\"EMERG\",\"PM\"] and persongroup in [" + findPersonGroup() + "] and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
+            string where = "failurecode=\"CATCHBASIN\"" +
+                           " and siteid=\"DWS_DSS\"" +
+                           " and service=\"DSS\"" +
+                           " and historyflag=0" +
+                           " and status=\"DISPTCHD\"" +
+                           " and worktype in [\"INV\",\"EMERG\",\"PM\"]" +
+                           " and persongroup in [" + findPersonGroup() + "]" +
+                           " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
           
             var request = createRequest("/os/mxwo");
             request.AddQueryParameter("oslc.where", where);
