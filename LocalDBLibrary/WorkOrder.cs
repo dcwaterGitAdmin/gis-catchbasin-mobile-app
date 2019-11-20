@@ -26,5 +26,14 @@ namespace LocalDBLibrary
                 return workorders.FindOne(x => x.wonum.Contains(num));
             }
         }
+        
+        public static MaximoWorkOrder FindByAssetAssetNum(string num)
+        {
+            using (var db = new LiteDatabase(@dbString))
+            {
+                var workorders = db.GetCollection<MaximoWorkOrder>("workorders");
+                return workorders.FindOne(x => x.asset.assetnum.Contains(num));
+            }
+        }
     }
 }
