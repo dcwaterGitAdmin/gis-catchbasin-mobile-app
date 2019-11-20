@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LocalDBLibrary;
 using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
@@ -18,6 +19,9 @@ namespace MaximoServiceTestConsoleApplication
             MaximoUser maximoUser = maximoService.mxuser;
             
             Console.WriteLine($"userid: {maximoUser.userName}");
+
+            List<MaximoWorkOrder> workOrders = maximoService.getWorkOrders();
+            Console.WriteLine(workOrders[0].wonum);
           
             
             MaximoWorkOrder wo = new MaximoWorkOrder();
