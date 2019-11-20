@@ -3,6 +3,18 @@ using System.Collections.Generic;
 
 namespace MaximoServiceLibrary.model
 {
+    /*
+     * This class was created use for be base class.
+     * All Maximo classes must extend from this class.
+     */
+    public class Maximo
+    {
+        // it use by LiteDB.
+        public int Id { get; set; }
+        // it use to find edited data by developers.
+        public bool editedFromApp { get; set; }
+        
+    }
 
     public class MaximoUser
     {
@@ -38,7 +50,7 @@ namespace MaximoServiceLibrary.model
         public List<MaximoPersonGroup> member { get; set; }
     }
 
-    public class MaximoWorkOrder{
+    public class MaximoWorkOrder : Maximo {
 
         public MaximoAsset asset { get; set; }
         public double actoutlabhrs { get; set; }
@@ -188,7 +200,7 @@ namespace MaximoServiceLibrary.model
         public List<MaximoWorkOrder> member { get; set; }
     }
 
-    public class MaximoAsset
+    public class MaximoAsset 
     {
         public string assetnum { get; set; }
         public DateTime changedate { get; set; }
