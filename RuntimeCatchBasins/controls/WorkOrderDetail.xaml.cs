@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MaximoServiceLibrary.model;
 
 namespace RuntimeCatchBasins.controls
 {
@@ -27,17 +29,29 @@ namespace RuntimeCatchBasins.controls
         }
 
 
-        public void update(helpers.MaximoWorkOrder wo)
+        public void update(MaximoWorkOrder wo)
         {
             if (wo.asset != null)
             {
                 Visibility = Visibility.Visible;
-                listView.ItemsSource = wo.asset.assetspec;
+                generateScreen(wo.asset.assetspec);
+
             }
             else{
                 Visibility = Visibility.Collapsed;
             }
           
+        }
+
+
+        public void generateScreen( List<MaximoAssetSpec>  assetSpecs)
+        {
+            
+           
+            foreach (var assetSpec in assetSpecs)
+            {
+                
+            }
         }
     }
 }

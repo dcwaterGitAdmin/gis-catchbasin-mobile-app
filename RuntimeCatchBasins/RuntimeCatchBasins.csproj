@@ -176,9 +176,10 @@
     <Resource Include="images\stopWatch.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="helpers" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\LocalDBLibrary\LocalDBLibrary.csproj">
+      <Project>{2a8ffa91-58e0-4991-b22f-72b738d9ceed}</Project>
+      <Name>LocalDBLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MaximoServiceLibrary\MaximoServiceLibrary.csproj">
       <Project>{8553bb8e-d82d-4877-97ac-492167219f18}</Project>
       <Name>MaximoServiceLibrary</Name>

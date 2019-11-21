@@ -38,8 +38,8 @@ namespace RuntimeCatchBasins.controls
             switch (Visibility)
             {
                 case System.Windows.Visibility.Visible:
-              
-                        listView.ItemsSource = MainWindow.maximoService.getWorkOrders();
+
+                    listView.ItemsSource = MainWindow.synchronizationService.workOrderRepository.findAll();
                       
                     break;
                 case System.Windows.Visibility.Hidden:

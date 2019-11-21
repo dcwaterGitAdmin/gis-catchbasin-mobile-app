@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:RuntimeCatchBasins.controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="300">
-    <Grid>
+    <Grid x:Name="Grid">
         <!--<TextBlock Width="300" x:Name="test" TextWrapping="Wrap"></TextBlock>-->
         <ListView  Width="300" x:Name="listView">
             <ListView.ItemTemplate>
