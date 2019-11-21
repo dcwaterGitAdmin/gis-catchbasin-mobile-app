@@ -34,4 +34,12 @@ namespace MaximoServiceLibrary.model
 	public class MaximoAssetRestResponse : MaximoBaseRestResponse<MaximoAsset>
 	{
 	}
+	
+	public class MaximoAttributePageableRestResponse : MaximoBasePageableRestResponse<MaximoAttribute>
+	{
+	}
+	
+	public class MaximoDomainPageableRestResponse : MaximoBasePageableRestResponse<MaximoDomain>
+	{
+	}
 }

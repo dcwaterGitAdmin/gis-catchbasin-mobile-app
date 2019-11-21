@@ -29,7 +29,34 @@ namespace MaximoServiceTestConsoleApplication
 
 			Console.WriteLine("work order count : " + synchronizationService.workOrderRepository.count());
 			Console.WriteLine("asset count : " + synchronizationService.assetRepository.count());
-/*
+
+			synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+			
+			Console.WriteLine("domain count : " + synchronizationService.domainRepository.count());
+			Console.WriteLine("attribute count : " + synchronizationService.attributeRepository.count());
+
+
+			foreach (var assetSpec in synchronizationService.assetRepository.findOne("442605").assetspec)
+			{
+				var attribute = synchronizationService.attributeRepository.findOne(assetSpec.assetattrid);
+				if (attribute == null) continue;
+				Console.WriteLine("Attribute : " +attribute.description);
+				if (attribute.domainid != null)
+				{
+					var domain = synchronizationService.domainRepository.findOne(attribute.domainid);
+					Console.WriteLine("Domain  : " +domain.description);
+				}
+				else
+				{
+					Console.WriteLine("DataType  : " +attribute.datatype);
+				}
+
+			}
+
+			
+
+
+			/*
 			List<MaximoWorkOrder> workOrders = maximoService.getWorkOrders();
 			Console.WriteLine(workOrders[0].wonum);
 
@@ -40,14 +67,14 @@ namespace MaximoServiceTestConsoleApplication
 			wo.assetnum = "1111";
 			//wo.locationdetails = "First AVE";
 */
-			
+
 			/*
 			MaximoAsset asset = new MaximoAsset();
 			asset.assetnum = "234234";
 			asset.assetid = 314;
 			//wo.asset = asset;
 			*/
-			
+
 			//WorkOrder.Insert(wo);
 
 			/*

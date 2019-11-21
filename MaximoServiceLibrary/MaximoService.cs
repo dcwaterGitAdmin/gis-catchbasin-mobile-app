@@ -214,6 +214,92 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrderList;
 		}
 
+
+		public List<MaximoAttribute> getAttributes()
+		{
+			var request = createRequest("/os/mxl_assetattribute");
+			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.pageSize", "10");
+			request.AddQueryParameter("pageno", "1");
+			var response = restClient.Execute(request);
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoAttribute>();
+			}
+			List<MaximoAttribute> maximoAttributes = new List<MaximoAttribute>();
+			
+			MaximoAttributePageableRestResponse mxl_assetattributePageableRestResponse =
+				JsonConvert.DeserializeObject<MaximoAttributePageableRestResponse>(response.Content);
+			maximoAttributes.AddRange(mxl_assetattributePageableRestResponse.member);
+			
+			// get next pages if there is any
+			while (mxl_assetattributePageableRestResponse.responseInfo.nextPage != null)
+			{
+				request = createRequest(mxl_assetattributePageableRestResponse.responseInfo.nextPage.href, true);
+
+				response = restClient.Execute(request);
+
+				if (!response.IsSuccessful)
+				{
+					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					// todo - throw exception here?
+					return maximoAttributes;
+				}
+
+				mxl_assetattributePageableRestResponse =
+					JsonConvert.DeserializeObject<MaximoAttributePageableRestResponse>(response.Content);
+				maximoAttributes.AddRange(mxl_assetattributePageableRestResponse.member);
+			}
+			
+			return maximoAttributes;
+			
+		}
+		
+		
+		public List<MaximoDomain> getDomains()
+		{
+			var request = createRequest("/os/mxdomain");
+			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.pageSize", "10");
+			request.AddQueryParameter("pageno", "1");
+			
+			var response = restClient.Execute(request);
+			
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoDomain>();
+			}
+			List<MaximoDomain> maximoDomains = new List<MaximoDomain>();
+			
+			MaximoDomainPageableRestResponse mxdomainPageableRestResponse =
+				JsonConvert.DeserializeObject<MaximoDomainPageableRestResponse>(response.Content);
+			maximoDomains.AddRange(mxdomainPageableRestResponse.member);
+			
+			// get next pages if there is any
+			while (mxdomainPageableRestResponse.responseInfo.nextPage != null)
+			{
+				request = createRequest(mxdomainPageableRestResponse.responseInfo.nextPage.href, true);
+
+				response = restClient.Execute(request);
+
+				if (!response.IsSuccessful)
+				{
+					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					// todo - throw exception here?
+					return maximoDomains;
+				}
+
+				mxdomainPageableRestResponse =
+					JsonConvert.DeserializeObject<MaximoDomainPageableRestResponse>(response.Content);
+				maximoDomains.AddRange(mxdomainPageableRestResponse.member);
+			}
+			
+			return maximoDomains;
+			
+		}
+		
 		public MaximoAsset getAsset(string assetnum)
 		{
 			if (assetnum == null) return null;

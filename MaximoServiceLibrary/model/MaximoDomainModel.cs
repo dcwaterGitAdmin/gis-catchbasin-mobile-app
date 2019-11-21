@@ -1671,4 +1671,211 @@ namespace MaximoServiceLibrary.model
 		// End Measure
 		public double endmeasure { get; set; }
 	}
+	
+	// MXL_ASSETATTRIBUTE
+	public class MaximoAttribute : MaximoBasePersistenceEntity
+	{
+
+		// Prefix
+		public string attrdescprefix { get; set; } 
+
+		// Attribute
+		public string assetattrid { get; set; } 
+
+		// ASSETATTRIBUTEID
+		public Int64 assetattributeid { get; set; } 
+
+		// Organization
+		public string orgid { get; set; } 
+
+		// Unit of Measure
+		public string measureunitid { get; set; } 
+
+		// Description
+		public string description { get; set; } 
+
+		// Site
+		public string siteid { get; set; } 
+
+		// Domain
+		public string domainid { get; set; } 
+
+		// Data Type
+		public string datatype { get; set; } 
+	}
+
+	
+	// MXDOMAIN
+	public class MaximoDomain : MaximoBasePersistenceEntity
+	{
+
+		// Scale
+		public int scale { get; set; } 
+
+		// SYNONYMDOMAIN
+		public List<SYNONYMDOMAIN> synonymdomain { get; set; } 
+
+		// Domain
+		public string domainid { get; set; } 
+
+		// ALNDOMAINVALUE
+		public List<ALNDOMAINVALUE> alndomain { get; set; } 
+
+		// Domain Type
+		public string domaintype { get; set; } 
+
+		// MAXDOMAINID
+		public Int64 maxdomainid { get; set; } 
+
+		// Description
+		public string description { get; set; } 
+
+		// NUMDOMAINVALUE
+		public List<NUMDOMAINVALUE> numericdomain { get; set; } 
+
+		// MAXDOMVALCOND
+		public List<MAXDOMVALCOND> maxdomvalcond { get; set; } 
+
+		// Length
+		public int length { get; set; } 
+
+		// Data Type
+		public string maxtype { get; set; } 
+
+		// Disable Caching
+		public bool nevercache { get; set; } 
+
+		// MAXTABLEDOMAIN
+		public List<MAXTABLEDOMAIN> maxtabledomain { get; set; } 
+
+		// Is Internal
+		//public int internal { get; set; } 
+		// todo: internal is reserved word
+	}
+
+	// MXDOMAIN
+	public class MAXTABLEDOMAIN : MaximoBaseEntity
+	{
+
+		// Object
+		public string objectname { get; set; } 
+
+		// Error Message Key
+		public string erroraccesskey { get; set; } 
+
+		// Error Message Group
+		public string errorresourcbundle { get; set; } 
+
+		// Organization
+		public string orgid { get; set; } 
+
+		// CROSSOVERDOMAIN
+		//public List<CROSSOVERDOMAIN> crossoverdomain { get; set; } 
+
+		// MAXTABLEDOMAINID
+		public Int64 maxtabledomainid { get; set; } 
+
+		// Validation Where Clause
+		public string validtnwhereclause { get; set; } 
+
+		// Site
+		public string siteid { get; set; } 
+
+		// List Where Clause
+		public string listwhereclause { get; set; } 
+	}
+
+	// MXDOMAIN
+	public class MAXDOMVALCOND : MaximoBaseEntity
+	{
+
+		// Object Name
+		public string objectname { get; set; } 
+
+		// Value ID
+		public string valueid { get; set; } 
+
+		// Unique Id
+		public Int64 maxdomvalcondid { get; set; } 
+
+		// Condition Number
+		public string conditionnum { get; set; } 
+	}
+
+	// MXDOMAIN
+	public class NUMDOMAINVALUE : MaximoBaseEntity
+	{
+
+		// Value ID
+		public string valueid { get; set; } 
+
+		// Organization
+		public string orgid { get; set; } 
+
+		// Description
+		public string description { get; set; } 
+
+		// NUMERICDOMAINID
+		public Int64 numericdomainid { get; set; } 
+
+		// Value
+		public double value { get; set; } 
+
+		// Site
+		public string siteid { get; set; } 
+	}
+
+	
+	// MXDOMAIN
+	public class ALNDOMAINVALUE : MaximoBaseEntity
+	{
+
+		// Value ID
+		public string valueid { get; set; } 
+
+		// Organization
+		public string orgid { get; set; } 
+
+		// ALNDOMAINID
+		public Int64 alndomainid { get; set; } 
+
+		// Description
+		public string description { get; set; } 
+
+		// Value
+		public string value { get; set; } 
+
+		// Site
+		public string siteid { get; set; } 
+	}
+
+	// MXDOMAIN
+	public class SYNONYMDOMAIN : MaximoBaseEntity
+	{
+
+		// Default
+		public bool defaults { get; set; } 
+
+		// Value ID
+		public string valueid { get; set; } 
+
+		// Organization
+		public string orgid { get; set; } 
+
+		// Description
+		public string description { get; set; } 
+
+		// Internal Value
+		public string maxvalue { get; set; } 
+
+		// Value
+		public string value { get; set; } 
+
+		// SYNONYMDOMAINID
+		public Int64 synonymdomainid { get; set; } 
+
+		// Site
+		public string siteid { get; set; } 
+	}
+
 }

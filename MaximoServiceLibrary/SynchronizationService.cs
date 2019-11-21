@@ -13,7 +13,9 @@ namespace MaximoServiceLibrary
 
 		public WorkOrderRepository workOrderRepository { get; }
 		public AssetRepository assetRepository { get; }
-
+		public DomainRepository domainRepository { get; }
+		public AttributeRepository attributeRepository { get; }
+		
 		public SynchronizationService(MaximoService _maximoService, DbConnection _dbConnection)
 		{
 			this.maximoService = _maximoService;
@@ -22,6 +24,8 @@ namespace MaximoServiceLibrary
 			workOrderRepository = new WorkOrderRepository(dbConnection);
 			assetRepository = new AssetRepository(dbConnection);
 			
+			domainRepository = new DomainRepository(dbConnection);
+			attributeRepository = new AttributeRepository(dbConnection);
 		}
 
 		public void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
@@ -54,6 +58,28 @@ namespace MaximoServiceLibrary
 				maximoWorkOrder.asset = maximoAsset;
 			}
 			
+			
+		}
+
+
+		// todo: change function name
+		public void synchronizeHelperFromMaximoToLocalDb()
+		{
+			
+			domainRepository.removeCollection();
+			List<MaximoDomain> domains = maximoService.getDomains();
+
+			foreach (var domain in domains)
+			{
+				domainRepository.insert(domain);
+			}
+			
+			attributeRepository.removeCollection();
+			List<MaximoAttribute> attributes = maximoService.getAttributes();
+			foreach (var attribute in attributes)
+			{
+				attributeRepository.insert(attribute);
+			}
 			
 		}
 	}

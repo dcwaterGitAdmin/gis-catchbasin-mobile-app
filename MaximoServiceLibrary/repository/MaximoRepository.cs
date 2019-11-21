@@ -40,4 +40,40 @@ namespace MaximoServiceLibrary.repository
 		
 	}
 	
+	public class AttributeRepository : DbReposistory<String, MaximoAttribute>
+	{
+		public AttributeRepository(DbConnection dbConnection) : base(dbConnection)
+		{
+		}
+
+		public override string tableName()
+		{
+			return "attributes";
+		}
+
+		public override string keyField()
+		{
+			return "assetattrid";
+		}
+		
+	}
+
+	public class DomainRepository : DbReposistory<String, MaximoDomain>
+	{
+		public DomainRepository(DbConnection dbConnection) : base(dbConnection)
+		{
+		}
+
+		public override string tableName()
+		{
+			return "domains";
+		}
+
+		public override string keyField()
+		{
+			return "domainid";
+		}
+		
+	}
+	
 }
