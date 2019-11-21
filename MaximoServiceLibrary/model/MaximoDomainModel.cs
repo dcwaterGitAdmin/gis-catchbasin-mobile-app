@@ -1077,11 +1077,6 @@ public class MaximoWorkOrder : MaximoBaseEntity
 	public string customerstreet { get; set; } 
 }
 
-    public class MaximoWorkOrderList
-    {
-        public List<MaximoWorkOrder> member { get; set; }
-    }
-
     public class MaximoAsset 
     {
         public string assetnum { get; set; }
@@ -1142,12 +1137,7 @@ public class MaximoWorkOrder : MaximoBaseEntity
         public List<MaximoAssetSpec> assetspec { get; set; }
         public bool disabled { get; set; }
     }
-
-    public class MaximoAssetMember
-    {
-        public List<MaximoAsset> member { get; set; }
-    }
-
+    
     public class MaximoAssetSpec
     {
 
