@@ -27,6 +27,7 @@ namespace LocalDBLibrary
             }
         }
         
+        /*
         public static MaximoWorkOrder FindByAssetAssetNum(string num)
         {
             using (var db = new LiteDatabase(@dbString))
@@ -35,5 +36,6 @@ namespace LocalDBLibrary
                 return workorders.FindOne(x => x.asset.assetnum.Contains(num));
             }
         }
+        */
     }
 }

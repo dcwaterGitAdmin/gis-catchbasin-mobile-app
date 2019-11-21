@@ -216,7 +216,7 @@ namespace MaximoServiceLibrary
 			 */
 			foreach (var maximoWorkOrder in maximoWorkOrderList)
 			{
-				maximoWorkOrder.asset = getAsset(maximoWorkOrder.assetnum);
+				//maximoWorkOrder.asset = getAsset(maximoWorkOrder.assetnum);
 			}
 
 			Console.WriteLine($"Fetched {maximoWorkOrderList.Count} work orders");

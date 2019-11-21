@@ -16,7 +16,7 @@ namespace MaximoServiceLibrary.model
 	 * This class was created use for be base class.
 	 * All Maximo classes must extend from this class.
 	 */
-	public class MaximoBasePersistanceEntity : MaximoBaseEntity
+	public class MaximoBasePersistenceEntity : MaximoBaseEntity
 	{
 		// it use by LiteDB.
 		public int Id { get; set; }
@@ -58,8 +58,15 @@ namespace MaximoServiceLibrary.model
 		public List<MaximoPersonGroup> member { get; set; }
 	}
 
-	// MXWO
-	public class MaximoWorkOrder : MaximoBasePersistanceEntity
+	public class MaximoWorkOrder : MaximoBasePersistenceEntity
+	{
+		public string wonum { get; set; }
+		public string assetnum { get; set; }
+
+	}
+
+// MXWO
+	public class MaximoWorkOrder2 : MaximoBasePersistenceEntity
 	{
 		public MaximoAsset asset { get; set; }
 
