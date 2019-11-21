@@ -3,1160 +3,1672 @@ using System.Collections.Generic;
 
 namespace MaximoServiceLibrary.model
 {
-    /*
-     * This class was created use for be base class.
-     * All Maximo classes must extend from this class.
-     */
-    public class MaximoBaseEntity
-    {
-        // it use by LiteDB.
-        public int Id { get; set; }
-        // it use to find edited data by developers.
-        public bool editedFromApp { get; set; }
-        
-    }
-
-    public class MaximoUser
-    {
-        public string baseCurrency { get; set; }
-        public string loginUserName { get; set; }
-        public string defaultOrg { get; set; }
-        public string defaultSite { get; set; }
-        public string userName { get; set; }
-        public string personId { get; set; }
-        public string insertOrg { get; set; }
-        public string loginID { get; set; }
-        public string defaultLanguage { get; set; }
-        public string calendarType { get; set; }
-        public string baseLang { get; set; }
-        public string email { get; set; }
-        public string baseCalendar { get; set; }
-        public string insertSite { get; set; }
-        public string displayName { get; set; }
-
-    }
-    public class MaximoPersonGroup
-    {
-        public double persongroupid { get; set; }
-        public string _rowstamp { get; set; }
-        public string persongroup { get; set; }
-        public string description { get; set; }
-        public string vehiclenum { get; set; }
-        public bool iscrewworkgroup { get; set; }
-
-    }
-    public class MaximoPersonGroupMember
-    {
-        public List<MaximoPersonGroup> member { get; set; }
-    }
-
-// MXWO
-public class MaximoWorkOrder : MaximoBaseEntity
-{
-	public MaximoAsset asset { get; set; }
+	public class MaximoBaseEntity
+	{
+		// _rowstamp
+		public string _rowstamp { get; set; }
+
+		// _rowstamp
+		public string href { get; set; }
+	}
+
+	/*
+	 * This class was created use for be base class.
+	 * All Maximo classes must extend from this class.
+	 */
+	public class MaximoBasePersistanceEntity : MaximoBaseEntity
+	{
+		// it use by LiteDB.
+		public int Id { get; set; }
+
+		// it use to find edited data by developers.
+		public bool editedFromApp { get; set; }
+	}
+
+	public class MaximoUser
+	{
+		public string baseCurrency { get; set; }
+		public string loginUserName { get; set; }
+		public string defaultOrg { get; set; }
+		public string defaultSite { get; set; }
+		public string userName { get; set; }
+		public string personId { get; set; }
+		public string insertOrg { get; set; }
+		public string loginID { get; set; }
+		public string defaultLanguage { get; set; }
+		public string calendarType { get; set; }
+		public string baseLang { get; set; }
+		public string email { get; set; }
+		public string baseCalendar { get; set; }
+		public string insertSite { get; set; }
+		public string displayName { get; set; }
+	}
 
-	// Actual Hours of External Labor
-	public string actoutlabhrs { get; set; } 
+	public class MaximoPersonGroup : MaximoBaseEntity
+	{
+		public double persongroupid { get; set; }
+		public string persongroup { get; set; }
+		public string description { get; set; }
+		public string vehiclenum { get; set; }
+		public bool iscrewworkgroup { get; set; }
+	}
 
-	// JOBTASKID
-	public Int64 jobtaskid { get; set; } 
+	public class MaximoPersonGroupMember
+	{
+		public List<MaximoPersonGroup> member { get; set; }
+	}
 
-	// Details
-	public string description_longdescription { get; set; } 
+	// MXWO
+	public class MaximoWorkOrder : MaximoBasePersistanceEntity
+	{
+		public MaximoAsset asset { get; set; }
 
-	// Charge to Store
-	public bool chargestore { get; set; } 
+		// auto-generated fields
 
-	// Justification
-	public string contractorjustification { get; set; } 
+		// Actual Hours of External Labor
+		public string actoutlabhrs { get; set; }
 
-	// Is GIS
-	public bool plussisgis { get; set; } 
+		// JOBTASKID
+		public Int64 jobtaskid { get; set; }
 
-	// Include Tasks in Schedule
-	public bool inctasksinsched { get; set; } 
+		// Details
+		public string description_longdescription { get; set; }
 
-	// Scheduled Start
-	public DateTime schedstart { get; set; } 
+		// Charge to Store
+		public bool chargestore { get; set; }
 
-	// Labor
-	public string wolablnk { get; set; } 
+		// Justification
+		public string contractorjustification { get; set; }
 
-	// Class
-	public string woclass { get; set; } 
+		// Is GIS
+		public bool plussisgis { get; set; }
 
-	// Validated
-	public bool validated { get; set; } 
+		// Include Tasks in Schedule
+		public bool inctasksinsched { get; set; }
 
-	// Temperature
-	public int temperature { get; set; } 
+		// Scheduled Start
+		public DateTime schedstart { get; set; }
 
-	// WORKORDERID
-	public Int64 workorderid { get; set; } 
+		// Labor
+		public string wolablnk { get; set; }
 
-	// Estimate Service Cost at Approval
-	public double estatapprservcost { get; set; } 
+		// Class
+		public string woclass { get; set; }
 
-	// Run 15 Minutes
-	public bool run15minutes { get; set; } 
+		// Validated
+		public bool validated { get; set; }
 
-	// Distance to Blockage
-	public string dcw_snakedist2blckg { get; set; } 
+		// Temperature
+		public int temperature { get; set; }
 
-	// Flow Action
-	public string flowaction { get; set; } 
+		// WORKORDERID
+		public Int64 workorderid { get; set; }
 
-	// Weathercond
-	public string weathercond { get; set; } 
+		// Estimate Service Cost at Approval
+		public double estatapprservcost { get; set; }
 
-	// Actual Cost of Internal Labor
-	public double actintlabcost { get; set; } 
+		// Run 15 Minutes
+		public bool run15minutes { get; set; }
 
-	// Frequency Unit
-	public string pluscfrequnit { get; set; } 
+		// Distance to Blockage
+		public string dcw_snakedist2blckg { get; set; }
 
-	// Sewer Relieved
-	public bool sewerrelieved { get; set; } 
+		// Flow Action
+		public string flowaction { get; set; }
 
-	// Service Group
-	public string commoditygroup { get; set; } 
+		// Weathercond
+		public string weathercond { get; set; }
 
-	// Appointment Required
-	public bool apptrequired { get; set; } 
+		// Actual Cost of Internal Labor
+		public double actintlabcost { get; set; }
 
-	// Outside Labor Cost
-	public double outlabcost { get; set; } 
+		// Frequency Unit
+		public string pluscfrequnit { get; set; }
 
-	// Loop Calibration
-	public bool pluscloop { get; set; } 
+		// Sewer Relieved
+		public bool sewerrelieved { get; set; }
 
-	// Status Date
-	public DateTime statusdate { get; set; } 
+		// Service Group
+		public string commoditygroup { get; set; }
 
-	// Asset's Extra Field # 5
-	public double woeq5 { get; set; } 
+		// Appointment Required
+		public bool apptrequired { get; set; }
 
-	// Flushing Zone
-	public string woeq4 { get; set; } 
+		// Outside Labor Cost
+		public double outlabcost { get; set; }
 
-	// Parent WO
-	public string parent { get; set; } 
+		// Loop Calibration
+		public bool pluscloop { get; set; }
 
-	// Category
-	public string woeq7 { get; set; } 
+		// Status Date
+		public DateTime statusdate { get; set; }
 
-	// Asset's Extra Field # 6
-	public DateTime woeq6 { get; set; } 
+		// Asset's Extra Field # 5
+		public double woeq5 { get; set; }
 
-	// Finish No Later Than
-	public DateTime fnlconstraint { get; set; } 
+		// Flushing Zone
+		public string woeq4 { get; set; }
 
-	// Useful Life
-	public string woeq9 { get; set; } 
+		// Parent WO
+		public string parent { get; set; }
 
-	// PM Extension Date
-	public DateTime pmextdate { get; set; } 
+		// Category
+		public string woeq7 { get; set; }
 
-	// Asset's Extra Field # 8
-	public string woeq8 { get; set; } 
+		// Asset's Extra Field # 6
+		public DateTime woeq6 { get; set; }
 
-	// Reason for Change
-	public string reasonforchange { get; set; } 
+		// Finish No Later Than
+		public DateTime fnlconstraint { get; set; }
 
-	// Zip
-	public string customerzip { get; set; } 
+		// Useful Life
+		public string woeq9 { get; set; }
 
-	// Petroleum Odor
-	public bool petroleumodor { get; set; } 
+		// PM Extension Date
+		public DateTime pmextdate { get; set; }
 
-	// Project
-	public string woeq1 { get; set; } 
+		// Asset's Extra Field # 8
+		public string woeq8 { get; set; }
 
-	// Estimated Cost of External Labor
-	public double estoutlabcost { get; set; } 
+		// Reason for Change
+		public string reasonforchange { get; set; }
 
-	// Pressure Zone
-	public string woeq2 { get; set; } 
+		// Zip
+		public string customerzip { get; set; }
 
-	// Snake Line
-	public bool snakeline { get; set; } 
+		// Petroleum Odor
+		public bool petroleumodor { get; set; }
 
-	// Location Details
-	public string woeq3 { get; set; } 
+		// Project
+		public string woeq1 { get; set; }
 
-	// Requires Location Downtime
-	public bool los { get; set; } 
+		// Estimated Cost of External Labor
+		public double estoutlabcost { get; set; }
 
-	// Cutnum
-	public string cutnum { get; set; } 
+		// Pressure Zone
+		public string woeq2 { get; set; }
 
-	// Water Cloudy
-	public bool watercloudy { get; set; } 
+		// Snake Line
+		public bool snakeline { get; set; }
 
-	// Problemside
-	public string problemside { get; set; } 
+		// Location Details
+		public string woeq3 { get; set; }
 
-	// Developer Contact
-	public string developercontact { get; set; } 
+		// Requires Location Downtime
+		public bool los { get; set; }
 
-	// Water Cause Rash
-	public bool watercauserash { get; set; } 
+		// Cutnum
+		public string cutnum { get; set; }
 
-	// FCID
-	public string fincntrlid { get; set; } 
+		// Water Cloudy
+		public bool watercloudy { get; set; }
 
-	// PM
-	public string pmnum { get; set; } 
+		// Problemside
+		public string problemside { get; set; }
 
-	// Measurement
-	public double measurementvalue { get; set; } 
+		// Developer Contact
+		public string developercontact { get; set; }
 
-	// Ignore Direct Issue Availability For Work Order Status
-	public bool ignorediavail { get; set; } 
+		// Water Cause Rash
+		public bool watercauserash { get; set; }
 
-	// Location where snake was run
-	public string snakeloc { get; set; } 
+		// FCID
+		public string fincntrlid { get; set; }
 
-	// Task
-	public int taskid { get; set; } 
+		// PM
+		public string pmnum { get; set; }
 
-	// Measurementvalue2
-	public double measurementvalue2 { get; set; } 
+		// Measurement
+		public double measurementvalue { get; set; }
 
-	// Locallized
-	public double measurementvalue4 { get; set; } 
+		// Ignore Direct Issue Availability For Work Order Status
+		public bool ignorediavail { get; set; }
 
-	// Equipmentused
-	public string equipmentused { get; set; } 
+		// Location where snake was run
+		public string snakeloc { get; set; }
 
-	// Measurementvalue3
-	public double measurementvalue3 { get; set; } 
+		// Task
+		public int taskid { get; set; }
 
-	// Debris
-	public bool debris { get; set; } 
+		// Measurementvalue2
+		public double measurementvalue2 { get; set; }
 
-	// Estimated Hours of External Labor
-	public string estoutlabhrs { get; set; } 
+		// Locallized
+		public double measurementvalue4 { get; set; }
 
-	// Velocitypres
-	public double velocitypres { get; set; } 
+		// Equipmentused
+		public string equipmentused { get; set; }
 
-	// Location of clean-out or test tee
-	public string cleanoutloc { get; set; } 
+		// Measurementvalue3
+		public double measurementvalue3 { get; set; }
 
-	// Permitdate
-	public DateTime permitdate { get; set; } 
+		// Debris
+		public bool debris { get; set; }
 
-	// Interruptible
-	public bool interruptible { get; set; } 
+		// Estimated Hours of External Labor
+		public string estoutlabhrs { get; set; }
 
-	// Crew
-	public string crewid { get; set; } 
+		// Velocitypres
+		public double velocitypres { get; set; }
 
-	// Class Structure
-	public string classstructureid { get; set; } 
+		// Location of clean-out or test tee
+		public string cleanoutloc { get; set; }
 
-	// Changed By
-	public string changeby { get; set; } 
+		// Permitdate
+		public DateTime permitdate { get; set; }
 
-	// Runningtraploc
-	public string runningtraploc { get; set; } 
+		// Interruptible
+		public bool interruptible { get; set; }
 
-	// PO Line ID
-	public Int64 genforpolineid { get; set; } 
+		// Crew
+		public string crewid { get; set; }
 
-	// Calendar
-	public string calccalendar { get; set; } 
+		// Class Structure
+		public string classstructureid { get; set; }
 
-	// Revised Priority
-	public int dcw_revisedpriority { get; set; } 
+		// Changed By
+		public string changeby { get; set; }
 
-	// Contractor Release #
-	public int contr_rel_num { get; set; } 
+		// Runningtraploc
+		public string runningtraploc { get; set; }
 
-	// Task
-	public string fctaskid { get; set; } 
+		// PO Line ID
+		public Int64 genforpolineid { get; set; }
 
-	// Source System ID
-	public string sourcesysid { get; set; } 
+		// Calendar
+		public string calccalendar { get; set; }
 
-	// Failed Date
-	public DateTime faildate { get; set; } 
+		// Revised Priority
+		public int dcw_revisedpriority { get; set; }
 
-	// Requires Dedicated Location Maintenance Window
-	public bool lms { get; set; } 
+		// Contractor Release #
+		public int contr_rel_num { get; set; }
 
-	// Next Calibration Due Date
-	public DateTime pluscnextdate { get; set; } 
+		// Task
+		public string fctaskid { get; set; }
 
-	// Wol4
-	public DateTime wol4 { get; set; } 
+		// Source System ID
+		public string sourcesysid { get; set; }
 
-	// Engineer Company
-	public string engineercompany { get; set; } 
+		// Failed Date
+		public DateTime faildate { get; set; }
 
-	// Asset
-	public string assetnum { get; set; } 
+		// Requires Dedicated Location Maintenance Window
+		public bool lms { get; set; }
 
-	// Occupancy Permit #
-	public string occpermitnum { get; set; } 
+		// Next Calibration Due Date
+		public DateTime pluscnextdate { get; set; }
 
-	// Estimate Material Cost at Approval
-	public double estatapprmatcost { get; set; } 
+		// Wol4
+		public DateTime wol4 { get; set; }
 
-	// Calculated Longitude (X)
-	public double calculatedx { get; set; } 
+		// Engineer Company
+		public string engineercompany { get; set; }
 
-	// Calculated Latitude (Y)
-	public double calculatedy { get; set; } 
+		// Asset
+		public string assetnum { get; set; }
 
-	// Lead
-	public string lead { get; set; } 
+		// Occupancy Permit #
+		public string occpermitnum { get; set; }
 
-	// PM Due Date
-	public DateTime pmduedate { get; set; } 
+		// Estimate Material Cost at Approval
+		public double estatapprmatcost { get; set; }
 
-	// Actual Labor Cost
-	public double actlabcost { get; set; } 
+		// Calculated Longitude (X)
+		public double calculatedx { get; set; }
 
-	// Reported By
-	public string reportedby { get; set; } 
+		// Calculated Latitude (Y)
+		public double calculatedy { get; set; }
 
-	// Operating Status
-	public string woeq10 { get; set; } 
+		// Lead
+		public string lead { get; set; }
 
-	// Asset's Extra Field # 12
-	public string woeq12 { get; set; } 
+		// PM Due Date
+		public DateTime pmduedate { get; set; }
 
-	// Job Plan Revision Number
-	public int pluscjprevnum { get; set; } 
+		// Actual Labor Cost
+		public double actlabcost { get; set; }
 
-	// Asset's Extra Field # 11
-	public string woeq11 { get; set; } 
+		// Reported By
+		public string reportedby { get; set; }
 
-	// Inspected By
-	public double woeq14 { get; set; } 
+		// Operating Status
+		public string woeq10 { get; set; }
 
-	// Description
-	public string description { get; set; } 
+		// Asset's Extra Field # 12
+		public string woeq12 { get; set; }
 
-	// Asset's Extra Field # 13
-	public DateTime woeq13 { get; set; } 
+		// Job Plan Revision Number
+		public int pluscjprevnum { get; set; }
 
-	// Whom is this change for
-	public string whomischangefor { get; set; } 
+		// Asset's Extra Field # 11
+		public string woeq11 { get; set; }
 
-	// Problem Throughout Location
-	public bool problemthruout { get; set; } 
+		// Inspected By
+		public double woeq14 { get; set; }
 
-	// Repair Facility Site
-	public string repfacsiteid { get; set; } 
+		// Description
+		public string description { get; set; }
 
-	// Under Flow Control
-	public bool flowcontrolled { get; set; } 
+		// Asset's Extra Field # 13
+		public DateTime woeq13 { get; set; }
 
-	// Nested Job Plan Processing
-	public bool nestedjpinprocess { get; set; } 
+		// Whom is this change for
+		public string whomischangefor { get; set; }
 
-	// Medical report
-	public string medicalreport { get; set; } 
+		// Problem Throughout Location
+		public bool problemthruout { get; set; }
 
-	// Construction Permit #
-	public string conpermitnum { get; set; } 
+		// Repair Facility Site
+		public string repfacsiteid { get; set; }
 
-	// Estimated Service Cost
-	public double estservcost { get; set; } 
+		// Under Flow Control
+		public bool flowcontrolled { get; set; }
 
-	// Ignore Storeroom Availability For Work Order Status
-	public bool ignoresrmavail { get; set; } 
+		// Nested Job Plan Processing
+		public bool nestedjpinprocess { get; set; }
 
-	// Lawson Budget Check
-	public bool dcw_lwbudgetcheck { get; set; } 
+		// Medical report
+		public string medicalreport { get; set; }
 
-	// Repair Facility Required
-	public bool repairlocflag { get; set; } 
+		// Construction Permit #
+		public string conpermitnum { get; set; }
 
-	// Physical Location
-	public string pluscphyloc { get; set; } 
+		// Estimated Service Cost
+		public double estservcost { get; set; }
 
-	// Respond By
-	public DateTime respondby { get; set; } 
+		// Ignore Storeroom Availability For Work Order Status
+		public bool ignoresrmavail { get; set; }
 
-	// PO Revision
-	public int genforporevision { get; set; } 
+		// Lawson Budget Check
+		public bool dcw_lwbudgetcheck { get; set; }
 
-	// Estimated Hours of Internal Labor
-	public string estintlabhrs { get; set; } 
+		// Repair Facility Required
+		public bool repairlocflag { get; set; }
 
-	// Owner Group
-	public string ownergroup { get; set; } 
+		// Physical Location
+		public string pluscphyloc { get; set; }
 
-	// Back Out Plan
-	public string backoutplan { get; set; } 
+		// Respond By
+		public DateTime respondby { get; set; }
 
-	// Wol3
-	public double wol3 { get; set; } 
+		// PO Revision
+		public int genforporevision { get; set; }
 
-	// Wol2
-	public string wol2 { get; set; } 
+		// Estimated Hours of Internal Labor
+		public string estintlabhrs { get; set; }
 
-	// Sampleloctype
-	public string sampleloctype { get; set; } 
+		// Owner Group
+		public string ownergroup { get; set; }
 
-	// Wol1
-	public string wol1 { get; set; } 
+		// Back Out Plan
+		public string backoutplan { get; set; }
 
-	// Send Materials to Lawson
-	public bool dcw_sendmatl2lw { get; set; } 
+		// Wol3
+		public double wol3 { get; set; }
 
-	// Requires Dedicated Asset Maintenance Window
-	public bool ams { get; set; } 
+		// Wol2
+		public string wol2 { get; set; }
 
-	// Work Group
-	public string persongroup { get; set; } 
+		// Sampleloctype
+		public string sampleloctype { get; set; }
 
-	// WO19
-	public bool wo19 { get; set; } 
+		// Wol1
+		public string wol1 { get; set; }
 
-	// State
-	public string customerstate { get; set; } 
+		// Send Materials to Lawson
+		public bool dcw_sendmatl2lw { get; set; }
 
-	// Measurement Date
-	public DateTime measuredate { get; set; } 
+		// Requires Dedicated Asset Maintenance Window
+		public bool ams { get; set; }
 
-	// BPEL Activity Name
-	public string pmcombpelactname { get; set; } 
+		// Work Group
+		public string persongroup { get; set; }
 
-	// Final Position
-	public string finalposition { get; set; } 
+		// WO19
+		public bool wo19 { get; set; }
 
-	// Outside Tool Cost
-	public double outtoolcost { get; set; } 
+		// State
+		public string customerstate { get; set; }
 
-	// Change Status Memo
-	public string np_statusmemo { get; set; } 
+		// Measurement Date
+		public DateTime measuredate { get; set; }
 
-	// WO20
-	public bool wo20 { get; set; } 
+		// BPEL Activity Name
+		public string pmcombpelactname { get; set; }
 
-	// E-mail
-	public string customeremail { get; set; } 
+		// Final Position
+		public string finalposition { get; set; }
 
-	// Agency
-	public string agencyid { get; set; } 
+		// Outside Tool Cost
+		public double outtoolcost { get; set; }
 
-	// Estimate Tool Cost at Approval
-	public double estatapprtoolcost { get; set; } 
+		// Change Status Memo
+		public string np_statusmemo { get; set; }
 
-	// Asset/Location Priority
-	public int assetlocpriority { get; set; } 
+		// WO20
+		public bool wo20 { get; set; }
 
-	// Calculated Priority
-	public int calcpriority { get; set; } 
+		// E-mail
+		public string customeremail { get; set; }
 
-	// Calendar
-	public string calendar { get; set; } 
+		// Agency
+		public string agencyid { get; set; }
 
-	// Snake Ran to the Main Public Sewer
-	public bool snaketosewer { get; set; } 
+		// Estimate Tool Cost at Approval
+		public double estatapprtoolcost { get; set; }
 
-	// Original Problem Type
-	public string origproblemtype { get; set; } 
+		// Asset/Location Priority
+		public int assetlocpriority { get; set; }
 
-	// Target Start
-	public DateTime targstartdate { get; set; } 
+		// Calculated Priority
+		public int calcpriority { get; set; }
 
-	// Water Taste
-	public bool watertaste { get; set; } 
+		// Calendar
+		public string calendar { get; set; }
 
-	// Originating Record
-	public string origrecordid { get; set; } 
+		// Snake Ran to the Main Public Sewer
+		public bool snaketosewer { get; set; }
 
-	// Downtime
-	public bool downtime { get; set; } 
+		// Original Problem Type
+		public string origproblemtype { get; set; }
 
-	// Require Asset Downtime
-	public bool reqasstdwntime { get; set; } 
+		// Target Start
+		public DateTime targstartdate { get; set; }
 
-	// Miss Utility Emergency
-	public bool missutilityemerg { get; set; } 
+		// Water Taste
+		public bool watertaste { get; set; }
 
-	// Typeodor
-	public string typeodor { get; set; } 
+		// Originating Record
+		public string origrecordid { get; set; }
 
-	// Service
-	public string service { get; set; } 
+		// Downtime
+		public bool downtime { get; set; }
 
-	// Is Restoration Required
-	public string restorationreqd { get; set; } 
+		// Require Asset Downtime
+		public bool reqasstdwntime { get; set; }
 
-	// Contractor Phone
-	public string contractorphone { get; set; } 
+		// Miss Utility Emergency
+		public bool missutilityemerg { get; set; }
 
-	// Approved Cost of Internal Labor
-	public double estatapprintlabcost { get; set; } 
+		// Typeodor
+		public string typeodor { get; set; }
 
-	// Disabled
-	public bool disabled { get; set; } 
+		// Service
+		public string service { get; set; }
 
-	// Developer Company
-	public string developercompany { get; set; } 
+		// Is Restoration Required
+		public string restorationreqd { get; set; }
 
-	// Property Line
-	public string wolo5 { get; set; } 
+		// Contractor Phone
+		public string contractorphone { get; set; }
 
-	// Last Time doclinks Copied
-	public DateTime lastcopylinkdate { get; set; } 
+		// Approved Cost of Internal Labor
+		public double estatapprintlabcost { get; set; }
 
-	// Wolo6
-	public double wolo6 { get; set; } 
+		// Disabled
+		public bool disabled { get; set; }
 
-	// Customer's E-mail Address
-	public string wolo3 { get; set; } 
+		// Developer Company
+		public string developercompany { get; set; }
 
-	// Estiamted Cost of External Labor
-	public string estatapproutlabhrs { get; set; } 
+		// Property Line
+		public string wolo5 { get; set; }
 
-	// Customer's Name
-	public string wolo4 { get; set; } 
+		// Last Time doclinks Copied
+		public DateTime lastcopylinkdate { get; set; }
 
-	// Sub Area
-	public string wolo9 { get; set; } 
+		// Wolo6
+		public double wolo6 { get; set; }
 
-	// Bldg Sewer/Running Trap Present
-	public bool runningtrap { get; set; } 
+		// Customer's E-mail Address
+		public string wolo3 { get; set; }
 
-	// Wolo7
-	public DateTime wolo7 { get; set; } 
+		// Estiamted Cost of External Labor
+		public string estatapproutlabhrs { get; set; }
 
-	// Project Type
-	public string projecttype { get; set; } 
+		// Customer's Name
+		public string wolo4 { get; set; }
 
-	// Wolo8
-	public double wolo8 { get; set; } 
+		// Sub Area
+		public string wolo9 { get; set; }
 
-	// Estiamted Hours of Internal Labor
-	public string estatapprintlabhrs { get; set; } 
+		// Bldg Sewer/Running Trap Present
+		public bool runningtrap { get; set; }
 
-	// Water Odor
-	public bool waterodor { get; set; } 
+		// Wolo7
+		public DateTime wolo7 { get; set; }
 
-	// Scheduled Finish
-	public DateTime schedfinish { get; set; } 
+		// Project Type
+		public string projecttype { get; set; }
 
-	// Work Order
-	public string wonum { get; set; } 
+		// Wolo8
+		public double wolo8 { get; set; }
 
-	// Area
-	public string wolo1 { get; set; } 
+		// Estiamted Hours of Internal Labor
+		public string estatapprintlabhrs { get; set; }
 
-	// Customer's Phone #
-	public string wolo2 { get; set; } 
+		// Water Odor
+		public bool waterodor { get; set; }
 
-	// Is this an Asset Swap
-	public bool woisswap { get; set; } 
+		// Scheduled Finish
+		public DateTime schedfinish { get; set; }
 
-	// Contractor Contact
-	public string contractorcontact { get; set; } 
+		// Work Order
+		public string wonum { get; set; }
 
-	// Reported Date
-	public DateTime reportdate { get; set; } 
+		// Area
+		public string wolo1 { get; set; }
 
-	// Outside Material Cost
-	public double outmatcost { get; set; } 
+		// Customer's Phone #
+		public string wolo2 { get; set; }
 
-	// BPEL In Progress
-	public bool pmcombpelinprog { get; set; } 
+		// Is this an Asset Swap
+		public bool woisswap { get; set; }
 
-	// Organization
-	public string orgid { get; set; } 
+		// Contractor Contact
+		public string contractorcontact { get; set; }
 
-	// Route Stop
-	public Int64 routestopid { get; set; } 
+		// Reported Date
+		public DateTime reportdate { get; set; }
 
-	// CB Functional Worktypes
-	public string wo1 { get; set; } 
+		// Outside Material Cost
+		public double outmatcost { get; set; }
 
-	// Site
-	public string siteid { get; set; } 
+		// BPEL In Progress
+		public bool pmcombpelinprog { get; set; }
 
-	// Ward
-	public string wo3 { get; set; } 
+		// Organization
+		public string orgid { get; set; }
 
-	// Valve Position as Found
-	public string wo4 { get; set; } 
+		// Route Stop
+		public Int64 routestopid { get; set; }
 
-	// Install Job # / Date
-	public string wo7 { get; set; } 
+		// CB Functional Worktypes
+		public string wo1 { get; set; }
 
-	// External Reference ID
-	public string externalrefid { get; set; } 
+		// Site
+		public string siteid { get; set; }
 
-	// WO14
-	public bool wo14 { get; set; } 
+		// Ward
+		public string wo3 { get; set; }
 
-	// WO13
-	public bool wo13 { get; set; } 
+		// Valve Position as Found
+		public string wo4 { get; set; }
 
-	// Job Plan
-	public string jpnum { get; set; } 
+		// Install Job # / Date
+		public string wo7 { get; set; }
 
-	// Lead Craft
-	public string leadcraft { get; set; } 
+		// External Reference ID
+		public string externalrefid { get; set; }
 
-	// Wo9
-	public string wo9 { get; set; } 
+		// WO14
+		public bool wo14 { get; set; }
 
-	// How Discovered
-	public string wo11 { get; set; } 
+		// WO13
+		public bool wo13 { get; set; }
 
-	// Project ID
-	public string fcprojectid { get; set; } 
+		// Job Plan
+		public string jpnum { get; set; }
 
-	// WO18
-	public bool wo18 { get; set; } 
+		// Lead Craft
+		public string leadcraft { get; set; }
 
-	// Plumber Name
-	public string plumbername { get; set; } 
+		// Wo9
+		public string wo9 { get; set; }
 
-	// Create Invoice
-	public bool wo17 { get; set; } 
+		// How Discovered
+		public string wo11 { get; set; }
 
-	// WO16
-	public bool wo16 { get; set; } 
+		// Project ID
+		public string fcprojectid { get; set; }
 
-	// First Approve Status
-	public string firstapprstatus { get; set; } 
+		// WO18
+		public bool wo18 { get; set; }
 
-	// WO15
-	public bool wo15 { get; set; } 
+		// Plumber Name
+		public string plumbername { get; set; }
 
-	// CIS Number
-	public string cisnum { get; set; } 
+		// Create Invoice
+		public bool wo17 { get; set; }
 
-	// Other Contact
-	public string othercontact { get; set; } 
+		// WO16
+		public bool wo16 { get; set; }
 
-	// Estimated Labor Cost
-	public double estlabcost { get; set; } 
+		// First Approve Status
+		public string firstapprstatus { get; set; }
 
-	// Duration
-	public string estdur { get; set; } 
+		// WO15
+		public bool wo15 { get; set; }
 
-	// Vehicle #
-	public string wo10 { get; set; } 
+		// CIS Number
+		public string cisnum { get; set; }
 
-	// Priority
-	public int wopriority { get; set; } 
+		// Other Contact
+		public string othercontact { get; set; }
 
-	// Has Follow-up Work
-	public bool hasfollowupwork { get; set; } 
+		// Estimated Labor Cost
+		public double estlabcost { get; set; }
 
-	// Connectiontype
-	public string connectiontype { get; set; } 
+		// Duration
+		public string estdur { get; set; }
 
-	// Verification
-	public string verification { get; set; } 
+		// Vehicle #
+		public string wo10 { get; set; }
 
-	// Supervisor
-	public string supervisor { get; set; } 
+		// Priority
+		public int wopriority { get; set; }
 
-	// PmComType
-	public string pmcomtype { get; set; } 
+		// Has Follow-up Work
+		public bool hasfollowupwork { get; set; }
 
-	// Actual Tool Cost
-	public double acttoolcost { get; set; } 
+		// Connectiontype
+		public string connectiontype { get; set; }
 
-	// Work Type
-	public string worktype { get; set; } 
+		// Verification
+		public string verification { get; set; }
 
-	// Has Status Changed
-	public bool statusiface { get; set; } 
+		// Supervisor
+		public string supervisor { get; set; }
 
-	// Start No Earlier Than
-	public DateTime sneconstraint { get; set; } 
+		// PmComType
+		public string pmcomtype { get; set; }
 
-	// Actual Material Cost
-	public double actmatcost { get; set; } 
+		// Actual Tool Cost
+		public double acttoolcost { get; set; }
 
-	// Winds
-	public string winds { get; set; } 
+		// Work Type
+		public string worktype { get; set; }
 
-	// Is Mobile
-	public bool pluscismobile { get; set; } 
+		// Has Status Changed
+		public bool statusiface { get; set; }
 
-	// Configuration Item
-	public string cinum { get; set; } 
+		// Start No Earlier Than
+		public DateTime sneconstraint { get; set; }
 
-	// Sender System ID
-	public string sendersysid { get; set; } 
+		// Actual Material Cost
+		public double actmatcost { get; set; }
 
-	// Complexity
-	public double complexity { get; set; } 
+		// Winds
+		public string winds { get; set; }
 
-	// Requires Asset Downtime
-	public bool aos { get; set; } 
+		// Is Mobile
+		public bool pluscismobile { get; set; }
 
-	// Problembegan
-	public string problembegan { get; set; } 
+		// Configuration Item
+		public string cinum { get; set; }
 
-	// Problemloc
-	public string problemloc { get; set; } 
+		// Sender System ID
+		public string sendersysid { get; set; }
 
-	// Distance
-	public int distance { get; set; } 
+		// Complexity
+		public double complexity { get; set; }
 
-	// Originating Record Class
-	public string origrecordclass { get; set; } 
+		// Requires Asset Downtime
+		public bool aos { get; set; }
 
-	// Has Children
-	public bool haschildren { get; set; } 
+		// Problembegan
+		public string problembegan { get; set; }
 
-	// Typetreatment
-	public string typetreatment { get; set; } 
+		// Problemloc
+		public string problemloc { get; set; }
 
-	// Work Location
-	public string worklocation { get; set; } 
+		// Distance
+		public int distance { get; set; }
 
-	// Estimated Tool Cost
-	public double esttoolcost { get; set; } 
+		// Originating Record Class
+		public string origrecordclass { get; set; }
 
-	// Frequency Field
-	public int pluscfrequency { get; set; } 
+		// Has Children
+		public bool haschildren { get; set; }
 
-	// Target Finish
-	public DateTime targcompdate { get; set; } 
+		// Typetreatment
+		public string typetreatment { get; set; }
 
-	// Crew
-	public string amcrew { get; set; } 
+		// Work Location
+		public string worklocation { get; set; }
 
-	// Observation
-	public string observation { get; set; } 
+		// Estimated Tool Cost
+		public double esttoolcost { get; set; }
 
-	// Vendor
-	public string vendor { get; set; } 
+		// Frequency Field
+		public int pluscfrequency { get; set; }
 
-	// Receivedat
-	public string receivedat { get; set; } 
+		// Target Finish
+		public DateTime targcompdate { get; set; }
 
-	// Outlet Diameter
-	public string outletdia { get; set; } 
+		// Crew
+		public string amcrew { get; set; }
 
-	// Repair Facility
-	public string repairfacility { get; set; } 
+		// Observation
+		public string observation { get; set; }
 
-	// Remarks
-	public string remarkdesc { get; set; } 
+		// Vendor
+		public string vendor { get; set; }
 
-	// Utility Strike
-	public bool dcw_utilitystrike { get; set; } 
+		// Receivedat
+		public string receivedat { get; set; }
 
-	// Assigned Owner Group
-	public string assignedownergroup { get; set; } 
+		// Outlet Diameter
+		public string outletdia { get; set; }
 
-	// Organization
-	public string calcorgid { get; set; } 
+		// Repair Facility
+		public string repairfacility { get; set; }
 
-	// Localizedwhere
-	public string localizedwhere { get; set; } 
+		// Remarks
+		public string remarkdesc { get; set; }
 
-	// Water Treatment
-	public bool watertreatment { get; set; } 
+		// Utility Strike
+		public bool dcw_utilitystrike { get; set; }
 
-	// Alt. Phone # or Fax #
-	public string altphonefax { get; set; } 
+		// Assigned Owner Group
+		public string assignedownergroup { get; set; }
 
-	// New Child Class
-	public string newchildclass { get; set; } 
+		// Organization
+		public string calcorgid { get; set; }
 
-	// Feature Class
-	public string plussfeatureclass { get; set; } 
+		// Localizedwhere
+		public string localizedwhere { get; set; }
 
-	// Route
-	public string route { get; set; } 
+		// Water Treatment
+		public bool watertreatment { get; set; }
 
-	// Precipitation
-	public bool precipitation { get; set; } 
+		// Alt. Phone # or Fax #
+		public string altphonefax { get; set; }
 
-	// WO Group
-	public string wogroup { get; set; } 
+		// New Child Class
+		public string newchildclass { get; set; }
 
-	// City
-	public string customercity { get; set; } 
+		// Feature Class
+		public string plussfeatureclass { get; set; }
 
-	// Estiamted Hours of External Labor
-	public double estatapproutlabcost { get; set; } 
+		// Route
+		public string route { get; set; }
 
-	// Person Seen Doctor
-	public bool personseendoctor { get; set; } 
+		// Precipitation
+		public bool precipitation { get; set; }
 
-	// PM Next Due Date
-	public DateTime pmnextduedate { get; set; } 
+		// WO Group
+		public string wogroup { get; set; }
 
-	// Direct Issue Material Status
-	public string dirissuemtlstatus { get; set; } 
+		// City
+		public string customercity { get; set; }
 
-	// Work Package Material Status
-	public string workpackmtlstatus { get; set; } 
+		// Estiamted Hours of External Labor
+		public double estatapproutlabcost { get; set; }
 
-	// Discolorhotcold
-	public string discolorhotcold { get; set; } 
+		// Person Seen Doctor
+		public bool personseendoctor { get; set; }
 
-	// Particles in Water
-	public bool particlesinwater { get; set; } 
+		// PM Next Due Date
+		public DateTime pmnextduedate { get; set; }
 
-	// Measurement Point
-	public string pointnum { get; set; } 
+		// Direct Issue Material Status
+		public string dirissuemtlstatus { get; set; }
 
-	// As-Built Required
-	public bool asbuiltreqd { get; set; } 
+		// Work Package Material Status
+		public string workpackmtlstatus { get; set; }
 
-	// Inherit Status Changes
-	public bool parentchgsstatus { get; set; } 
+		// Discolorhotcold
+		public string discolorhotcold { get; set; }
 
-	// Changed Date
-	public DateTime changedate { get; set; } 
+		// Particles in Water
+		public bool particlesinwater { get; set; }
 
-	// Phone
-	public string phone { get; set; } 
+		// Measurement Point
+		public string pointnum { get; set; }
 
-	// Is Task
-	public bool istask { get; set; } 
+		// As-Built Required
+		public bool asbuiltreqd { get; set; }
 
-	// Cleanout
-	public bool cleanout { get; set; } 
+		// Inherit Status Changes
+		public bool parentchgsstatus { get; set; }
 
-	// Location
-	public string location { get; set; } 
+		// Changed Date
+		public DateTime changedate { get; set; }
 
-	// Crew Work Group
-	public string crewworkgroup { get; set; } 
+		// Phone
+		public string phone { get; set; }
 
-	// Actual Service Cost
-	public double actservcost { get; set; } 
+		// Is Task
+		public bool istask { get; set; }
 
-	// History
-	public bool historyflag { get; set; } 
+		// Cleanout
+		public bool cleanout { get; set; }
 
-	// Worts3
-	public string worts3 { get; set; } 
+		// Location
+		public string location { get; set; }
 
-	// Wojp1
-	public string wojp1 { get; set; } 
+		// Crew Work Group
+		public string crewworkgroup { get; set; }
 
-	// Pipe Type
-	public string pipetype { get; set; } 
+		// Actual Service Cost
+		public double actservcost { get; set; }
 
-	// Worts4
-	public DateTime worts4 { get; set; } 
+		// History
+		public bool historyflag { get; set; }
 
-	// Worts1
-	public string worts1 { get; set; } 
+		// Worts3
+		public string worts3 { get; set; }
 
-	// Worts2
-	public string worts2 { get; set; } 
+		// Wojp1
+		public string wojp1 { get; set; }
 
-	// Wojp5
-	public DateTime wojp5 { get; set; } 
+		// Pipe Type
+		public string pipetype { get; set; }
 
-	// Actual Start
-	public DateTime actstart { get; set; } 
+		// Worts4
+		public DateTime worts4 { get; set; }
 
-	// Justification
-	public string justification { get; set; } 
+		// Worts1
+		public string worts1 { get; set; }
 
-	// Wojp4
-	public double wojp4 { get; set; } 
+		// Worts2
+		public string worts2 { get; set; }
 
-	// Worts5
-	public double worts5 { get; set; } 
+		// Wojp5
+		public DateTime wojp5 { get; set; }
 
-	// Wojp3
-	public string wojp3 { get; set; } 
+		// Actual Start
+		public DateTime actstart { get; set; }
 
-	// Actual Cost of External Labor
-	public double actoutlabcost { get; set; } 
+		// Justification
+		public string justification { get; set; }
 
-	// Wojp2
-	public string wojp2 { get; set; } 
+		// Wojp4
+		public double wojp4 { get; set; }
 
-	// Flow Action Assist
-	public bool flowactionassist { get; set; } 
+		// Worts5
+		public double worts5 { get; set; }
 
-	// Calibration Overdue Date
-	public DateTime pluscoverduedate { get; set; } 
+		// Wojp3
+		public string wojp3 { get; set; }
 
-	// Launch Entry Name
-	public string launchentryname { get; set; } 
+		// Actual Cost of External Labor
+		public double actoutlabcost { get; set; }
 
-	// Estimate Labor Cost at Approval
-	public double estatapprlabcost { get; set; } 
+		// Wojp2
+		public string wojp2 { get; set; }
 
-	// Fund
-	public string fund { get; set; } 
+		// Flow Action Assist
+		public bool flowactionassist { get; set; }
 
-	// PmComState
-	public string pmcomstate { get; set; } 
+		// Calibration Overdue Date
+		public DateTime pluscoverduedate { get; set; }
 
-	// Estimated Material Cost
-	public double estmatcost { get; set; } 
+		// Launch Entry Name
+		public string launchentryname { get; set; }
 
-	// Priority Justification
-	public string justifypriority { get; set; } 
+		// Estimate Labor Cost at Approval
+		public double estatapprlabcost { get; set; }
 
-	// Debris Description
-	public string debrisdesc { get; set; } 
+		// Fund
+		public string fund { get; set; }
 
-	// Suspend Flow Control
-	public bool suspendflow { get; set; } 
+		// PmComState
+		public string pmcomstate { get; set; }
 
-	// Status
-	public string status { get; set; } 
+		// Estimated Material Cost
+		public double estmatcost { get; set; }
 
-	// Contract
-	public string contract { get; set; } 
+		// Priority Justification
+		public string justifypriority { get; set; }
 
-	// ENum
-	//JsonProperty(enum) 
-	public string enumField { get; set; } 
+		// Debris Description
+		public string debrisdesc { get; set; }
 
-	// Material Status Last Updated
-	public DateTime availstatusdate { get; set; } 
+		// Suspend Flow Control
+		public bool suspendflow { get; set; }
 
-	// Particle Color
-	public string particlecolor { get; set; } 
+		// Status
+		public string status { get; set; }
 
-	// Water Discolored
-	public bool waterdiscolored { get; set; } 
+		// Contract
+		public string contract { get; set; }
 
-	// Extra Field
-	public int wolo10 { get; set; } 
+		// ENum
+		//JsonProperty(enum) 
+		public string enumField { get; set; }
 
-	// Environment
-	public string environment { get; set; } 
+		// Material Status Last Updated
+		public DateTime availstatusdate { get; set; }
 
-	// Miss Utility Number
-	public string missutilitynum { get; set; } 
+		// Particle Color
+		public string particlecolor { get; set; }
 
-	// Payee Company
-	public string othercompany { get; set; } 
+		// Water Discolored
+		public bool waterdiscolored { get; set; }
 
-	// Owner System ID
-	public string ownersysid { get; set; } 
+		// Extra Field
+		public int wolo10 { get; set; }
 
-	// Owner
-	public string owner { get; set; } 
+		// Environment
+		public string environment { get; set; }
 
-	// Problem Code
-	public string problemcode { get; set; } 
+		// Miss Utility Number
+		public string missutilitynum { get; set; }
 
-	// Developer Phone #
-	public string developerphone { get; set; } 
+		// Payee Company
+		public string othercompany { get; set; }
 
-	// Accepts Charges
-	public bool woacceptscharges { get; set; } 
+		// Owner System ID
+		public string ownersysid { get; set; }
 
-	// Map #
-	public string mapnum { get; set; } 
+		// Owner
+		public string owner { get; set; }
 
-	// Watercolor
-	public string watercolor { get; set; } 
+		// Problem Code
+		public string problemcode { get; set; }
 
-	// BPEL Enabled
-	public bool pmcombpelenabled { get; set; } 
+		// Developer Phone #
+		public string developerphone { get; set; }
 
-	// CB Assignment
-	public bool dcw_cbassigned { get; set; } 
+		// Accepts Charges
+		public bool woacceptscharges { get; set; }
 
-	// Target Description
-	public string targetdesc { get; set; } 
+		// Map #
+		public string mapnum { get; set; }
 
-	// Actual Hours of Internal Labor
-	public string actintlabhrs { get; set; } 
+		// Watercolor
+		public string watercolor { get; set; }
 
-	// Inspector
-	public string inspector { get; set; } 
+		// BPEL Enabled
+		public bool pmcombpelenabled { get; set; }
 
-	// BKPCONTRACT
-	public string bkpcontract { get; set; } 
+		// CB Assignment
+		public bool dcw_cbassigned { get; set; }
 
-	// Numberofturns
-	public double numberofturns { get; set; } 
+		// Target Description
+		public string targetdesc { get; set; }
 
-	// Estimated Cost of Internal Labor
-	public double estintlabcost { get; set; } 
+		// Actual Hours of Internal Labor
+		public string actintlabhrs { get; set; }
 
-	// Actual Labor Hours
-	public string actlabhrs { get; set; } 
+		// Inspector
+		public string inspector { get; set; }
 
-	// Failure Class
-	public string failurecode { get; set; } 
+		// BKPCONTRACT
+		public string bkpcontract { get; set; }
 
-	// Sequence
-	public int wosequence { get; set; } 
+		// Numberofturns
+		public double numberofturns { get; set; }
 
-	// Missutilitydate
-	public DateTime missutilitydate { get; set; } 
+		// Estimated Cost of Internal Labor
+		public double estintlabcost { get; set; }
 
-	// Risk Assessment
-	public string risk { get; set; } 
+		// Actual Labor Hours
+		public string actlabhrs { get; set; }
 
-	// Estimated Labor Hours
-	public string estlabhrs { get; set; } 
+		// Failure Class
+		public string failurecode { get; set; }
 
-	// As-Built Recorded
-	public bool asbuiltrecd { get; set; } 
+		// Sequence
+		public int wosequence { get; set; }
 
-	// Shift
-	public string calcshift { get; set; } 
+		// Missutilitydate
+		public DateTime missutilitydate { get; set; }
 
-	// Jetline
-	public bool jetline { get; set; } 
+		// Risk Assessment
+		public string risk { get; set; }
 
-	// Plumber's License #
-	public string plumberlicnum { get; set; } 
+		// Estimated Labor Hours
+		public string estlabhrs { get; set; }
 
-	// Estimate Labor Hours at Approval
-	public string estatapprlabhrs { get; set; } 
+		// As-Built Recorded
+		public bool asbuiltrecd { get; set; }
 
-	// Location Details
-	public string locationdetails { get; set; } 
+		// Shift
+		public string calcshift { get; set; }
 
-	// On Behalf Of
-	public string onbehalfof { get; set; } 
+		// Jetline
+		public bool jetline { get; set; }
 
-	// Storeroom Material Status
-	public string storeroommtlstatus { get; set; } 
+		// Plumber's License #
+		public string plumberlicnum { get; set; }
 
-	// Actual Finish
-	public DateTime actfinish { get; set; } 
+		// Estimate Labor Hours at Approval
+		public string estatapprlabhrs { get; set; }
 
-	// PO
-	public string generatedforpo { get; set; } 
+		// Location Details
+		public string locationdetails { get; set; }
 
-	// Receivedvia
-	public string receivedvia { get; set; } 
+		// On Behalf Of
+		public string onbehalfof { get; set; }
 
-	// WOJO6
-	public string wojo6 { get; set; } 
+		// Storeroom Material Status
+		public string storeroommtlstatus { get; set; }
 
-	// GL Account
-	public string glaccount { get; set; } 
+		// Actual Finish
+		public DateTime actfinish { get; set; }
 
-	// WOJO5
-	public string wojo5 { get; set; } 
+		// PO
+		public string generatedforpo { get; set; }
 
-	// WOJO8
-	public string wojo8 { get; set; } 
+		// Receivedvia
+		public string receivedvia { get; set; }
 
-	// WOJO7
-	public string wojo7 { get; set; } 
+		// WOJO6
+		public string wojo6 { get; set; }
 
-	// WOJO2
-	public string wojo2 { get; set; } 
+		// GL Account
+		public string glaccount { get; set; }
 
-	// WOJO1
-	public string wojo1 { get; set; } 
+		// WOJO5
+		public string wojo5 { get; set; }
 
-	// WOJO4
-	public double wojo4 { get; set; } 
+		// WOJO8
+		public string wojo8 { get; set; }
 
-	// WOJO3
-	public string wojo3 { get; set; } 
+		// WOJO7
+		public string wojo7 { get; set; }
 
-	// Time Remaining
-	public string remdur { get; set; } 
+		// WOJO2
+		public string wojo2 { get; set; }
 
-	// Service
-	public string commodity { get; set; } 
+		// WOJO1
+		public string wojo1 { get; set; }
 
-	// Watertastedesc
-	public string watertastedesc { get; set; } 
+		// WOJO4
+		public double wojo4 { get; set; }
 
-	// Streeet Address
-	public string customerstreet { get; set; } 
-}
+		// WOJO3
+		public string wojo3 { get; set; }
 
-    public class MaximoAsset 
-    {
-        public string assetnum { get; set; }
-        public DateTime changedate { get; set; }
-        public bool plussisgis { get; set; }
-        public bool tloampartition { get; set; }
-        public double totdowntime { get; set; }
-        public bool autowogen { get; set; }
-        public string assetusercust_collectionref { get; set; }
-        public string _rowstamp { get; set; }
-        public string orgid { get; set; }
-        public string assettag { get; set; }
-        public string description { get; set; }
-        public string siteid { get; set; }
-        public string href { get; set; }
-        public bool islinear { get; set; }
-        public bool isrunning { get; set; }
-        public string status { get; set; }
-        public bool removefromactiveroutes { get; set; }
-        public bool returnedtovendor { get; set; }
-        public bool rolltoallchildren { get; set; }
-        public double ytdcost { get; set; }
-        public string globalid { get; set; }
-        public double unchargedcost { get; set; }
-        public bool fixedasset { get; set; }
-        public double assetid { get; set; }
-        public string mapnum { get; set; }
-        public double totunchargedcost { get; set; }
-        public bool plusciscontam { get; set; }
-        public bool pluscpmextdate { get; set; }
-        public double totalcost { get; set; }
-        public bool changepmstatus { get; set; }
-        public double purchaseprice { get; set; }
-        public string hierarchypath { get; set; }
-        public string newsite { get; set; }
-        public double budgetcost { get; set; }
-        public bool children { get; set; }
-        public string assetspec_collectionref { get; set; }
-        public string failurecode { get; set; }
-        public bool pluscisinhousecal { get; set; }
-        public bool removefromactivesp { get; set; }
-        public bool pluscsolution { get; set; }
-        public bool mainthierchy { get; set; }
-        public string itemsetid { get; set; }
-        public bool pluscismte { get; set; }
-        public string glaccount { get; set; }
-        public string changeby { get; set; }
-        public string assetmntskd_collectionref { get; set; }
-        public double replacecost { get; set; }
-        public bool eq22 { get; set; }
-        public bool iscalibration { get; set; }
-        public string geoworxsyncid { get; set; }
-        public double invcost { get; set; }
-        public bool moved { get; set; }
-        public string plussfeatureclass { get; set; }
-        public string assetopskd_collectionref { get; set; }
-        public string assetmeter_collectionref { get; set; }
-        public List<MaximoAssetSpec> assetspec { get; set; }
-        public bool disabled { get; set; }
-    }
-    
-    public class MaximoAssetSpec
-    {
+		// Time Remaining
+		public string remdur { get; set; }
 
-        public string alnvalue { get; set; }
-        public DateTime changedate { get; set; }
-        public bool continuous { get; set; }
-        public string classstructureid { get; set; }
-        public string changeby { get; set; }
-        public bool inheritedfromitem { get; set; }
-        public bool mandatory { get; set; }
-        public string localref { get; set; }
-        public double numvalue { get; set; }
-        public bool itemspecvalchanged { get; set; }
-        public double displaysequence { get; set; }
-        public string _rowstamp { get; set; }
-        public string assetattrid { get; set; }
-        public string orgid { get; set; }
-        public string href { get; set; }
-        public double assetspecid { get; set; }
-        public double linearassetspecid { get; set; }
-    }    
+		// Service
+		public string commodity { get; set; }
+
+		// Watertastedesc
+		public string watertastedesc { get; set; }
+
+		// Streeet Address
+		public string customerstreet { get; set; }
+	}
+
+	// MXASSET
+	public class MaximoAsset : MaximoBaseEntity
+	{
+		// meta fields
+		public string assetusercust_collectionref { get; set; }
+		public string assetspec_collectionref { get; set; }
+		public string assetmntskd_collectionref { get; set; }
+		public string assetopskd_collectionref { get; set; }
+		public string assetmeter_collectionref { get; set; }
+
+
+		// relation fields 
+		// INT_ASSETMETER
+		//public List<INT_ASSETMETER> assetmeter { get; set; } 
+
+		// ASSETOPSKD
+		//public List<ASSETOPSKD> assetopskd { get; set; } 
+
+		// ASSETMNTSKD
+		//public List<ASSETMNTSKD> assetmntskd { get; set; } 
+
+		// ASSETUSERCUST
+		//public List<ASSETUSERCUST> assetusercust { get; set; } 
+
+		// ASSETSPECCLASS
+		public List<MaximoAssetSpec> assetspec { get; set; }
+
+
+		// auto-generated fields
+
+		// Is GIS
+		public bool plussisgis { get; set; }
+
+		// Details
+		public string description_longdescription { get; set; }
+
+		// Applied As
+		public string pluscsumdir { get; set; }
+
+		// Partition
+		public bool tloampartition { get; set; }
+
+		// Total Downtime
+		public string totdowntime { get; set; }
+
+		// Loop Number
+		public string pluscloopnum { get; set; }
+
+		// COF Score
+		public string cof_score { get; set; }
+
+		// Tool Rate
+		public double toolrate { get; set; }
+
+		// Calibration Vendor
+		public string pluscvendor { get; set; }
+
+		// Organization
+		public string orgid { get; set; }
+
+		// Serial #
+		public string serialnum { get; set; }
+
+		// Rotating Item
+		public string itemnum { get; set; }
+
+		// Site
+		public string siteid { get; set; }
+
+		// Service Address
+		public string plussaddresscode { get; set; }
+
+		// External Reference ID
+		public string externalrefid { get; set; }
+
+		// Linear
+		public bool islinear { get; set; }
+
+		// Asset Up
+		public bool isrunning { get; set; }
+
+		// Last Changed Date
+		public DateTime statusdate { get; set; }
+
+		// % READING
+		public string pluscsumread { get; set; }
+
+		// Y1
+		public double y1 { get; set; }
+
+		// Y2
+		public double y2 { get; set; }
+
+		// Parent
+		public string parent { get; set; }
+
+		// Returned To Vendor
+		public bool returnedtovendor { get; set; }
+
+		// Bin
+		public string binnum { get; set; }
+
+		// Loop Location
+		public string plusclploc { get; set; }
+
+		// YTD Cost
+		public double ytdcost { get; set; }
+
+		// Condition Code
+		public string conditioncode { get; set; }
+
+		// %SPAN
+		public string pluscsumspan { get; set; }
+
+		// Uncharged Cost
+		public double unchargedcost { get; set; }
+
+		// To
+		public string pluscoprgeto { get; set; }
+
+		// Asset
+		public Int64 assetid { get; set; }
+
+		// Operating Range From
+		public string pluscoprgefrom { get; set; }
+
+		// Sender System ID
+		public string sendersysid { get; set; }
+
+		// Purchase Price
+		public double purchaseprice { get; set; }
+
+		// Change the Status of All Associated PMs to Inactive
+		public bool changepmstatus { get; set; }
+
+		// Hierarchy Path
+		public string hierarchypath { get; set; }
+
+		// Class
+		public string pluscclass { get; set; }
+
+		// Operating Status
+		public string eq10 { get; set; }
+
+		// Budgeted
+		public double budgetcost { get; set; }
+
+		// Asset Department
+		public string pluscassetdept { get; set; }
+
+		// Remove Asset Reference from Active Safety Plans
+		public bool removefromactivesp { get; set; }
+
+		// X2
+		public double x2 { get; set; }
+
+		// EQ13
+		public string eq13 { get; set; }
+
+		// Inspected By
+		public string eq14 { get; set; }
+
+		// EQ11
+		public string eq11 { get; set; }
+
+		// Repair Facility Site
+		public string defaultrepfacsiteid { get; set; }
+
+		// X1
+		public double x1 { get; set; }
+
+		// EQ12
+		public string eq12 { get; set; }
+
+		// Default Repair Facility
+		public string defaultrepfac { get; set; }
+
+		// Comments
+		public string eq16 { get; set; }
+
+		// Buffer Solution Flag
+		public bool pluscsolution { get; set; }
+
+		// Condition Code
+		public string eq15 { get; set; }
+
+		// Item Set
+		public string itemsetid { get; set; }
+
+		// Last Audit By
+		public string lastauditby { get; set; }
+
+		// Is M&TE
+		public bool pluscismte { get; set; }
+
+		// Date Inspected
+		public DateTime eq19 { get; set; }
+
+		// Type
+		public string assettype { get; set; }
+
+		// Changed By
+		public string changeby { get; set; }
+
+		// Accuracy EU
+		public string pluscsumeu { get; set; }
+
+		// Vendor
+		public string vendor { get; set; }
+
+		// Asset Template
+		public string templateid { get; set; }
+
+		// Replacement Cost
+		public double replacecost { get; set; }
+
+		// Control Account
+		public string toolcontrolaccount { get; set; }
+
+		// LOF Score Date
+		public DateTime lof_score_date { get; set; }
+
+		// Start Measure
+		public double startmeasure { get; set; }
+
+		// Calendar
+		public string calnum { get; set; }
+
+		// Verified
+		public bool eq22 { get; set; }
+
+		// EQ23
+		public DateTime eq23 { get; set; }
+
+		// GeoWorx Sync Identifier
+		public string geoworxsyncid { get; set; }
+
+		// EQ24
+		public double eq24 { get; set; }
+
+		// Warranty Expiration Date
+		public DateTime warrantyexpdate { get; set; }
+
+		// Feature Class
+		public string plussfeatureclass { get; set; }
+
+		// ROF Score Date
+		public DateTime rof_score_date { get; set; }
+
+		// Source System ID
+		public string sourcesysid { get; set; }
+
+		// ROF Score
+		public string rof_score { get; set; }
+
+		// Changed Date
+		public DateTime changedate { get; set; }
+
+		// Asset #
+		public string assetnum { get; set; }
+
+		// Location
+		public string location { get; set; }
+
+		// Partition ID
+		public string tloamhash { get; set; }
+
+		// Automatically Generate Work Orders
+		public bool autowogen { get; set; }
+
+		// Category
+		public string eq7 { get; set; }
+
+		// EQ6
+		public DateTime eq6 { get; set; }
+
+		// EQ5
+		public double eq5 { get; set; }
+
+		// Asset End
+		public string enddescription { get; set; }
+
+		// Flushing Zone
+		public string eq4 { get; set; }
+
+		// Priority
+		public int priority { get; set; }
+
+		// Useful Life
+		public string eq9 { get; set; }
+
+		// Asset Tag / Decal #
+		public string assettag { get; set; }
+
+		// Description
+		public string description { get; set; }
+
+		// EQ8
+		public string eq8 { get; set; }
+
+		// Calibration Due Date
+		public DateTime pluscduedate { get; set; }
+
+		// Location Details
+		public string eq3 { get; set; }
+
+		// Pressure Zone
+		public string eq2 { get; set; }
+
+		// Project
+		public string eq1 { get; set; }
+
+		// Status
+		public string status { get; set; }
+
+		// Shift
+		public string shiftnum { get; set; }
+
+		// Remove Asset Reference from Active Routes
+		public bool removefromactiveroutes { get; set; }
+
+		// Physical Location
+		public string pluscphyloc { get; set; }
+
+		// Roll New Status to All Child Assets
+		public bool rolltoallchildren { get; set; }
+
+		// Global ID
+		public string globalid { get; set; }
+
+		// Asset Start
+		public string startdescription { get; set; }
+
+		// Manufacturer
+		public string manufacturer { get; set; }
+
+		// Owner System ID
+		public string ownersysid { get; set; }
+
+		// Last Audit Date
+		public DateTime lastauditdate { get; set; }
+
+		// Installation Date
+		public DateTime installdate { get; set; }
+
+		// %URV
+		public string pluscsumurv { get; set; }
+
+		// Fixed Asset?
+		public bool fixedasset { get; set; }
+
+		// End Measure
+		public double endmeasure { get; set; }
+
+		// Map #
+		public string mapnum { get; set; }
+
+		// LRM
+		public string lrm { get; set; }
+
+		// Total Uncharged Cost
+		public double totunchargedcost { get; set; }
+
+		// Is Contaminated
+		public bool plusciscontam { get; set; }
+
+		// M&TE Classification
+		public string pluscismteclass { get; set; }
+
+		// Total Cost
+		public double totalcost { get; set; }
+
+		// Service Address
+		public string saddresscode { get; set; }
+
+		// Extend Date
+		public bool pluscpmextdate { get; set; }
+
+		// Direction
+		public string direction { get; set; }
+
+		// To Site
+		public string newsite { get; set; }
+
+		// Children
+		public bool children { get; set; }
+
+		// Meter Group
+		public string groupname { get; set; }
+
+		// Is Contaminated Description
+		public string plusciscondesc { get; set; }
+
+		// Rotating Suspense Account
+		public string rotsuspacct { get; set; }
+
+		// Failure Class
+		public string failurecode { get; set; }
+
+		// Internal Calibration
+		public bool pluscisinhousecal { get; set; }
+
+		// Depreciation Pending
+		public bool depreciationpending { get; set; }
+
+		// Maintain Hierarchy
+		public bool mainthierchy { get; set; }
+
+		// Model Number
+		public string pluscmodelnum { get; set; }
+
+		// COF Score Date
+		public DateTime cof_score_date { get; set; }
+
+		// Ancestor
+		public string ancestor { get; set; }
+
+		// Units
+		public string pluscoprgeeu { get; set; }
+
+		// Item Type
+		public string itemtype { get; set; }
+
+		// GL Account
+		public string glaccount { get; set; }
+
+		// Calibration
+		public bool iscalibration { get; set; }
+
+		// Inventory Cost
+		public double invcost { get; set; }
+
+		// Moved
+		public bool moved { get; set; }
+
+		// Usage
+		public string usage { get; set; }
+
+		// LOF Score
+		public string lof_score { get; set; }
+
+		// Disabled
+		public bool disabled { get; set; }
+	}
+
+
+// ASSETSPECCLASS
+	public class MaximoAssetSpec : MaximoBaseEntity
+	{
+		// Changed Date
+		public DateTime changedate { get; set; }
+
+		// Table Value
+		public string tablevalue { get; set; }
+
+		// Unit of Measure
+		public string measureunitid { get; set; }
+
+		// Alphanumeric Value
+		public string alnvalue { get; set; }
+
+		// Item Specification Value Changed 
+		public bool itemspecvalchanged { get; set; }
+
+		// Display Sequence
+		public int displaysequence { get; set; }
+
+		// Start Y Offset
+		public double startyoffset { get; set; }
+
+		// Unit of Start Offset
+		public string startoffsetunitid { get; set; }
+
+		// End Unit of Measure
+		public string endmeasureunitid { get; set; }
+
+		// Unit of End Offset
+		public string endoffsetunitid { get; set; }
+
+		// Start Y Offset Referent
+		public string startyoffsetref { get; set; }
+
+		// Attribute
+		public string assetattrid { get; set; }
+
+		// Organization
+		public string orgid { get; set; }
+
+		// Linked to Section
+		public string linkedtosection { get; set; }
+
+		// Start Offset
+		public double startoffset { get; set; }
+
+		// ASSETSPECID
+		public Int64 assetspecid { get; set; }
+
+		// Start Unit of Measure
+		public string startmeasureunitid { get; set; }
+
+		// Continuous
+		public bool continuous { get; set; }
+
+		// Unit of Base Measure
+		public string basemeasureunitid { get; set; }
+
+		// Class Structure
+		public string classstructureid { get; set; }
+
+		// Inherited from Item
+		public bool inheritedfromitem { get; set; }
+
+		// Changed By
+		public string changeby { get; set; }
+
+		// End Z Offset
+		public double endzoffset { get; set; }
+
+		// Mandatory
+		public bool mandatory { get; set; }
+
+		// End Y Offset Referent
+		public string endyoffsetref { get; set; }
+
+		// Start Z Offset
+		public double startzoffset { get; set; }
+
+		// Start Measure
+		public double startmeasure { get; set; }
+
+		// Numeric Value
+		public double numvalue { get; set; }
+
+		// Start Asset Feature ID
+		public Int64 startassetfeatureid { get; set; }
+
+		// Es02
+		public string es02 { get; set; }
+
+		// Es03
+		public string es03 { get; set; }
+
+		// Section
+		public string section { get; set; }
+
+		// Es04
+		public DateTime es04 { get; set; }
+
+		// End Y Offset
+		public double endyoffset { get; set; }
+
+		// Es05
+		public double es05 { get; set; }
+
+		// Es01
+		public string es01 { get; set; }
+
+		// Start Base Measure
+		public double startbasemeasure { get; set; }
+
+		// End Offset
+		public double endoffset { get; set; }
+
+		// End Z Offset Referent
+		public string endzoffsetref { get; set; }
+
+		// End Asset Feature ID
+		public Int64 endassetfeatureid { get; set; }
+
+		// Start Z Offset Referent
+		public string startzoffsetref { get; set; }
+
+		// Linked to Attribute
+		public string linkedtoattribute { get; set; }
+
+		// End Base Measure
+		public double endbasemeasure { get; set; }
+
+		// Linear Specification Id
+		public Int64 linearassetspecid { get; set; }
+
+		// End Measure
+		public double endmeasure { get; set; }
+	}
 }
