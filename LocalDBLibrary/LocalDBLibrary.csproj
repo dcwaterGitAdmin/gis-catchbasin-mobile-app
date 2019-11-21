@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LocalDBLibrary</RootNamespace>
     <AssemblyName>LocalDBLibrary</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -46,16 +46,9 @@
     <Compile Include="DbConnection.cs" />
     <Compile Include="DbReposistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WorkOrder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MaximoServiceLibrary\MaximoServiceLibrary.csproj">
-      <Project>{8553bb8e-d82d-4877-97ac-492167219f18}</Project>
-      <Name>MaximoServiceLibrary</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

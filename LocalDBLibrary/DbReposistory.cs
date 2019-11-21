@@ -7,6 +7,8 @@ namespace LocalDBLibrary
 	{
 		abstract public string tableName();
 
+		abstract public string keyField();
+
 		private DbConnection dbConnection;
 
 		public DbReposistory(DbConnection _dbConnection)
@@ -28,7 +30,7 @@ namespace LocalDBLibrary
 		public T findOne(K k)
 		{
 			var collection = dbConnection.db.GetCollection<T>(tableName());
-			return collection.FindOne(Query.EQ("_id", new BsonValue(k)));
+			return collection.FindOne(Query.EQ(keyField(), new BsonValue(k)));
 		}
 
 		public IEnumerable<T> findAll()
@@ -37,18 +39,18 @@ namespace LocalDBLibrary
 			return collection.FindAll();
 		}
 
-		public T upsert(K k, T t)
+		public T upsert(T t)
 		{
 			var collection = dbConnection.db.GetCollection<T>(tableName());
-			collection.Upsert(new BsonValue(k), t);
+			collection.Upsert(t);
 
 			return t;
 		}
 		
-		public T insert(K k, T t)
+		public T insert(T t)
 		{
 			var collection = dbConnection.db.GetCollection<T>(tableName());
-			collection.Insert(new BsonValue(k), t);
+			collection.Insert(t);
 
 			return t;
 		}

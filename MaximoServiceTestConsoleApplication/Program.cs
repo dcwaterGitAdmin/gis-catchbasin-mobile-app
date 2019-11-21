@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LocalDBLibrary;
 using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
+using MaximoServiceLibrary.repository;
 
 namespace MaximoServiceTestConsoleApplication
 {
@@ -11,7 +12,9 @@ namespace MaximoServiceTestConsoleApplication
 		public static void Main(string[] args)
 		{
 			MaximoService maximoService = new MaximoService();
+			DbConnection dbConnection = new DbConnection();
 
+			
 			bool isLoggedIn = maximoService.login("erdem", "password");
 			Console.WriteLine($"is user Logged in Maximo: {isLoggedIn}");
 
@@ -20,16 +23,23 @@ namespace MaximoServiceTestConsoleApplication
 
 			Console.WriteLine($"userid: {maximoUser.userName}");
 
+			SynchronizationService synchronizationService = new SynchronizationService(maximoService, dbConnection);
+			
+			synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
+
+			Console.WriteLine("work order count : " + synchronizationService.workOrderRepository.count());
+			Console.WriteLine("asset count : " + synchronizationService.assetRepository.count());
+/*
 			List<MaximoWorkOrder> workOrders = maximoService.getWorkOrders();
 			Console.WriteLine(workOrders[0].wonum);
 
-			DbConnection dbConnection = new DbConnection();
 			
 
 			MaximoWorkOrder wo = new MaximoWorkOrder();
-			wo.wonum = "123123";
+			wo.wonum = "123124";
 			wo.assetnum = "1111";
 			//wo.locationdetails = "First AVE";
+*/
 			
 			/*
 			MaximoAsset asset = new MaximoAsset();
@@ -40,10 +50,11 @@ namespace MaximoServiceTestConsoleApplication
 			
 			//WorkOrder.Insert(wo);
 
+			/*
 			WorkOrderRepository workOrderRepository = new WorkOrderRepository(dbConnection);
-			workOrderRepository.removeCollection();
+			//workOrderRepository.removeCollection();
 			
-			workOrderRepository.upsert(wo.wonum, wo);
+			workOrderRepository.upsert(wo);
 			
 			Console.WriteLine(workOrderRepository.count());
 			IEnumerable<MaximoWorkOrder> maximoWorkOrders = workOrderRepository.findAll();
@@ -52,8 +63,9 @@ namespace MaximoServiceTestConsoleApplication
 				Console.WriteLine(maximoWorkOrder.wonum + " - " + maximoWorkOrder.assetnum);
 			}
 
-			//MaximoWorkOrder woQueried = workOrderRepository.findOne(wo.wonum);
-			//Console.WriteLine(woQueried.wonum + " - " + woQueried.assetnum);
+			MaximoWorkOrder woQueried = workOrderRepository.findOne("123123");
+			Console.WriteLine(woQueried.wonum + " - " + woQueried.assetnum);
+			*/
 
 			/*
 			MaximoWorkOrder wo2 = WorkOrder.FindByWoNum("123123");
@@ -66,15 +78,4 @@ namespace MaximoServiceTestConsoleApplication
 		}
 	}
 
-	public class WorkOrderRepository : DbReposistory<String, MaximoWorkOrder>
-	{
-		public WorkOrderRepository(DbConnection dbConnection) : base(dbConnection)
-		{
-		}
-
-		public override string tableName()
-		{
-			return "workorders2";
-		}
-	}
 }

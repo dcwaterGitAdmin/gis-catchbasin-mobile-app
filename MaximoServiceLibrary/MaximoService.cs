@@ -210,16 +210,7 @@ namespace MaximoServiceLibrary
 					JsonConvert.DeserializeObject<MaximoWorkOrderPageableRestResponse>(response.Content);
 				maximoWorkOrderList.AddRange(mxwoPageableRestResponse.member);
 			}
-
-			/*
-			 * for each work order, fetch its details 
-			 */
-			foreach (var maximoWorkOrder in maximoWorkOrderList)
-			{
-				//maximoWorkOrder.asset = getAsset(maximoWorkOrder.assetnum);
-			}
-
-			Console.WriteLine($"Fetched {maximoWorkOrderList.Count} work orders");
+			
 			return maximoWorkOrderList;
 		}
 

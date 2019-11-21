@@ -58,15 +58,8 @@ namespace MaximoServiceLibrary.model
 		public List<MaximoPersonGroup> member { get; set; }
 	}
 
+	// MXWO
 	public class MaximoWorkOrder : MaximoBasePersistenceEntity
-	{
-		public string wonum { get; set; }
-		public string assetnum { get; set; }
-
-	}
-
-// MXWO
-	public class MaximoWorkOrder2 : MaximoBasePersistenceEntity
 	{
 		public MaximoAsset asset { get; set; }
 
@@ -1095,7 +1088,7 @@ namespace MaximoServiceLibrary.model
 	}
 
 	// MXASSET
-	public class MaximoAsset : MaximoBaseEntity
+	public class MaximoAsset : MaximoBasePersistenceEntity
 	{
 		// meta fields
 		public string assetusercust_collectionref { get; set; }
