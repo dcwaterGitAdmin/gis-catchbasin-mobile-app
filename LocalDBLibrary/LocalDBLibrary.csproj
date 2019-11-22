@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="DbConnection.cs" />
     <Compile Include="DbReposistory.cs" />
+    <Compile Include="model\BasePersistenceEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -54,6 +54,11 @@ namespace MaximoServiceLibrary
 
 		public RestRequest createRequest(string _url, bool isFullHrefUrl)
 		{
+			return createRequest(_url, isFullHrefUrl, Method.GET);
+		}	
+		
+		public RestRequest createRequest(string _url, bool isFullHrefUrl, Method method)
+		{
 			string finalUrl = _url;
 
 			// fix the full href url to match BASE_URL
@@ -73,6 +78,7 @@ namespace MaximoServiceLibrary
 			}
 
 			var request = new RestRequest(finalUrl);
+			request.Method = method;
 			request.AddQueryParameter("lean", "1");
 			request.AddCookie(_jsessionid_Cookie_Name, sessionId);
 			request.AddCookie(_ltpatoken2_Cookie_Name, token);
@@ -214,6 +220,18 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrderList;
 		}
 
+		public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
+		{
+			var request = createRequest(maximoWorkOrder.href, true, Method.POST);
+			request.AddHeader("x-method-override", "PATCH");
+
+			request.AddJsonBody(maximoWorkOrder);
+			
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
+			
+			return response.IsSuccessful;
+		} 
 
 		public List<MaximoAttribute> getAttributes()
 		{

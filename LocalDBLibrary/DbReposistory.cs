@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using LiteDB;
+using LocalDBLibrary.model;
 
 namespace LocalDBLibrary
 {
-	abstract public class DbReposistory<K, T>
+	abstract public class DbReposistory<K, T> where T : BasePersistenceEntity
 	{
 		abstract public string tableName();
 
@@ -39,6 +40,12 @@ namespace LocalDBLibrary
 			return collection.FindAll();
 		}
 
+		public IEnumerable<T> findAllUpdated()
+		{
+			var collection = dbConnection.db.GetCollection<T>(tableName());
+			return collection.Find(Query.EQ("editedFromApp", true));
+		}
+		
 		public T upsert(T t)
 		{
 			var collection = dbConnection.db.GetCollection<T>(tableName());
@@ -54,6 +61,15 @@ namespace LocalDBLibrary
 
 			return t;
 		}
-		
+
+		public T update(T t)
+		{
+			t.editedFromApp = true;
+			
+			var collection = dbConnection.db.GetCollection<T>(tableName());
+			collection.Update(t);
+
+			return t;
+		}
 	}
 }

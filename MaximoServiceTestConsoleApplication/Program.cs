@@ -25,7 +25,7 @@ namespace MaximoServiceTestConsoleApplication
 
 			SynchronizationService synchronizationService = new SynchronizationService(maximoService, dbConnection);
 			
-			synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
+			//synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
 
 			Console.WriteLine("work order count : " + synchronizationService.workOrderRepository.count());
 			Console.WriteLine("asset count : " + synchronizationService.assetRepository.count());
@@ -53,7 +53,20 @@ namespace MaximoServiceTestConsoleApplication
 
 			}
 
+			MaximoWorkOrder woUpdated = synchronizationService.workOrderRepository.findOne("19-661918");
+			Console.WriteLine($"wonum : {woUpdated.wonum}, edited: {woUpdated.editedFromApp}, actlabcost: {woUpdated.actlabcost}");
 			
+			woUpdated.actlabcost += 1;
+			synchronizationService.workOrderRepository.update(woUpdated);
+
+			// find again
+			woUpdated = synchronizationService.workOrderRepository.findOne("19-661918");
+			Console.WriteLine($"wonum : {woUpdated.wonum}, edited: {woUpdated.editedFromApp}, actlabcost: {woUpdated.actlabcost}");
+			
+			synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();
+
+			
+				
 
 
 			/*

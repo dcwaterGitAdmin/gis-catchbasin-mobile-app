@@ -61,6 +61,23 @@ namespace MaximoServiceLibrary
 			
 		}
 
+		public void synchronizeWorkOrderCompositeFromLocalDbToMaximo()
+		{
+			IEnumerable<MaximoWorkOrder> maximoWorkOrders = workOrderRepository.findAllUpdated();
+			foreach (var maximoWorkOrder in maximoWorkOrders)
+			{
+				Console.WriteLine($"synchronizing workorder : [{maximoWorkOrder.wonum}] to Maximo");
+
+				bool isSuccessful = maximoService.updateWorkOrder(maximoWorkOrder);
+
+				if (isSuccessful)
+				{
+					maximoWorkOrder.editedFromApp = false;
+					workOrderRepository.upsert(maximoWorkOrder);
+				}
+			}
+		}
+
 
 		// todo: change function name
 		public void synchronizeHelperFromMaximoToLocalDb()
