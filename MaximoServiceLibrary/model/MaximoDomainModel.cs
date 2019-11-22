@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using LocalDBLibrary.model;
 
 namespace MaximoServiceLibrary.model
 {
-	public class MaximoBaseEntity
+	public class MaximoBaseEntity : BasePersistenceEntity
 	{
 		// _rowstamp
 		public string _rowstamp { get; set; }
@@ -12,18 +13,6 @@ namespace MaximoServiceLibrary.model
 		public string href { get; set; }
 	}
 
-	/*
-	 * This class was created use for be base class.
-	 * All Maximo classes must extend from this class.
-	 */
-	public class MaximoBasePersistenceEntity : MaximoBaseEntity
-	{
-		// it use by LiteDB.
-		public int Id { get; set; }
-
-		// it use to find edited data by developers.
-		public bool editedFromApp { get; set; }
-	}
 
 	public class MaximoUser
 	{
@@ -59,7 +48,7 @@ namespace MaximoServiceLibrary.model
 	}
 
 	// MXWO
-	public class MaximoWorkOrder : MaximoBasePersistenceEntity
+	public class MaximoWorkOrder : MaximoBaseEntity
 	{
 		public MaximoAsset asset { get; set; }
 
@@ -1088,7 +1077,7 @@ namespace MaximoServiceLibrary.model
 	}
 
 	// MXASSET
-	public class MaximoAsset : MaximoBasePersistenceEntity
+	public class MaximoAsset : MaximoBaseEntity
 	{
 		// meta fields
 		public string assetusercust_collectionref { get; set; }
@@ -1673,7 +1662,7 @@ namespace MaximoServiceLibrary.model
 	}
 	
 	// MXL_ASSETATTRIBUTE
-	public class MaximoAttribute : MaximoBasePersistenceEntity
+	public class MaximoAttribute : MaximoBaseEntity
 	{
 
 		// Prefix
@@ -1706,7 +1695,7 @@ namespace MaximoServiceLibrary.model
 
 	
 	// MXDOMAIN
-	public class MaximoDomain : MaximoBasePersistenceEntity
+	public class MaximoDomain : MaximoBaseEntity
 	{
 
 		// Scale
