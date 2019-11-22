@@ -86,19 +86,36 @@ namespace MaximoServiceLibrary
 
 		public void synchronizeWorkOrderCompositeFromLocalDbToMaximo()
 		{
-			IEnumerable<MaximoWorkOrder> maximoWorkOrders = workOrderRepository.findAllUpdated();
-			foreach (var maximoWorkOrder in maximoWorkOrders)
-			{
-				Console.WriteLine($"synchronizing workorder : [{maximoWorkOrder.wonum}] to Maximo");
+			
+			// todo:this is next step
+//			IEnumerable<MaximoWorkOrder> maximoWorkOrders = workOrderRepository.findAllUpdated();
+//			foreach (var maximoWorkOrder in maximoWorkOrders)
+//			{
+//				Console.WriteLine($"synchronizing workorder : [{maximoWorkOrder.wonum}] to Maximo");
+//
+//				bool isSuccessful = maximoService.updateWorkOrder(maximoWorkOrder);
+//
+//				if (isSuccessful)
+//				{
+//					maximoWorkOrder.editedFromApp = false;
+//					workOrderRepository.upsert(maximoWorkOrder);
+//				}
+//			}
 
-				bool isSuccessful = maximoService.updateWorkOrder(maximoWorkOrder);
+			IEnumerable<MaximoAssetSpec> maximoAssetSpecs = assetSpecRepository.findAllUpdated();
+			foreach (var maximoAssetSpec in maximoAssetSpecs)
+			{
+				Console.WriteLine($"synchronizing workorder : [{maximoAssetSpec.Id}] to Maximo");
+
+				bool isSuccessful = maximoService.updateAssetSpec(maximoAssetSpec);
 
 				if (isSuccessful)
 				{
-					maximoWorkOrder.editedFromApp = false;
-					workOrderRepository.upsert(maximoWorkOrder);
+					maximoAssetSpec.editedFromApp = false;
+					assetSpecRepository.upsert(maximoAssetSpec);
 				}
 			}
+
 			
 			
 		}
