@@ -125,13 +125,27 @@ namespace RuntimeCatchBasins.controls
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
-
+            assetSpec.alnvalue = (sender as TextBox).Text;
+            MainWindow.synchronizationService.assetSpecRepository.update(assetSpec);
             throw new NotImplementedException();
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            throw new NotImplementedException();
+           switch (maximoDomain.domaintype)
+            {
+                case "ALN":
+                case "SYNONYM":
+                    assetSpec.alnvalue = (sender as ComboBox).SelectedValue as String;
+                    break;
+                case "NUMERIC":
+                    assetSpec.numvalue = Convert.ToDouble((sender as ComboBox).SelectedValue);
+                    break;
+               
+     
+            }
+            MainWindow.synchronizationService.assetSpecRepository.update(assetSpec);
         }
+
     }
 }
