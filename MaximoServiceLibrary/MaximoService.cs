@@ -233,6 +233,19 @@ namespace MaximoServiceLibrary
 			return response.IsSuccessful;
 		} 
 
+		public bool updateAssetSpec(MaximoAssetSpec maximoAssetSpec)
+		{
+			var request = createRequest(maximoAssetSpec.href, true, Method.POST);
+			request.AddHeader("x-method-override", "PATCH");
+
+			request.AddJsonBody(maximoAssetSpec);
+			
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/mxasset/refid/assetspec - update operation response : {response.Content}");
+			
+			return response.IsSuccessful;
+		} 
+		
 		public List<MaximoAttribute> getAttributes()
 		{
 			var request = createRequest("/os/mxl_assetattribute");

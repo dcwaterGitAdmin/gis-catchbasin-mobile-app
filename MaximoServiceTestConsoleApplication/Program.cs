@@ -34,9 +34,7 @@ namespace MaximoServiceTestConsoleApplication
 			
 			Console.WriteLine("domain count : " + synchronizationService.domainRepository.count());
 			Console.WriteLine("attribute count : " + synchronizationService.attributeRepository.count());
-
-
-<<<<<<< HEAD
+			
 			//foreach (var assetSpec in synchronizationService.assetRepository.findOne("442605").assetspec)
 			//{
 			//	var attribute = synchronizationService.attributeRepository.findOne(assetSpec.assetattrid);
@@ -54,28 +52,28 @@ namespace MaximoServiceTestConsoleApplication
 
 			//}
 
-			foreach (var domain in synchronizationService.domainRepository.findAll())
-            {
-                Console.WriteLine(domain.domaintype);
-            }
-            Console.ReadKey();
-=======
-			foreach (var assetSpec in synchronizationService.assetRepository.findOne("442605").assetspec)
-			{
-				var attribute = synchronizationService.attributeRepository.findOne(assetSpec.assetattrid);
-				if (attribute == null) continue;
-				Console.WriteLine("Attribute : " +attribute.description);
-				if (attribute.domainid != null)
-				{
-					var domain = synchronizationService.domainRepository.findOne(attribute.domainid);
-					Console.WriteLine("Domain  : " +domain.description);
-				}
-				else
-				{
-					Console.WriteLine("DataType  : " +attribute.datatype);
-				}
-
-			}
+//			foreach (var domain in synchronizationService.domainRepository.findAll())
+//            {
+//                Console.WriteLine(domain.domaintype);
+//            }
+//            Console.ReadKey();
+//
+//			foreach (var assetSpec in synchronizationService.assetRepository.findOne("442605").assetspec)
+//			{
+//				var attribute = synchronizationService.attributeRepository.findOne(assetSpec.assetattrid);
+//				if (attribute == null) continue;
+//				Console.WriteLine("Attribute : " +attribute.description);
+//				if (attribute.domainid != null)
+//				{
+//					var domain = synchronizationService.domainRepository.findOne(attribute.domainid);
+//					Console.WriteLine("Domain  : " +domain.description);
+//				}
+//				else
+//				{
+//					Console.WriteLine("DataType  : " +attribute.datatype);
+//				}
+//
+//			}
 
 			MaximoWorkOrder woUpdated = synchronizationService.workOrderRepository.findOne("19-661918");
 			Console.WriteLine($"wonum : {woUpdated.wonum}, edited: {woUpdated.editedFromApp}, actlabcost: {woUpdated.actlabcost}");
@@ -90,9 +88,6 @@ namespace MaximoServiceTestConsoleApplication
 			synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();
 
 			
-				
-
->>>>>>> 6c40b74af5bae52d58d5e6f4661a5160e88739cf
 
 			/*
 			List<MaximoWorkOrder> workOrders = maximoService.getWorkOrders();

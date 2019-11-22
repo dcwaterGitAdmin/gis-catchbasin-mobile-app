@@ -13,6 +13,7 @@ namespace MaximoServiceLibrary
 
 		public WorkOrderRepository workOrderRepository { get; }
 		public AssetRepository assetRepository { get; }
+		public AssetSpecRepository assetSpecRepository { get; }
 		public DomainRepository domainRepository { get; }
 		public AttributeRepository attributeRepository { get; }
 		
@@ -23,7 +24,7 @@ namespace MaximoServiceLibrary
 			
 			workOrderRepository = new WorkOrderRepository(dbConnection);
 			assetRepository = new AssetRepository(dbConnection);
-			
+			assetSpecRepository = new AssetSpecRepository(dbConnection);
 			domainRepository = new DomainRepository(dbConnection);
 			attributeRepository = new AttributeRepository(dbConnection);
 		}
@@ -49,6 +50,18 @@ namespace MaximoServiceLibrary
                     maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
                     if (maximoAsset != null)
                     {
+	                    if (maximoAsset.assetspec != null)
+	                    {
+		                    List<MaximoAssetSpec> assetSpecs = new List<MaximoAssetSpec>();
+		                    foreach (var assetSpec in maximoAsset.assetspec)
+		                    {
+			                    assetSpecs.Add(assetSpecRepository.upsert(assetSpec)));
+		                    }
+
+		                    maximoAsset.assetspec = assetSpecs;
+	                    }
+	                    
+	                    
                         maximoAsset = assetRepository.upsert(maximoAsset);
                     }
 
@@ -86,6 +99,8 @@ namespace MaximoServiceLibrary
 					workOrderRepository.upsert(maximoWorkOrder);
 				}
 			}
+			
+			
 		}
 
 

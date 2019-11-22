@@ -40,6 +40,24 @@ namespace MaximoServiceLibrary.repository
 		
 	}
 	
+	public class AssetSpecRepository : DbReposistory<String, MaximoAssetSpec>
+	{
+		public AssetSpecRepository(DbConnection dbConnection) : base(dbConnection)
+		{
+		}
+
+		public override string tableName()
+		{
+			return "assetSpecs";
+		}
+
+		public override string keyField()
+		{
+			return "Id";
+		}
+		
+	}
+	
 	public class AttributeRepository : DbReposistory<String, MaximoAttribute>
 	{
 		public AttributeRepository(DbConnection dbConnection) : base(dbConnection)
