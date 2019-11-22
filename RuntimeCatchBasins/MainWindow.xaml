@@ -36,7 +36,7 @@
                     <RibbonGroup x:Name="MaximoRibbonGroup" Header="Maximo">
                         <RibbonButton LargeImageSource="images\login.png"  Label="Login"  x:Name="loginButton" Click="LoginButton_Click" />
                         <RibbonButton LargeImageSource="images\sync.png" Label="Sync"  IsEnabled="False"     x:Name="syncButton"   Click="SyncButton_Click"/>
-                        <RibbonButton LargeImageSource="images\workOrderList.png" Label="Work Order List"        IsEnabled="False"     x:Name="workOrderListButton"      Click="WorkOrderListButton_Click"/>
+                        <RibbonButton LargeImageSource="images\workOrderList.png" Label="Work Order List"        IsEnabled="True"     x:Name="workOrderListButton"      Click="WorkOrderListButton_Click"/>
                     </RibbonGroup>
 
                 </RibbonTab>

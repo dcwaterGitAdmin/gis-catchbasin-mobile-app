@@ -1,13 +1,11 @@
-﻿<UserControl x:Class="RuntimeCatchBasins.controls.WorkOrderDetail"
+﻿<UserControl x:Class="RuntimeCatchBasins.controls.DetailRow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RuntimeCatchBasins.controls"
              mc:Ignorable="d" 
+             d:DesignHeight="20"
              d:DesignWidth="300">
-    <ScrollViewer>
-        <StackPanel Width="300"  x:Name="panel">
-        </StackPanel>
-    </ScrollViewer>
+    <StackPanel x:Name="stackPanel" Orientation="Horizontal" ></StackPanel>
 </UserControl>

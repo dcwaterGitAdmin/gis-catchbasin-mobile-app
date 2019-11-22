@@ -30,7 +30,10 @@ namespace MaximoServiceLibrary
 
 		public void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
 		{
-			List<MaximoWorkOrder> maximoWorkOrders = maximoService.getWorkOrders();
+
+            clearWorkOrderCompositeFromLocalDb();
+
+            List<MaximoWorkOrder> maximoWorkOrders = maximoService.getWorkOrders();
 			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
 			
 			/*
@@ -38,8 +41,23 @@ namespace MaximoServiceLibrary
 			 */
 			foreach (var maximoWorkOrder in maximoWorkOrders)
 			{
-				// synchronize maximoWorkOrder in local db
-				MaximoWorkOrder maximoWorkOrderFromDb = workOrderRepository.findOne(maximoWorkOrder.wonum);
+
+                // check if the asset is already in DB
+                MaximoAsset maximoAsset = assetRepository.findOne(maximoWorkOrder.assetnum);
+                if (maximoAsset == null)
+                {
+                    maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
+                    if (maximoAsset != null)
+                    {
+                        maximoAsset = assetRepository.upsert(maximoAsset);
+                    }
+
+
+                }
+
+                maximoWorkOrder.asset = maximoAsset;
+                // synchronize maximoWorkOrder in local db
+                MaximoWorkOrder maximoWorkOrderFromDb = workOrderRepository.findOne(maximoWorkOrder.wonum);
 				if (maximoWorkOrderFromDb != null)
 				{
 					maximoWorkOrder.Id = maximoWorkOrderFromDb.Id;
@@ -47,26 +65,24 @@ namespace MaximoServiceLibrary
 
 				workOrderRepository.upsert(maximoWorkOrder);
 				
-				// check if the asset is already in DB
-				MaximoAsset maximoAsset = assetRepository.findOne(maximoWorkOrder.assetnum);
-				if (maximoAsset == null)
-				{
-					maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
-					maximoAsset = assetRepository.upsert(maximoAsset);
-				}
 				
-				maximoWorkOrder.asset = maximoAsset;
 			}
 			
 			
 		}
 
 
+        public void clearWorkOrderCompositeFromLocalDb()
+        {
+            workOrderRepository.removeCollection();
+            assetRepository.removeCollection();
+        }
+
 		// todo: change function name
 		public void synchronizeHelperFromMaximoToLocalDb()
 		{
-			
-			domainRepository.removeCollection();
+
+            clearHelperFromLocalDb();
 			List<MaximoDomain> domains = maximoService.getDomains();
 
 			foreach (var domain in domains)
@@ -74,7 +90,7 @@ namespace MaximoServiceLibrary
 				domainRepository.insert(domain);
 			}
 			
-			attributeRepository.removeCollection();
+			
 			List<MaximoAttribute> attributes = maximoService.getAttributes();
 			foreach (var attribute in attributes)
 			{
@@ -82,5 +98,11 @@ namespace MaximoServiceLibrary
 			}
 			
 		}
-	}
+
+        public void clearHelperFromLocalDb()
+        {
+            domainRepository.removeCollection();
+            assetRepository.removeCollection();
+        }
+    }
 }

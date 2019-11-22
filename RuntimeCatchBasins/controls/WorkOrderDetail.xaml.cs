@@ -21,7 +21,7 @@ namespace RuntimeCatchBasins.controls
     /// <summary>
     /// Interaction logic for WorkOrderDetail.xaml
     /// </summary>
-    public partial class WorkOrderDetail : UserControl
+    public partial class WorkOrderDetail : System.Windows.Controls.UserControl
     {
         public WorkOrderDetail()
         {
@@ -46,11 +46,12 @@ namespace RuntimeCatchBasins.controls
 
         public void generateScreen( List<MaximoAssetSpec>  assetSpecs)
         {
-            
-           
+
+            panel.Children.Clear();
             foreach (var assetSpec in assetSpecs)
             {
-                
+              
+                panel.Children.Add(new  DetailRow(assetSpec));
             }
         }
     }

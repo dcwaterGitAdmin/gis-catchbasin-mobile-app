@@ -10,8 +10,8 @@ namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		private static readonly string BASE_HOST = "http://localhost:8080";
-		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		//private static readonly string BASE_HOST = "http://localhost:8080";
+		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -83,7 +83,7 @@ namespace MaximoServiceLibrary
 		public bool login(string username, string password)
 		{
 			string maxauth = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(username + ":" + password));
-			var request = new RestRequest(BASE_URL + "/rest/login");
+			var request = new RestRequest(BASE_URL + "/login");
 
 			request.AddHeader("Authorization", "Basic " + maxauth);
 			request.Method = Method.GET;

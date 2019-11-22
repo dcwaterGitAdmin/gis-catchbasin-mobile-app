@@ -22,6 +22,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaximoServiceLibrary;
 using LocalDBLibrary;
+using MaximoServiceLibrary.model;
 
 namespace RuntimeCatchBasins
 {
@@ -70,7 +71,7 @@ namespace RuntimeCatchBasins
 
 		public void workOrderSelectedChange(object sender, SelectionChangedEventArgs e)
 		{
-			woDetail.update((sender as ListView).SelectedItem as helpers.MaximoWorkOrder);
+			woDetail.update((sender as ListView).SelectedItem as MaximoWorkOrder);
 		}
 
 
@@ -187,10 +188,12 @@ namespace RuntimeCatchBasins
 
 		public void startSync()
 		{
-			if (synchronizationService.domainRepository.count() == 0)
-			{
-				synchronizationService.synchronizeHelperFromMaximoToLocalDb();
-			}
+
+            
+			//if (synchronizationService.domainRepository.count() == 0)
+			//{
+			//	synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+			//}
 
 			synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
 		}

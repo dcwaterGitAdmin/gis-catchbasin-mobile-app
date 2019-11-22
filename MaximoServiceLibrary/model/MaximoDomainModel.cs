@@ -1770,7 +1770,7 @@ namespace MaximoServiceLibrary.model
 		public string orgid { get; set; } 
 
 		// CROSSOVERDOMAIN
-		//public List<CROSSOVERDOMAIN> crossoverdomain { get; set; } 
+		public List<CROSSOVERDOMAIN> crossoverdomain { get; set; } 
 
 		// MAXTABLEDOMAINID
 		public Int64 maxtabledomainid { get; set; } 
@@ -1877,5 +1877,34 @@ namespace MaximoServiceLibrary.model
 		// Site
 		public string siteid { get; set; } 
 	}
+
+    // MXDOMAIN
+    public class CROSSOVERDOMAIN : MaximoBaseEntity
+    {
+
+        // Destination Field
+        public string destfield { get; set; }
+
+        // Condition on Destination
+        public string destcondition { get; set; }
+
+        // Condition on Source
+        public string sourcecondition { get; set; }
+
+        // Accept NULL value
+        public bool copyevenifsrcnull { get; set; }
+
+        // Sequence
+        public int sequence { get; set; }
+
+        // No Overwrite
+        public bool copyonlyifdestnull { get; set; }
+
+        // CROSSOVERDOMAINID
+        public Int64 crossoverdomainid { get; set; }
+
+        // Source Field
+        public string sourcefield { get; set; }
+    }
 
 }
