@@ -27,7 +27,7 @@ namespace RuntimeCatchBasins.controls
         public DetailRow(MaximoAssetSpec _assetSpec)
         {
             InitializeComponent();
-            assetSpec = _assetSpec;
+            assetSpec = MainWindow.synchronizationService.assetSpecRepository.findById(_assetSpec.Id);
 
             att = MainWindow.synchronizationService.attributeRepository.findOne(assetSpec.assetattrid);
            
@@ -43,7 +43,7 @@ namespace RuntimeCatchBasins.controls
             if (att.domainid != null)
             {
                 ComboBox comboBox = new ComboBox();
-                comboBox.SelectionChanged += ComboBox_SelectionChanged;
+                
                 comboBox.HorizontalAlignment = HorizontalAlignment.Stretch;
                 comboBox.Width = 144;
                 comboBox.Margin = new Thickness(3);
@@ -108,15 +108,17 @@ namespace RuntimeCatchBasins.controls
                 }
 
                 comboBox.SelectedIndex = index;
+                comboBox.SelectionChanged += ComboBox_SelectionChanged;
                 stackPanel.Children.Add(comboBox);
             }
             else
             {
                 TextBox textBox = new TextBox();
-                textBox.TextChanged += TextBox_TextChanged;
+               
                 textBox.Width = 144;
                 textBox.Margin = new Thickness(3);
                 textBox.Text = assetSpec.alnvalue;
+                textBox.TextChanged += TextBox_TextChanged;
                 stackPanel.Children.Add(textBox);
             }
 
@@ -127,7 +129,7 @@ namespace RuntimeCatchBasins.controls
 
             assetSpec.alnvalue = (sender as TextBox).Text;
             MainWindow.synchronizationService.assetSpecRepository.update(assetSpec);
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -136,10 +138,10 @@ namespace RuntimeCatchBasins.controls
             {
                 case "ALN":
                 case "SYNONYM":
-                    assetSpec.alnvalue = (sender as ComboBox).SelectedValue as String;
+                    assetSpec.alnvalue = ((sender as ComboBox).SelectedItem as ComboBoxItem).Uid;
                     break;
                 case "NUMERIC":
-                    assetSpec.numvalue = Convert.ToDouble((sender as ComboBox).SelectedValue);
+                    assetSpec.numvalue = Convert.ToDouble(((sender as ComboBox).SelectedItem as ComboBoxItem).Uid);
                     break;
                
      

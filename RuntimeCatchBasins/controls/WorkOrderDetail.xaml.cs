@@ -30,16 +30,29 @@ namespace RuntimeCatchBasins.controls
 
 
         public void update(MaximoWorkOrder wo)
-        {
-            if (wo.asset != null)
+        {if (wo != null)
             {
-                Visibility = Visibility.Visible;
-                generateScreen(wo.asset.assetspec);
+                if (wo.asset != null)
+                {
+                    Visibility = Visibility.Visible;
+                    panel.Children.Clear();
+                    foreach (var assetSpec in wo.asset.assetspec)
+                    {
 
+                        panel.Children.Add(new DetailRow(assetSpec));
+                    }
+
+                }
+                else
+                {
+                    Visibility = Visibility.Collapsed;
+                }
             }
-            else{
+            else
+            {
                 Visibility = Visibility.Collapsed;
             }
+           
           
         }
 
@@ -47,12 +60,7 @@ namespace RuntimeCatchBasins.controls
         public void generateScreen( List<MaximoAssetSpec>  assetSpecs)
         {
 
-            panel.Children.Clear();
-            foreach (var assetSpec in assetSpecs)
-            {
-              
-                panel.Children.Add(new  DetailRow(assetSpec));
-            }
+            
         }
     }
 }

@@ -160,7 +160,10 @@ namespace RuntimeCatchBasins
 
 		private void SyncButton_Click(object sender, RoutedEventArgs e)
 		{
-		}
+            statusLabel.Content = "Wait for Maximo Sync ";
+            synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();
+            MessageBox.Show("Maximo Sync Completed");
+        }
 
 		private void WorkOrderListButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -186,17 +189,20 @@ namespace RuntimeCatchBasins
 			workOrderListButton.IsEnabled = true;
 		}
 
-		public void startSync()
+		public  void startSync()
 		{
 
-            
-			//if (synchronizationService.domainRepository.count() == 0)
-			//{
-			//	synchronizationService.synchronizeHelperFromMaximoToLocalDb();
-			//}
 
-			synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
-		}
+            //if (synchronizationService.domainRepository.count() == 0)
+            //{
+            //	synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+            //}
+           // statusLabel.Content = "Wait for Maximo Sync ";
+          
+            synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
+            //statusLabel.Content = "Maximo Sync Completed";
+            MessageBox.Show("Maximo Sync Completed");
+        }
 
 		// Map initialization logic is contained in MapViewModel.cs
 	}

@@ -40,7 +40,7 @@ namespace MaximoServiceLibrary.repository
 		
 	}
 	
-	public class AssetSpecRepository : DbReposistory<String, MaximoAssetSpec>
+	public class AssetSpecRepository : DbReposistory<int, MaximoAssetSpec>
 	{
 		public AssetSpecRepository(DbConnection dbConnection) : base(dbConnection)
 		{
@@ -55,8 +55,10 @@ namespace MaximoServiceLibrary.repository
 		{
 			return "Id";
 		}
-		
-	}
+
+       
+
+    }
 	
 	public class AttributeRepository : DbReposistory<String, MaximoAttribute>
 	{

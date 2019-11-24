@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LocalDBLibrary;
 using MaximoServiceLibrary.model;
 using MaximoServiceLibrary.repository;
@@ -29,7 +30,7 @@ namespace MaximoServiceLibrary
 			attributeRepository = new AttributeRepository(dbConnection);
 		}
 
-		public void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
+		public async void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
 		{
 
             clearWorkOrderCompositeFromLocalDb();
@@ -55,7 +56,8 @@ namespace MaximoServiceLibrary
 		                    List<MaximoAssetSpec> assetSpecs = new List<MaximoAssetSpec>();
 		                    foreach (var assetSpec in maximoAsset.assetspec)
 		                    {
-			                    assetSpecs.Add(assetSpecRepository.upsert(assetSpec)));
+                                assetSpec.assetnum = maximoAsset.assetnum;
+			                    assetSpecs.Add(assetSpecRepository.insert(assetSpec));
 		                    }
 
 		                    maximoAsset.assetspec = assetSpecs;
@@ -84,7 +86,7 @@ namespace MaximoServiceLibrary
 			
 		}
 
-		public void synchronizeWorkOrderCompositeFromLocalDbToMaximo()
+        public async void  synchronizeWorkOrderCompositeFromLocalDbToMaximo()
 		{
 			
 			// todo:this is next step
@@ -103,16 +105,19 @@ namespace MaximoServiceLibrary
 //			}
 
 			IEnumerable<MaximoAssetSpec> maximoAssetSpecs = assetSpecRepository.findAllUpdated();
-			foreach (var maximoAssetSpec in maximoAssetSpecs)
+            
+            foreach (var assetnum in maximoAssetSpecs.Select(x => x.assetnum).Distinct())
 			{
-				Console.WriteLine($"synchronizing workorder : [{maximoAssetSpec.Id}] to Maximo");
+                var asset = assetRepository.findOne(assetnum);
+                asset.assetspec = assetSpecRepository.Find("assetnum", assetnum).ToList(); ;
 
-				bool isSuccessful = maximoService.updateAssetSpec(maximoAssetSpec);
+				bool isSuccessful = maximoService.updateAsset(asset);
 
 				if (isSuccessful)
 				{
-					maximoAssetSpec.editedFromApp = false;
-					assetSpecRepository.upsert(maximoAssetSpec);
+                    // todo review
+                    //maximoAssetSpec.editedFromApp = false;
+					//assetSpecRepository.upsert(maximoAssetSpec);
 				}
 			}
 
@@ -125,6 +130,7 @@ namespace MaximoServiceLibrary
         {
             workOrderRepository.removeCollection();
             assetRepository.removeCollection();
+            assetSpecRepository.removeCollection();
         }
 
 		// todo: change function name

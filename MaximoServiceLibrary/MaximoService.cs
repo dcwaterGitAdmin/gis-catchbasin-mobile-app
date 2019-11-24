@@ -235,7 +235,7 @@ namespace MaximoServiceLibrary
 
 		public bool updateAssetSpec(MaximoAssetSpec maximoAssetSpec)
 		{
-			var request = createRequest(maximoAssetSpec.href, true, Method.POST);
+			var request = createRequest(maximoAssetSpec.localref, true, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
 
 			request.AddJsonBody(maximoAssetSpec);
@@ -244,9 +244,23 @@ namespace MaximoServiceLibrary
 			Console.WriteLine($"/mxasset/refid/assetspec - update operation response : {response.Content}");
 			
 			return response.IsSuccessful;
-		} 
-		
-		public List<MaximoAttribute> getAttributes()
+		}
+
+        public bool updateAsset(MaximoAsset maximoAsset)
+        {
+            var request = createRequest(maximoAsset.href, true, Method.POST);
+            request.AddHeader("x-method-override", "PATCH");
+           
+
+            request.AddJsonBody(maximoAsset);
+
+            var response = restClient.Execute(request);
+            Console.WriteLine($"/mxasset - update operation response : {response.Content}");
+
+            return response.IsSuccessful;
+        }
+
+        public List<MaximoAttribute> getAttributes()
 		{
 			var request = createRequest("/os/mxl_assetattribute");
 			request.AddQueryParameter("oslc.select", "*");

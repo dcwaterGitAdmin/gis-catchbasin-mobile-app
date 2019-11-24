@@ -11,7 +11,10 @@ namespace MaximoServiceLibrary.model
 
 		// _rowstamp
 		public string href { get; set; }
-	}
+
+        //localref
+        public string localref { get; set; }
+    }
 
 
 	public class MaximoUser
@@ -1119,7 +1122,7 @@ namespace MaximoServiceLibrary.model
 		public bool tloampartition { get; set; }
 
 		// Total Downtime
-		public string totdowntime { get; set; }
+		public double totdowntime { get; set; }
 
 		// Loop Number
 		public string pluscloopnum { get; set; }
@@ -1525,6 +1528,9 @@ namespace MaximoServiceLibrary.model
 // ASSETSPECCLASS
 	public class MaximoAssetSpec : MaximoBaseEntity
 	{
+        // todo : review
+        public string assetnum { get; set; }
+
 		// Changed Date
 		public DateTime changedate { get; set; }
 
@@ -1606,8 +1612,8 @@ namespace MaximoServiceLibrary.model
 		// Start Measure
 		public double startmeasure { get; set; }
 
-		// Numeric Value
-		public double numvalue { get; set; }
+        // Numeric Value
+        public double? numvalue { get; set; }
 
 		// Start Asset Feature ID
 		public Int64 startassetfeatureid { get; set; }

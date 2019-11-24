@@ -7,7 +7,7 @@
         xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013"
         xmlns:local="clr-namespace:RuntimeCatchBasins"
         mc:Ignorable="d"
-        Title="MainWindow" Height="525" Width="790">
+        Title="MainWindow" Height="525" Width="1200">
     <Window.Resources>
         <local:MapViewModel x:Key="MapViewModel" />
     </Window.Resources>
@@ -43,7 +43,9 @@
             </Ribbon>
            
             <StatusBar DockPanel.Dock="Bottom" >
-                <Label HorizontalAlignment="Left" x:Name="statusLabel">DC Water</Label>
+                <Label HorizontalAlignment="Left" x:Name="statusLabel" FontWeight="Bold">
+                    DC Water
+                </Label>
             </StatusBar>
 
             <usercontrol:WorkOrderList x:Name="woList" DockPanel.Dock="Left" Visibility="Collapsed"></usercontrol:WorkOrderList>
