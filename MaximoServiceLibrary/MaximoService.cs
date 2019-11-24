@@ -29,11 +29,15 @@ namespace MaximoServiceLibrary
 		private string token;
 		private string sessionId;
 
+		private string username;
+		private string password;
+
 		// public
 		public MaximoUser mxuser;
 		public LoginDelegateHandler loginDelegate;
 		public LogoutDelegateHandler logoutDelegate;
 		public bool isUserLoggedIn = false;
+		public bool isOnline; 
 
 
 		// delegate
@@ -98,38 +102,71 @@ namespace MaximoServiceLibrary
 
 		public bool login(string username, string password)
 		{
+			this.username = username;
+			this.password = password;
+			
+			isUserLoggedIn = false;
+			
 			string maxauth = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(username + ":" + password));
-			var request = new RestRequest(BASE_URL + "/login");
+			var request = new RestRequest(BASE_URL + "/rest/login");
 
 			request.AddHeader("Authorization", "Basic " + maxauth);
 			request.Method = Method.GET;
-			request.AddHeader("Accept", "application/xml,text/xml");
+			request.AddHeader("Accept", "application/xml,text/xml,application/json");
 
 			var response = restClient.Execute(request);
 
-			foreach (RestResponseCookie cookie in response.Cookies.ToArray())
+			if (response.ResponseStatus != ResponseStatus.Completed)
 			{
-				if (cookie.Name.ToUpper() == _ltpatoken2_Cookie_Name.ToUpper())
-				{
-					token = cookie.Value;
-				}
-
-				if (cookie.Name.ToUpper() == _jsessionid_Cookie_Name.ToUpper())
-				{
-					sessionId = cookie.Value;
-				}
-			}
-
-
-			if (response.StatusCode == System.Net.HttpStatusCode.OK && sessionId != null && token != null)
-			{
-				isUserLoggedIn = true;
-				loginDelegate();
-				return true;
+				isOnline = false;
 			}
 			else
 			{
-				return false;
+				isOnline = true;
+			}
+
+			if (isOnline)
+			{
+				foreach (RestResponseCookie cookie in response.Cookies.ToArray())
+				{
+					if (cookie.Name.ToUpper() == _ltpatoken2_Cookie_Name.ToUpper())
+					{
+						token = cookie.Value;
+					}
+
+					if (cookie.Name.ToUpper() == _jsessionid_Cookie_Name.ToUpper())
+					{
+						sessionId = cookie.Value;
+					}
+				}
+
+
+				if (response.StatusCode == System.Net.HttpStatusCode.OK && sessionId != null && token != null)
+				{
+					isUserLoggedIn = true;
+					loginDelegate();
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else // is offline
+			{
+				MaximoUser maximoUser = userRepository.findOne(username);
+				if (maximoUser.password.Equals(password))
+				{
+					mxuser = maximoUser;
+					
+					isUserLoggedIn = true;
+					loginDelegate();
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
 
@@ -140,11 +177,24 @@ namespace MaximoServiceLibrary
 
 		public void whoami()
 		{
-			var request = createRequest("/whoami");
+			if (isOnline)
+			{
+				var request = createRequest("/whoami");
 
-			var response = restClient.Execute(request);
+				var response = restClient.Execute(request);
 
-			mxuser = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
+				mxuser = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
+
+				MaximoUser maximoUserFromDb = userRepository.findOne(mxuser.userName);
+				if (maximoUserFromDb != null)
+				{
+					mxuser.Id = maximoUserFromDb.Id;
+				}
+
+				mxuser.password = this.password;
+
+				userRepository.upsert(mxuser);
+			}
 		}
 
 		public void clearUserData()

@@ -15,19 +15,24 @@ namespace MaximoServiceTestConsoleApplication
 			
 			MaximoService maximoService = maximoServiceLibraryBeanConfiguration.maximoService;
 			DbConnection dbConnection = maximoServiceLibraryBeanConfiguration.dbConnection;
+			UserRepository userRepository = maximoServiceLibraryBeanConfiguration.userRepository;
 
 			
-			bool isLoggedIn = maximoService.login("erdem", "password");
+			bool isLoggedIn = maximoService.login("EDELIOGLU", "password");
 			Console.WriteLine($"is user Logged in Maximo: {isLoggedIn}");
 
-			maximoService.whoami();
 			MaximoUser maximoUser = maximoService.mxuser;
 
 			Console.WriteLine($"userid: {maximoUser.userName}");
+			
+			Console.WriteLine($"userid from db: {userRepository.findOne(maximoUser.userName).userName}");
 
 			SynchronizationService synchronizationService = maximoServiceLibraryBeanConfiguration.synchronizationService;
-			
-			//synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
+
+			if (maximoService.isOnline)
+			{
+				synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
+			}
 
 			Console.WriteLine("work order count : " + maximoServiceLibraryBeanConfiguration.workOrderRepository.count());
 			Console.WriteLine("asset count : " + maximoServiceLibraryBeanConfiguration.assetRepository.count());

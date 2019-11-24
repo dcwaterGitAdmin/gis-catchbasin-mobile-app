@@ -17,7 +17,7 @@ namespace MaximoServiceLibrary.repository
 
 		public override string keyField()
 		{
-			return "username";
+			return "userName";
 		}
 		
 	}
