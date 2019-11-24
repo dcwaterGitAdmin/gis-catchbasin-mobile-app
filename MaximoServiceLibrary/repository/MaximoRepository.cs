@@ -4,6 +4,24 @@ using MaximoServiceLibrary.model;
 
 namespace MaximoServiceLibrary.repository
 {
+	public class UserRepository : DbReposistory<String, MaximoUser>
+	{
+		public UserRepository(DbConnection dbConnection) : base(dbConnection)
+		{
+		}
+
+		public override string tableName()
+		{
+			return "users";
+		}
+
+		public override string keyField()
+		{
+			return "username";
+		}
+		
+	}
+	
 	public class WorkOrderRepository : DbReposistory<String, MaximoWorkOrder>
 	{
 		public WorkOrderRepository(DbConnection dbConnection) : base(dbConnection)

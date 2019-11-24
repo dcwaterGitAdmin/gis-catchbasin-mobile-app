@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MaximoService.cs" />
+    <Compile Include="MaximoServiceLibraryBeanConfiguration.cs" />
     <Compile Include="model\MaximoDomainModel.cs" />
     <Compile Include="model\MaximoRestModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

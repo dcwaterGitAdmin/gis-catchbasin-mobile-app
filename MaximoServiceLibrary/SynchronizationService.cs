@@ -10,24 +10,27 @@ namespace MaximoServiceLibrary
 	public class SynchronizationService
 	{
 		private MaximoService maximoService;
-		private DbConnection dbConnection;
 
-		public WorkOrderRepository workOrderRepository { get; }
-		public AssetRepository assetRepository { get; }
-		public AssetSpecRepository assetSpecRepository { get; }
-		public DomainRepository domainRepository { get; }
-		public AttributeRepository attributeRepository { get; }
+		private WorkOrderRepository workOrderRepository;
+		private AssetRepository assetRepository;
+		private AssetSpecRepository assetSpecRepository;
+		private DomainRepository domainRepository;
+		private AttributeRepository attributeRepository;
 		
-		public SynchronizationService(MaximoService _maximoService, DbConnection _dbConnection)
+		public SynchronizationService(MaximoService _maximoService, 
+			WorkOrderRepository _workOrderRepository,
+			AssetRepository _assetRepository,
+			AssetSpecRepository _assetSpecRepository,
+			DomainRepository _domainRepository,
+			AttributeRepository _attributeRepository)
 		{
 			this.maximoService = _maximoService;
-			this.dbConnection = _dbConnection;
 			
-			workOrderRepository = new WorkOrderRepository(dbConnection);
-			assetRepository = new AssetRepository(dbConnection);
-			assetSpecRepository = new AssetSpecRepository(dbConnection);
-			domainRepository = new DomainRepository(dbConnection);
-			attributeRepository = new AttributeRepository(dbConnection);
+			workOrderRepository = _workOrderRepository;
+			assetRepository = _assetRepository;
+			assetSpecRepository = _assetSpecRepository;
+			domainRepository = _domainRepository;
+			attributeRepository = _attributeRepository;
 		}
 
 		public async void synchronizeWorkOrderCompositeFromMaximoToLocalDb()

@@ -31,11 +31,11 @@ namespace RuntimeCatchBasins
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public static MaximoService maximoService = new MaximoService();
-		public static DbConnection dbConnection = new DbConnection();
+		public static MaximoServiceLibraryBeanConfiguration maximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
+		public static MaximoService maximoService = maximoServiceLibraryBeanConfiguration.maximoService;
+		public static DbConnection dbConnection = maximoServiceLibraryBeanConfiguration.dbConnection;
 
-		public static SynchronizationService synchronizationService =
-			new SynchronizationService(maximoService, dbConnection);
+		public static SynchronizationService synchronizationService = maximoServiceLibraryBeanConfiguration.synchronizationService;
 
 		public MainWindow()
 		{

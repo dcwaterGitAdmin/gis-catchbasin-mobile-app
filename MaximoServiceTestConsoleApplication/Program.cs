@@ -11,8 +11,10 @@ namespace MaximoServiceTestConsoleApplication
 	{
 		public static void Main(string[] args)
 		{
-			MaximoService maximoService = new MaximoService();
-			DbConnection dbConnection = new DbConnection();
+			MaximoServiceLibraryBeanConfiguration maximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
+			
+			MaximoService maximoService = maximoServiceLibraryBeanConfiguration.maximoService;
+			DbConnection dbConnection = maximoServiceLibraryBeanConfiguration.dbConnection;
 
 			
 			bool isLoggedIn = maximoService.login("erdem", "password");
@@ -23,17 +25,17 @@ namespace MaximoServiceTestConsoleApplication
 
 			Console.WriteLine($"userid: {maximoUser.userName}");
 
-			SynchronizationService synchronizationService = new SynchronizationService(maximoService, dbConnection);
+			SynchronizationService synchronizationService = maximoServiceLibraryBeanConfiguration.synchronizationService;
 			
 			//synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
 
-			Console.WriteLine("work order count : " + synchronizationService.workOrderRepository.count());
-			Console.WriteLine("asset count : " + synchronizationService.assetRepository.count());
+			Console.WriteLine("work order count : " + maximoServiceLibraryBeanConfiguration.workOrderRepository.count());
+			Console.WriteLine("asset count : " + maximoServiceLibraryBeanConfiguration.assetRepository.count());
 
 			//synchronizationService.synchronizeHelperFromMaximoToLocalDb();
 			
-			Console.WriteLine("domain count : " + synchronizationService.domainRepository.count());
-			Console.WriteLine("attribute count : " + synchronizationService.attributeRepository.count());
+			Console.WriteLine("domain count : " + maximoServiceLibraryBeanConfiguration.domainRepository.count());
+			Console.WriteLine("attribute count : " + maximoServiceLibraryBeanConfiguration.attributeRepository.count());
 			
 			//foreach (var assetSpec in synchronizationService.assetRepository.findOne("442605").assetspec)
 			//{
@@ -75,14 +77,14 @@ namespace MaximoServiceTestConsoleApplication
 //
 //			}
 
-			MaximoWorkOrder woUpdated = synchronizationService.workOrderRepository.findOne("19-661918");
+			MaximoWorkOrder woUpdated = maximoServiceLibraryBeanConfiguration.workOrderRepository.findOne("19-661918");
 			Console.WriteLine($"wonum : {woUpdated.wonum}, edited: {woUpdated.editedFromApp}, actlabcost: {woUpdated.actlabcost}");
 			
 			woUpdated.actlabcost += 1;
-			synchronizationService.workOrderRepository.update(woUpdated);
+			maximoServiceLibraryBeanConfiguration.workOrderRepository.update(woUpdated);
 
 			// find again
-			woUpdated = synchronizationService.workOrderRepository.findOne("19-661918");
+			woUpdated = maximoServiceLibraryBeanConfiguration.workOrderRepository.findOne("19-661918");
 			Console.WriteLine($"wonum : {woUpdated.wonum}, edited: {woUpdated.editedFromApp}, actlabcost: {woUpdated.actlabcost}");
 			
 			synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();

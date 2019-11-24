@@ -17,13 +17,16 @@ namespace MaximoServiceLibrary.model
     }
 
 
-	public class MaximoUser
+	public class MaximoUser : MaximoBaseEntity
 	{
+		public string userName { get; set; }
+		
+		public string password { get; set; }
+
 		public string baseCurrency { get; set; }
 		public string loginUserName { get; set; }
 		public string defaultOrg { get; set; }
 		public string defaultSite { get; set; }
-		public string userName { get; set; }
 		public string personId { get; set; }
 		public string insertOrg { get; set; }
 		public string loginID { get; set; }

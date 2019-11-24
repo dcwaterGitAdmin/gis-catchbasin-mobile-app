@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LocalDBLibrary;
 using Newtonsoft.Json;
 using RestSharp;
 using MaximoServiceLibrary.model;
+using MaximoServiceLibrary.repository;
 
 namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		//private static readonly string BASE_HOST = "http://localhost:8080";
-		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		private static readonly string BASE_HOST = "http://localhost:8080";
+		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -20,6 +22,9 @@ namespace MaximoServiceLibrary
 		private static readonly string _jsessionid_Cookie_Name = "JSESSIONID";
 
 		// private 
+		private DbConnection dbConnection;
+		private UserRepository userRepository;
+		
 		private RestClient restClient;
 		private string token;
 		private string sessionId;
@@ -37,9 +42,14 @@ namespace MaximoServiceLibrary
 		public delegate void LogoutDelegateHandler();
 
 		// cons
-		public MaximoService()
+		public MaximoService(DbConnection _dbConnection,
+			UserRepository _userRepository)
 		{
+			this.dbConnection = _dbConnection;
+			this.userRepository = _userRepository;
+			
 			// todo : put app config
+			
 			restClient = new RestClient();
 			loginDelegate = new LoginDelegateHandler(whoami);
 			//  loginDelegate += getWorkOrders;
