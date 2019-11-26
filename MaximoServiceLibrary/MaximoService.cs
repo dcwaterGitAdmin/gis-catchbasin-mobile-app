@@ -154,6 +154,7 @@ namespace MaximoServiceLibrary
 			}
 			else // is offline
 			{
+                return false;
 				MaximoUser maximoUser = userRepository.findOne(username);
 				if (maximoUser.password.Equals(password))
 				{

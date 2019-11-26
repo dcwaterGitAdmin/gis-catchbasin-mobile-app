@@ -1,0 +1,26 @@
+﻿<Window x:Class="CatchBasin.View.Login"
+        x:Name="LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CatchBasin.View"
+        xmlns:vm="clr-namespace:CatchBasin.ViewModel"
+        xmlns:ff="clr-namespace:CatchBasin.ViewModel.Helper"
+        mc:Ignorable="d"
+        Title="DC Water Mobile Catch Basin Application Login Page" Height="600" Width="400">
+    <Window.Resources>
+        <vm:LoginVM x:Key="vm"/>
+    </Window.Resources>
+    <Grid DataContext="{StaticResource vm}">
+        <StackPanel Margin="30">
+            <Image Source="/CatchBasin;component/Resources/Images/Logo.png" Height="200" />
+            <Label Margin="0,10,0,0" FontSize="24">Username :</Label>
+            <TextBox  FontSize="24" Text="{Binding UserName}"></TextBox>
+            <Label  FontSize="24">Password :</Label>
+            <PasswordBox ff:PasswordHelper.Attach="True" ff:PasswordHelper.Password="{Binding Text, ElementName=plainPassword, Mode=TwoWay}" FontSize="24" ></PasswordBox>
+            <TextBlock x:Name="plainPassword" Text="{Binding Password, Mode=TwoWay}" Visibility="Collapsed"/>
+            <Button Margin="0,10,0,0" FontSize="24" Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=LoginWindow}">Login</Button>
+        </StackPanel>
+    </Grid>
+</Window>

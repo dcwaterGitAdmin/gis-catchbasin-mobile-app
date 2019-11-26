@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaximoServiceTestConsoleApp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDBLibrary", "LocalDBLibrary\LocalDBLibrary.csproj", "{2A8FFA91-58E0-4991-B22F-72B738D9CEED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatchBasin", "CatchBasin\CatchBasin.csproj", "{0D5F8F27-2D9B-41D5-95A1-E6E22E77FEE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{2A8FFA91-58E0-4991-B22F-72B738D9CEED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A8FFA91-58E0-4991-B22F-72B738D9CEED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A8FFA91-58E0-4991-B22F-72B738D9CEED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D5F8F27-2D9B-41D5-95A1-E6E22E77FEE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D5F8F27-2D9B-41D5-95A1-E6E22E77FEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D5F8F27-2D9B-41D5-95A1-E6E22E77FEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D5F8F27-2D9B-41D5-95A1-E6E22E77FEE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
