@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="CatchBasin.View.UserControl.AssetDetail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CatchBasin.View.UserControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="300">
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Margin="10">
+                <Label Content="Asset Tag" FontWeight="Bold"/>
+                <TextBlock TextWrapping="Wrap" Text="C-277-060-804-665"/>
+
+                <Label Content="Type" FontWeight="Bold"/>
+                <ComboBox></ComboBox>
+
+                <Label Content="Top Material" FontWeight="Bold"/>
+                <ComboBox></ComboBox>
+
+                <Label Content="Top Thickness" FontWeight="Bold"/>
+                <ComboBox></ComboBox>
+
+                <Label Content="Grate Type" FontWeight="Bold"/>
+                <ComboBox></ComboBox>
+
+                <Label Content="Number of Chambers" FontWeight="Bold"/>
+                <TextBox></TextBox>
+
+                <Label Content="Number of Throats" FontWeight="Bold"/>
+                <TextBox></TextBox>
+
+                <Label Content="Location Detail" FontWeight="Bold"/>
+                <TextBox></TextBox>
+
+                <Label Content="Owner" FontWeight="Bold"/>
+                <ComboBox></ComboBox>
+
+                <Label Content="Cleaning Responsibility" FontWeight="Bold"/>
+                <ComboBox></ComboBox>
+
+                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
+                    Is Water Quality?
+                </CheckBox>
+                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
+                    Is In MS4?
+                </CheckBox>
+                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
+                    Is Corner CB?
+                </CheckBox>
+                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
+                    Has Biofilter?
+                </CheckBox>
+
+                <Label Content="Flow Restrictor Type" FontWeight="Bold"/>
+                <ComboBox></ComboBox>
+
+                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
+                    Has Sump?
+                </CheckBox>
+                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
+                    Has Water Seal?
+                </CheckBox>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

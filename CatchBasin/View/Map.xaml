@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013"
         xmlns:local="clr-namespace:CatchBasin.View"
+         xmlns:uc="clr-namespace:CatchBasin.View.UserControl"
         xmlns:vm="clr-namespace:CatchBasin.ViewModel"
         mc:Ignorable="d"
         Title="DC Water Mobile Catch Basin Application" Height="525" Width="790">
@@ -33,7 +34,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+       
         <LinearGradientBrush x:Key="ActiveRibbonButtonBrush" StartPoint="0,0" EndPoint="0,1" >
             <GradientStop Color="#c0c0aa" Offset="0"/>
             <GradientStop Color="#1482c5" Offset="1"/>
@@ -106,12 +107,24 @@
                     <RibbonGroup x:Name="MaximoRibbonGroup" Header="Maximo">
 
                         <RibbonButton Command="{Binding SyncCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/sync.png" Label="Manual Sync"  />
-                        <RibbonButton Command="{Binding WorkOrdersCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/workOrderList.png" Label="Work Order List" />
+                        <RibbonButton Command="{Binding WorkOrdersCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/workOrderList.png" Label="Work Order List" >
+                            <RibbonButton.Style>
+                                <Style TargetType="RibbonButton">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding WorkOrdersIsVisible}" Value="true">
+                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="BorderBrush" Value="#1482c5"/>
+                                            <Setter Property="CornerRadius" Value="3"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </RibbonButton.Style>
+                        </RibbonButton>
 
-                        <RibbonMenuButton LargeImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Label="Add Workorder" KeyTip="V">
-                            <RibbonMenuButton Label="1"></RibbonMenuButton>
-                            <RibbonMenuButton Label="2"></RibbonMenuButton>
-                        </RibbonMenuButton>
+
+                        <RibbonMenuButton ItemsSource="{Binding CreateWorkOrderList}" LargeImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Label="Add Workorder" KeyTip="V"/>
+
                     </RibbonGroup>
                     
                     <RibbonGroup x:Name="AppRibbonGroup" Header="Application">
@@ -147,12 +160,16 @@
                     <TextBlock Text="{Binding GPSLocation}"></TextBlock>
                 </StatusBarItem>
             </StatusBar>
+
+            <uc:WorkOrderList DataContext="{Binding WorkOrderListVM}" DockPanel.Dock="Left" Visibility="{Binding MapVM.WorkOrdersIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" />
+            <uc:WorkOrderDetail DataContext="{Binding WorkOrderDetailVM}" DockPanel.Dock="Left" Visibility="{Binding MapVM.WorkOrderDetailIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" />
+            <uc:AssetDetail DataContext="{Binding AssetDetailVM}" DockPanel.Dock="Left" Visibility="{Binding MapVM.AssetDetailIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" />
             
             <esri:TableOfContents x:Name="TOC" Visibility="{Binding TOCIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" DockPanel.Dock="Right" Width="300" GeoView="{Binding ElementName=mapView}" ShowLegend="True" />
             
             <esri:MeasureToolbar x:Name="Measure" DockPanel.Dock="Bottom" Visibility="{Binding MeasureIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}"  MapView="{Binding ElementName=mapView}"></esri:MeasureToolbar>
-            
-            <esri:MapView Map="{Binding Map}" x:Name="mapView" />
+
+            <esri:MapView Map="{Binding Map}" DockPanel.Dock="Left" x:Name="mapView" />
         </DockPanel>
     </Grid>
 </Window>

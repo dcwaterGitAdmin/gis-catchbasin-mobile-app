@@ -60,14 +60,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModel\AssetDetailVM.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
+    <Compile Include="ViewModel\Command\SaveWorkOrderCommand.cs" />
+    <Compile Include="ViewModel\Command\SelectAssetOnMapCommand.cs" />
     <Compile Include="ViewModel\Command\MapCommands.cs" />
     <Compile Include="ViewModel\Command\LoginCommand.cs" />
+    <Compile Include="ViewModel\Command\CreateAssetOnMapCommand.cs" />
+    <Compile Include="ViewModel\Command\CancelWorkOrderCommand.cs" />
+    <Compile Include="ViewModel\Command\ShowAssetCommand.cs" />
     <Compile Include="ViewModel\Helper\PasswordHelper.cs" />
     <Compile Include="ViewModel\LoginVM.cs" />
+    <Compile Include="ViewModel\WorkOrderDetailVM.cs" />
     <Compile Include="ViewModel\WorkOrderListVM.cs" />
     <Compile Include="View\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UserControl\AssetDetail.xaml.cs">
+      <DependentUpon>AssetDetail.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UserControl\WorkOrderDetail.xaml.cs">
+      <DependentUpon>WorkOrderDetail.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\UserControl\WorkOrderList.xaml.cs">
       <DependentUpon>WorkOrderList.xaml</DependentUpon>
@@ -86,6 +99,14 @@
     </Compile>
     <Compile Include="ViewModel\MapVM.cs" />
     <Page Include="View\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\UserControl\AssetDetail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\UserControl\WorkOrderDetail.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -136,6 +157,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LocalDBLibrary\LocalDBLibrary.csproj">
+      <Project>{2A8FFA91-58E0-4991-B22F-72B738D9CEED}</Project>
+      <Name>LocalDBLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MaximoServiceLibrary\MaximoServiceLibrary.csproj">
       <Project>{8553bb8e-d82d-4877-97ac-492167219f18}</Project>
       <Name>MaximoServiceLibrary</Name>
@@ -191,6 +216,20 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\logout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\more.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\click.png" />
+    <Resource Include="Resources\Images\location.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\add.png" />
+    <Resource Include="Resources\Images\right-arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\delete.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

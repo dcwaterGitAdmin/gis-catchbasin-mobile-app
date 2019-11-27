@@ -16,13 +16,13 @@ using System.Windows.Shapes;
 namespace CatchBasin.View.UserControl
 {
     /// <summary>
-    /// Interaction logic for WorkOrderList.xaml
+    /// Interaction logic for AssetDetail.xaml
     /// </summary>
-    public partial class WorkOrderList : System.Windows.Controls.UserControl
+    public partial class AssetDetail : System.Windows.Controls.UserControl
     {
-        public WorkOrderList()
+        public AssetDetail()
         {
-           InitializeComponent();
+            InitializeComponent();
         }
     }
 }

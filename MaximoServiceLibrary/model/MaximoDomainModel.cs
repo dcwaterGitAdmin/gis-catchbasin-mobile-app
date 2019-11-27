@@ -58,6 +58,7 @@ namespace MaximoServiceLibrary.model
 	{
 		public MaximoAsset asset { get; set; }
 
+        public List<MaximoWorkOrderSpec> workorderspec { get; set; }
 		// auto-generated fields
 
 		// Actual Hours of External Labor
@@ -1905,6 +1906,60 @@ namespace MaximoServiceLibrary.model
 
         // Source Field
         public string sourcefield { get; set; }
+    }
+
+    // todo : control
+    public class MaximoWorkOrderSpec : MaximoBaseEntity
+    {
+        public DateTime changedate { get; set; }
+        public int refobjectid { get; set; }
+        public string assetattrid { get; set; }
+        public string orgid { get; set; }
+        public string classstructureid { get; set; }
+        public string changeby { get; set; }
+        public bool mandatory { get; set; }
+        public int workorderspecid { get; set; }
+        public string siteid { get; set; }
+        public string refobjectname { get; set; }
+        public int classspecid { get; set; }
+        public string wonum { get; set; }
+        public int displaysequence { get; set; }
+        public string alnvalue { get; set; }
+        public double? numvalue { get; set; }
+    }
+
+    public class FailureRemark : MaximoBaseEntity
+    {
+        public int failureremarkid { get; set; }
+        public DateTime enterdate { get; set; }
+        public string orgid { get; set; }
+        public string description { get; set; }
+        public string siteid { get; set; }
+        public string wonum { get; set; }
+        public string langcode { get; set; }
+        public bool hasld { get; set; }
+    }
+
+    public class FailureList : MaximoBaseEntity
+    {
+      
+        public string orgid { get; set; }
+        public int parent { get; set; }
+        public int failurelist { get; set; }
+        public string failurecode { get; set; }
+        public bool dcw_invalid { get; set; }
+        public string type { get; set; }
+       
+    }
+    public class FailureCode : MaximoBaseEntity
+    {
+       
+        public string orgid { get; set; }
+        public string description { get; set; }
+        public int failurecodeid { get; set; }
+        public string failurecode { get; set; }
+        public string langcode { get; set; }
+        public bool hasld { get; set; }
     }
 
 }

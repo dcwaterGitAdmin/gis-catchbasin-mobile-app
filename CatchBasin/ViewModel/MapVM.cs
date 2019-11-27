@@ -20,6 +20,8 @@ using CatchBasin.View;
 using System.Windows.Media;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Windows.Controls.Ribbon;
+using MaximoServiceLibrary.model;
 
 namespace CatchBasin.ViewModel
 {
@@ -31,6 +33,9 @@ namespace CatchBasin.ViewModel
 
         public MapVM()
         {
+            WorkOrderListVM = new WorkOrderListVM(this);
+            WorkOrderDetailVM = new WorkOrderDetailVM(this);
+            AssetDetailVM = new AssetDetailVM(this);
             IdentifyCommand = new IdentifyCommand(this);
 
             MeasureIsVisible = false;
@@ -42,6 +47,7 @@ namespace CatchBasin.ViewModel
             SketchCommand = new SketchCommand(this);
             ZoomToFullExtentCommand = new ZoomToFullExtentCommand(this);
             SyncCommand = new SyncCommand(this);
+            WorkOrdersIsVisible = false;
             WorkOrdersCommand = new WorkOrdersCommand(this);
             CreateWorkOrderCommand = new CreateWorkOrderCommand(this);
             SettingsCommand = new SettingsCommand(this);
@@ -60,7 +66,93 @@ namespace CatchBasin.ViewModel
             get { return _map; }
             set { _map = value; OnPropertyChanged(); }
         }
-        
+
+        private WorkOrderListVM workOrderListVM;
+
+        public WorkOrderListVM WorkOrderListVM
+        {
+            get { return workOrderListVM; }
+            set { workOrderListVM = value; OnPropertyChanged("WorkOrderListVM"); }
+        }
+
+        private WorkOrderDetailVM workOrderDetailVM;
+
+        public WorkOrderDetailVM WorkOrderDetailVM
+        {
+            get { return workOrderDetailVM; }
+            set { workOrderDetailVM = value; OnPropertyChanged("WorkOrderDetailVM"); }
+        }
+        private bool workOrderDetailIsVisible;
+
+        public bool WorkOrderDetailIsVisible
+        {
+            get { return workOrderDetailIsVisible; }
+            set { workOrderDetailIsVisible = value; OnPropertyChanged("WorkOrderDetailIsVisible"); }
+        }
+
+
+        public void ShowWorkOrderDetail(MaximoWorkOrder wo)
+        {
+            WorkOrderDetailIsVisible = true;
+            WorkOrderDetailVM.Update(wo);
+        }
+
+        public void HideWorkOrderDetail()
+        {
+            WorkOrderDetailIsVisible = false;
+            WorkOrderDetailVM.Clear();
+        }
+
+
+        private AssetDetailVM assetDetailVM;
+
+        public AssetDetailVM AssetDetailVM
+        {
+            get { return assetDetailVM; }
+            set { assetDetailVM = value; OnPropertyChanged("AssetDetailVM"); }
+        }
+
+        private bool assetDetailIsVisible;
+
+        public bool AssetDetailIsVisible
+        {
+            get { return assetDetailIsVisible; }
+            set { assetDetailIsVisible = value; OnPropertyChanged("AssetDetailIsVisible"); }
+        }
+
+        public void ShowAssetDetail(MaximoWorkOrder wo)
+        {
+            AssetDetailIsVisible = true;
+            AssetDetailVM.Update(wo);
+        }
+
+        public void HideAssetDetail()
+        {
+            AssetDetailIsVisible = false;
+            AssetDetailVM.Clear();
+        }
+
+
+        private List<RibbonButton> createWorkOrderList;
+
+        public List<RibbonButton> CreateWorkOrderList
+        {
+            get { return createWorkOrderList; }
+            set { createWorkOrderList = value; OnPropertyChanged("CreateWorkOrderList"); }
+        }
+
+        public void generateCreateWorkOrderList(List<string> list)
+        {
+            List<RibbonButton> menuList = new List<RibbonButton>();
+            foreach (string item in list)
+            {
+                RibbonButton ribbonMenuButton = new RibbonButton();
+                ribbonMenuButton.Label = item;
+                ribbonMenuButton.Command = CreateWorkOrderCommand;
+                menuList.Add(ribbonMenuButton);
+            }
+            CreateWorkOrderList = menuList;
+        }
 
 
         private bool identifyIsVisible;
@@ -162,10 +254,18 @@ namespace CatchBasin.ViewModel
 
         }
 
+        private bool workOrdersIsVisible;
+
+        public bool WorkOrdersIsVisible
+        {
+            get { return workOrdersIsVisible; }
+            set { workOrdersIsVisible = value; OnPropertyChanged("WorkOrdersIsVisible"); }
+        }
+
         public WorkOrdersCommand WorkOrdersCommand { get; set; }
         public void ShowWorkOrders()
         {
-
+            WorkOrdersIsVisible = !WorkOrdersIsVisible;
         }
 
 

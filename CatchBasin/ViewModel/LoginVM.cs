@@ -45,15 +45,17 @@ namespace CatchBasin.ViewModel
 
         public void DoLogin(Window window)
         {
-            new Map().Show();
-            window.Close();
-            return;
+            //new Map().Show();
+            //window.Close();
+            //return;
 
-            // todo: activate this code
+           
             try
             {
                 if (MaximoServiceLibraryBeanConfiguration.maximoService.login(UserName, Password))
                 {
+                    MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+                    MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();
                     new Map().Show();
                     window.Close();
                 }

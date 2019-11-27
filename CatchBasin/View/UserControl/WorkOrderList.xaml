@@ -6,13 +6,26 @@
              xmlns:local="clr-namespace:CatchBasin.View.UserControl"
               xmlns:vm="clr-namespace:CatchBasin.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <vm:WorkOrderListVM x:Key="vm" />
-    </UserControl.Resources>
-    <Grid>
+             d:DesignHeight="450" d:DesignWidth="450">
+
+    <Grid >
         <ListView ItemsSource="{Binding WorkOrders}" SelectedIndex="{Binding SelectedIndex}">
+            <ListView.Resources>
+                <Style TargetType="ListViewItem">
+                    <Style.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="true" />
+                                <Condition Property="Selector.IsSelectionActive" Value="true" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="Pink" />
+                           
+                        </MultiTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.Resources>
             <ListView.ItemTemplate>
+                
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="2">
                         <Grid Height="90" Width="450">
