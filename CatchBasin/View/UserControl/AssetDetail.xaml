@@ -17,8 +17,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Command="{Binding CancelWorkOrderCommand}" Grid.Column="0">Cancel</Button>
-                <Button Command="{Binding SaveWorkOrderCommand}" Grid.Column="1">Save</Button>
+                <Button Command="{Binding CancelCommand}" Grid.Column="0">Cancel</Button>
+                <Button Command="{Binding SaveCommand}" Grid.Column="1">Save</Button>
             </Grid>
             <ScrollViewer>
                 <StackPanel Margin="10">

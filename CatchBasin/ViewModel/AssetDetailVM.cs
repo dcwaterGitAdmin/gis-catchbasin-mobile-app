@@ -197,16 +197,16 @@ namespace CatchBasin.ViewModel
             set { flowRestrictorTypeList = value;  OnPropertyChanged("FlowRestrictorTypeList");}
         }
 
-        private Command.CancelCommand cancelCommand;
+        private Command.CancelCommand<AssetDetailVM> cancelCommand;
 
-        public Command.CancelCommand CancelWorkOrderCommand
+        public Command.CancelCommand<AssetDetailVM> CancelWorkOrderCommand
         {
             get { return cancelCommand; }
             set { cancelCommand = value; }
         }
-        private Command.SaveCommand saveCommand;
+        private Command.SaveCommand<AssetDetailVM> saveCommand;
 
-        public Command.SaveCommand SaveCommand
+        public Command.SaveCommand<AssetDetailVM> SaveCommand
         {
             get { return saveCommand; }
             set { saveCommand = value; }

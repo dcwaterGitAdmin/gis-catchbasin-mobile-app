@@ -62,14 +62,15 @@
     </ApplicationDefinition>
     <Compile Include="ViewModel\AssetDetailVM.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
-    <Compile Include="ViewModel\Command\SaveWorkOrderCommand.cs" />
+    <Compile Include="ViewModel\Command\SaveCommand.cs" />
     <Compile Include="ViewModel\Command\SelectAssetOnMapCommand.cs" />
     <Compile Include="ViewModel\Command\MapCommands.cs" />
     <Compile Include="ViewModel\Command\LoginCommand.cs" />
     <Compile Include="ViewModel\Command\CreateAssetOnMapCommand.cs" />
-    <Compile Include="ViewModel\Command\CancelWorkOrderCommand.cs" />
+    <Compile Include="ViewModel\Command\CancelCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAssetCommand.cs" />
     <Compile Include="ViewModel\Helper\PasswordHelper.cs" />
+    <Compile Include="ViewModel\Helper\IDetailVM.cs" />
     <Compile Include="ViewModel\LoginVM.cs" />
     <Compile Include="ViewModel\WorkOrderDetailVM.cs" />
     <Compile Include="ViewModel\WorkOrderListVM.cs" />

@@ -123,7 +123,11 @@ namespace CatchBasin.ViewModel
         public void ShowAssetDetail(MaximoWorkOrder wo)
         {
             AssetDetailIsVisible = true;
-            AssetDetailVM.Update(wo);
+            if(wo != null && wo.asset != null)
+            {
+                AssetDetailVM.Update(wo.asset);
+            }
+            
         }
 
         public void HideAssetDetail()

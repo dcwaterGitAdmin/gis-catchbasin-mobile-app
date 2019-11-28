@@ -10,7 +10,6 @@ namespace CatchBasin.ViewModel.Helper
     {
         void Save();
         void Cancel();
-        void Clear();
-        void Update();
+
     }
 }

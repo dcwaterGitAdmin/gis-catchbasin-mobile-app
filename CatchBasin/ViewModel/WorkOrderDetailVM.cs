@@ -457,16 +457,16 @@ namespace CatchBasin.ViewModel
             get { return selectAssetOnMapCommand; }
             set { selectAssetOnMapCommand = value; }
         }
-        private Command.CancelCommand cancelCommand;
+        private Command.CancelCommand<WorkOrderDetailVM> cancelCommand;
 
-        public Command.CancelCommand CancelCommand
+        public Command.CancelCommand<WorkOrderDetailVM> CancelCommand
         {
             get { return cancelCommand; }
             set { cancelCommand = value; }
         }
-        private Command.SaveCommand saveCommand;
+        private Command.SaveCommand<WorkOrderDetailVM> saveCommand;
 
-        public Command.SaveCommand SaveCommand
+        public Command.SaveCommand<WorkOrderDetailVM> SaveCommand
         {
             get { return saveCommand; }
             set { saveCommand = value; }
