@@ -16,13 +16,14 @@ namespace MaximoServiceLibrary
 		private AssetSpecRepository assetSpecRepository;
 		private DomainRepository domainRepository;
 		private AttributeRepository attributeRepository;
-		
-		public SynchronizationService(MaximoService _maximoService, 
+        private FailureListRepository failureListRepository;
+        public SynchronizationService(MaximoService _maximoService, 
 			WorkOrderRepository _workOrderRepository,
 			AssetRepository _assetRepository,
 			AssetSpecRepository _assetSpecRepository,
 			DomainRepository _domainRepository,
-			AttributeRepository _attributeRepository)
+			AttributeRepository _attributeRepository,
+            FailureListRepository _failureListRepository)
 		{
 			this.maximoService = _maximoService;
 			
@@ -31,7 +32,8 @@ namespace MaximoServiceLibrary
 			assetSpecRepository = _assetSpecRepository;
 			domainRepository = _domainRepository;
 			attributeRepository = _attributeRepository;
-		}
+            failureListRepository = _failureListRepository;
+        }
 
 		public async void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
 		{
@@ -52,6 +54,8 @@ namespace MaximoServiceLibrary
                 if (maximoAsset == null)
                 {
                     maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
+                    
+
                     if (maximoAsset != null)
                     {
 	                    if (maximoAsset.assetspec != null)
@@ -61,6 +65,7 @@ namespace MaximoServiceLibrary
 		                    {
                                 assetSpec.assetnum = maximoAsset.assetnum;
 			                    assetSpecs.Add(assetSpecRepository.insert(assetSpec));
+
 		                    }
 
 		                    maximoAsset.assetspec = assetSpecs;
@@ -74,6 +79,10 @@ namespace MaximoServiceLibrary
                 }
 
                 maximoWorkOrder.asset = maximoAsset;
+              
+                maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder.href); 
+                maximoWorkOrder.failureremark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
+                maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
                 // synchronize maximoWorkOrder in local db
                 MaximoWorkOrder maximoWorkOrderFromDb = workOrderRepository.findOne(maximoWorkOrder.wonum);
 				if (maximoWorkOrderFromDb != null)
@@ -140,20 +149,37 @@ namespace MaximoServiceLibrary
 		public void synchronizeHelperFromMaximoToLocalDb()
 		{
 
-            clearHelperFromLocalDb();
-			List<MaximoDomain> domains = maximoService.getDomains();
+   //         clearHelperFromLocalDb();
+			//List<MaximoDomain> domains = maximoService.getDomains();
 
-			foreach (var domain in domains)
-			{
-				domainRepository.insert(domain);
-			}
+			//foreach (var domain in domains)
+			//{
+			//	domainRepository.insert(domain);
+			//}
 			
 			
-			List<MaximoAttribute> attributes = maximoService.getAttributes();
-			foreach (var attribute in attributes)
-			{
-				attributeRepository.insert(attribute);
-			}
+			//List<MaximoAttribute> attributes = maximoService.getAttributes();
+			//foreach (var attribute in attributes)
+			//{
+			//	attributeRepository.insert(attribute);
+			//}
+
+            // 1283 CatchBasin failurelist id
+            List<FailureList> failureLists = new List<FailureList>();
+            List<FailureList> tempFailureLists = maximoService.getFailureList("1283");
+            failureLists.AddRange(tempFailureLists);
+            var problemCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
+            tempFailureLists = maximoService.getFailureList(problemCodes);
+            failureLists.AddRange(tempFailureLists);
+            var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
+            tempFailureLists = maximoService.getFailureList(causeCodes);
+            failureLists.AddRange(tempFailureLists);
+
+            foreach (var failureList in failureLists)
+            {
+                failureListRepository.insert(failureList);
+            }
+        
 			
 		}
 

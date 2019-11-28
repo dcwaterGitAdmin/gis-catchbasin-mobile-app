@@ -12,8 +12,8 @@ namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		private static readonly string BASE_HOST = "http://localhost:8080";
-		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		//private static readonly string BASE_HOST = "http://localhost:8080";
+		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -108,7 +108,7 @@ namespace MaximoServiceLibrary
 			isUserLoggedIn = false;
 			
 			string maxauth = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(username + ":" + password));
-			var request = new RestRequest(BASE_URL + "/rest/login");
+			var request = new RestRequest(BASE_URL + "/login");
 
 			request.AddHeader("Authorization", "Basic " + maxauth);
 			request.Method = Method.GET;
@@ -152,9 +152,9 @@ namespace MaximoServiceLibrary
 					return false;
 				}
 			}
-			else // is offline
+			else 
 			{
-                return false;
+               
 				MaximoUser maximoUser = userRepository.findOne(username);
 				if (maximoUser.password.Equals(password))
 				{
@@ -281,7 +281,127 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrderList;
 		}
 
-		public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
+        public List<MaximoWorkOrderSpec> getWorkOrderSpec(string workOrderHref)
+        {
+            var request = createRequest(workOrderHref+"/workorderspec", true);
+            request.AddQueryParameter("oslc.select", "*");
+            var response = restClient.Execute(request);
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                return new List<MaximoWorkOrderSpec>();
+            }
+
+            List<MaximoWorkOrderSpec> maximoWorkOrderSpecList = new List<MaximoWorkOrderSpec>();
+
+            MaximoWorkOrderSpecPageableRestResponse mxwospecPageableRestResponse =
+                JsonConvert.DeserializeObject<MaximoWorkOrderSpecPageableRestResponse>(response.Content);
+            maximoWorkOrderSpecList.AddRange(mxwospecPageableRestResponse.member);
+
+            // get next pages if there is any
+            while (mxwospecPageableRestResponse.responseInfo.nextPage != null)
+            {
+                request = createRequest(mxwospecPageableRestResponse.responseInfo.nextPage.href, true);
+
+                response = restClient.Execute(request);
+
+                if (!response.IsSuccessful)
+                {
+                    Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                    // todo - throw exception here?
+                    return maximoWorkOrderSpecList;
+                }
+
+                mxwospecPageableRestResponse =
+                    JsonConvert.DeserializeObject<MaximoWorkOrderSpecPageableRestResponse>(response.Content);
+                maximoWorkOrderSpecList.AddRange(mxwospecPageableRestResponse.member);
+            }
+
+            return maximoWorkOrderSpecList;
+
+        }
+
+        public FailureRemark getWorkOrderFailureRemark(string workOrderHref)
+        {
+            var request = createRequest(workOrderHref + "/failureremark", true);
+            request.AddQueryParameter("oslc.select", "*");
+            var response = restClient.Execute(request);
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                return new FailureRemark();
+            }
+
+            
+            FailureRemarkPageableRestResponse mxwospecPageableRestResponse =
+                JsonConvert.DeserializeObject<FailureRemarkPageableRestResponse>(response.Content);
+
+            return mxwospecPageableRestResponse.member.Count > 0 ? mxwospecPageableRestResponse.member[0] : new FailureRemark();
+        }
+
+        public List<FailureReport> getWorkOrderFailureReport(string workOrderHref)
+        {
+            var request = createRequest(workOrderHref + "/failurereport", true);
+            request.AddQueryParameter("oslc.select", "*");
+            var response = restClient.Execute(request);
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                return new List<FailureReport>();
+            }
+
+            FailureReportPageableRestResponse frPageableRestResponse =
+                JsonConvert.DeserializeObject<FailureReportPageableRestResponse>(response.Content);
+            return frPageableRestResponse.member ?? new List<FailureReport>();
+        }
+
+        public List<FailureList> getFailureList(string parentIds)
+        {
+            var request = createRequest("/os/dcw_kona_failurelist");
+            request.AddQueryParameter("oslc.select", "*");
+            request.AddQueryParameter("oslc.pageSize", "10");
+            request.AddQueryParameter("oslc.where", $"parent in [{parentIds}]");
+            var response = restClient.Execute(request);
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                return new List<FailureList>();
+            }
+
+            List<FailureList> FailureLists = new List<FailureList>();
+
+            FailureListPageableRestResponse flPageableRestResponse =
+                JsonConvert.DeserializeObject<FailureListPageableRestResponse>(response.Content);
+            FailureLists.AddRange(flPageableRestResponse.member);
+
+            // get next pages if there is any
+            while (flPageableRestResponse.responseInfo.nextPage != null)
+            {
+                request = createRequest(flPageableRestResponse.responseInfo.nextPage.href, true);
+
+                response = restClient.Execute(request);
+
+                if (!response.IsSuccessful)
+                {
+                    Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                    // todo - throw exception here?
+                    return FailureLists;
+                }
+
+                flPageableRestResponse =
+                    JsonConvert.DeserializeObject<FailureListPageableRestResponse>(response.Content);
+                FailureLists.AddRange(flPageableRestResponse.member);
+            }
+
+            return FailureLists;
+
+        }
+
+        public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
 			var request = createRequest(maximoWorkOrder.href, true, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");

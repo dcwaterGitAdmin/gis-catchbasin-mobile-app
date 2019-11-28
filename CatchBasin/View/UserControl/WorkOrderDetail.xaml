@@ -104,8 +104,8 @@
                         <Label Content="Status" FontWeight="Bold"/>
                         <ComboBox ItemsSource="{Binding StatusList}"
                             DisplayMemberPath="description"
-                            SelectedValuePath="alndomain"
-                             SelectedValue="{Binding Status}"/>
+                            SelectedValuePath="value"
+                             SelectedValue="{Binding Status, Mode=TwoWay}"/>
                     </StackPanel>
                     <StackPanel Visibility="{Binding ActualsIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Grid>

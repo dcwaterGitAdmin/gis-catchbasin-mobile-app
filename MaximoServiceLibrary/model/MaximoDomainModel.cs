@@ -59,6 +59,10 @@ namespace MaximoServiceLibrary.model
 		public MaximoAsset asset { get; set; }
 
         public List<MaximoWorkOrderSpec> workorderspec { get; set; }
+
+        public FailureRemark failureremark { get; set; }
+
+        public List<FailureReport> failurereport { get; set; }
 		// auto-generated fields
 
 		// Actual Hours of External Labor
@@ -1940,13 +1944,25 @@ namespace MaximoServiceLibrary.model
         public bool hasld { get; set; }
     }
 
+    public class FailureReport : MaximoBaseEntity
+    {
+        public int failurereportid { get; set; }
+        public string assetnum { get; set; }
+        public string orgid { get; set; }
+        public string siteid { get; set; }
+        public string failurecode { get; set; }
+        public string type { get; set; }
+        public int linenum { get; set; }
+        public string wonum { get; set; }
+    }
+
     public class FailureList : MaximoBaseEntity
     {
       
         public string orgid { get; set; }
         public int parent { get; set; }
         public int failurelist { get; set; }
-        public string failurecode { get; set; }
+        public List<FailureCode> failurecode { get; set; }
         public bool dcw_invalid { get; set; }
         public string type { get; set; }
        
@@ -1961,5 +1977,7 @@ namespace MaximoServiceLibrary.model
         public string langcode { get; set; }
         public bool hasld { get; set; }
     }
+
+
 
 }

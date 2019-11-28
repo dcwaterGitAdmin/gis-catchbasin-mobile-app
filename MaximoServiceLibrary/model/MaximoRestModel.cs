@@ -42,4 +42,20 @@ namespace MaximoServiceLibrary.model
 	public class MaximoDomainPageableRestResponse : MaximoBasePageableRestResponse<MaximoDomain>
 	{
 	}
+
+    public class MaximoWorkOrderSpecPageableRestResponse : MaximoBasePageableRestResponse<MaximoWorkOrderSpec>
+    {
+    }
+
+    public class FailureRemarkPageableRestResponse : MaximoBasePageableRestResponse<FailureRemark>
+    {
+    }
+
+    public class FailureReportPageableRestResponse : MaximoBasePageableRestResponse<FailureReport>
+    {
+    }
+
+    public class FailureListPageableRestResponse : MaximoBasePageableRestResponse<FailureList>
+    {
+    }
 }

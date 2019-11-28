@@ -55,13 +55,13 @@ namespace CatchBasin.ViewModel
                 if (MaximoServiceLibraryBeanConfiguration.maximoService.login(UserName, Password))
                 {
                     MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
-                    MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();
+                   // MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
                     new Map().Show();
                     window.Close();
                 }
                 else
                 {
-                    MessageBox.Show("Something is wrong!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Something is wrong!\n", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch(Exception e)

@@ -16,7 +16,7 @@ namespace MaximoServiceLibrary
         public AssetSpecRepository assetSpecRepository { get; }
         public AttributeRepository attributeRepository { get; }
         public DomainRepository domainRepository { get; }
-        
+        public FailureListRepository failureListRepository { get; }
 
         public MaximoService maximoService { get; }
         
@@ -32,7 +32,8 @@ namespace MaximoServiceLibrary
             assetSpecRepository = new AssetSpecRepository(dbConnection);
             attributeRepository = new AttributeRepository(dbConnection);
             domainRepository = new DomainRepository(dbConnection);
-            
+            failureListRepository = new FailureListRepository(dbConnection);
+
             maximoService = new MaximoService(dbConnection, userRepository);
 
             synchronizationService = new SynchronizationService(maximoService,
@@ -40,7 +41,7 @@ namespace MaximoServiceLibrary
                 assetRepository,
                 assetSpecRepository,
                 domainRepository,
-                attributeRepository);
+                attributeRepository, failureListRepository);
         }
     }
 }

@@ -113,5 +113,22 @@ namespace MaximoServiceLibrary.repository
 		}
 		
 	}
-	
+
+    public class FailureListRepository : DbReposistory<int, FailureList>
+    {
+        public FailureListRepository(DbConnection dbConnection) : base(dbConnection)
+        {
+        }
+
+        public override string tableName()
+        {
+            return "failurelists";
+        }
+
+        public override string keyField()
+        {
+            return "failurelist";
+        }
+
+    }
 }

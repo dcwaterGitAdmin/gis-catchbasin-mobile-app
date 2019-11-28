@@ -1,4 +1,5 @@
-﻿using MaximoServiceLibrary.model;
+﻿using MaximoServiceLibrary;
+using MaximoServiceLibrary.model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,7 +137,7 @@ namespace CatchBasin.ViewModel
         public string AssetTag
         {
             get { return assetTag; }
-            set { assetTag = value; OnPropertyChanged("Asset"); }
+            set { assetTag = value; OnPropertyChanged("AssetTag"); }
         }
 
        
@@ -153,14 +154,14 @@ namespace CatchBasin.ViewModel
         public string Problem
         {
             get { return problem; }
-            set { problem = value; OnPropertyChanged("Problem"); }
+            set { problem = value; OnPropertyChanged("Problem"); SetCauseList(); }
         }
         private bool causeIsVisible;
 
         public bool CauseIsVisible
         {
             get { return causeIsVisible; }
-            set { causeIsVisible = value; OnPropertyChanged("CauseIsVisible"); }
+            set { causeIsVisible = value; OnPropertyChanged("CauseIsVisible"); SetRemedyList(); }
         }
 
 
@@ -476,49 +477,53 @@ namespace CatchBasin.ViewModel
         public List<FailureCode> ProblemList
         {
             get { return problemList; }
-            set { problemList = value; }
+            set { problemList = value; OnPropertyChanged("ProblemList"); }
         }
         private List<FailureCode> causeList;
 
         public List<FailureCode> CauseList
         {
             get { return causeList; }
-            set { causeList = value; }
+            set { causeList = value; OnPropertyChanged("CauseList"); }
         }
         private List<FailureCode> remedyList;
 
         public List<FailureCode> RemedyList
         {
             get { return remedyList; }
-            set { remedyList = value; }
+            set { remedyList = value; OnPropertyChanged("RemedyList"); }
         }
 
-        private List<MaximoDomain> statusList;
+        private List<SYNONYMDOMAIN> statusList;
 
-        public List<MaximoDomain> StatusList
+        public List<SYNONYMDOMAIN> StatusList
         {
             get { return statusList; }
-            set { statusList = value; }
+            set { statusList = value; OnPropertyChanged("StatusList"); }
         }
 
 
         public MaximoWorkOrder MaximoWorkOrder;
 
         public bool isDirty;
+        public MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
 
         public WorkOrderDetailVM(MapVM _mapVM)
         {
             PropertyChanged += WorkOrderDetailVM_PropertyChanged;
+            MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
             MapVM = _mapVM;
             ShowAssetCommand = new Command.ShowAssetCommand(this);
             SelectAssetOnMapCommand = new Command.SelectAssetOnMapCommand(this);
             CreateAssetOnMapCommand = new Command.CreateAssetOnMapCommand(this);
             CancelWorkOrderCommand = new Command.CancelWorkOrderCommand(this);
             SaveWorkOrderCommand = new Command.SaveWorkOrderCommand(this);
-            // todo: set combobox item
-            // Problem
-            // Cause
-            // Remedy
+
+            ProblemList = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("type", "PROBLEM").Select(x => x.failurecode[0]).ToList<FailureCode>();
+
+
+
+            StatusList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("WOSTATUS").synonymdomain;
             // Status
         }
 
@@ -545,10 +550,21 @@ namespace CatchBasin.ViewModel
             Contact = MaximoWorkOrder.wolo4;
             Phone = MaximoWorkOrder.wolo2;
             AssetTag = MaximoWorkOrder.asset?.assettag;
+            Remarks = MaximoWorkOrder.failureremark?.description;
+            
+            Status = MaximoWorkOrder.status;
 
             // todo : make test!
-            Status = MaximoWorkOrder.status;
             Problem = MaximoWorkOrder.problemcode;
+            if (MaximoWorkOrder.failurereport.Count > 1)
+            {
+                Cause = MaximoWorkOrder.failurereport[1].failurecode;
+            }
+            if (MaximoWorkOrder.failurereport.Count > 2)
+            {
+                Remedy = MaximoWorkOrder.failurereport[2].failurecode;
+            }
+           
 
             foreach (var workOrderSpec in MaximoWorkOrder.workorderspec ?? new List<MaximoWorkOrderSpec>())
             {
@@ -615,22 +631,24 @@ namespace CatchBasin.ViewModel
 
         public void Save()
         {
-
+            isDirty = false;
+            MapVM.HideWorkOrderDetail();
         }
 
         public void Cancel()
         {
             if (isDirty)
             {
-                MessageBoxResult messageBoxResult = MessageBox.Show("Sure", "Workorder was modified. Discard Changes?", MessageBoxButton.YesNo,MessageBoxImage.Warning);
+                MessageBoxResult messageBoxResult = MessageBox.Show("Workorder was modified. Discard Changes?", "Workorder :" + MaximoWorkOrder.wonum, MessageBoxButton.YesNo,MessageBoxImage.Warning);
 
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                   
+                    MapVM.HideWorkOrderDetail();
                 }
                 else if (messageBoxResult == MessageBoxResult.No)
                 {
-                    MapVM.HideWorkOrderDetail();
+                    Save();
+                   
                 }
             }
         }
@@ -743,6 +761,31 @@ namespace CatchBasin.ViewModel
         public void ShowAssetDetail()
         {
             MapVM.ShowAssetDetail(MaximoWorkOrder);
+        }
+
+        public void SetCauseList()
+        {
+            if(Problem != null)
+            {
+                RemedyList = null;
+                var selectedProblem = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("failurecode[0].failurecode", Problem).ToArray()[0];
+
+                CauseList = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("parent", selectedProblem.failurelist).Select(x => x.failurecode[0]).ToList<FailureCode>();
+
+            }
+
+        }
+
+        public void SetRemedyList()
+        {
+            if(Cause != null)
+            {
+                var selectedCause = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("failurecode[0].failurecode", Cause).ToArray()[0];
+
+                RemedyList = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("parent", selectedCause.failurelist).Select(x => x.failurecode[0]).ToList<FailureCode>();
+
+            }
+
         }
     }
 }
