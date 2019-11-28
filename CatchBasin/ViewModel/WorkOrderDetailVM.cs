@@ -520,11 +520,7 @@ namespace CatchBasin.ViewModel
             SaveWorkOrderCommand = new Command.SaveWorkOrderCommand(this);
 
             ProblemList = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("type", "PROBLEM").Select(x => x.failurecode[0]).ToList<FailureCode>();
-
-
-
             StatusList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("WOSTATUS").synonymdomain;
-            // Status
         }
 
         private void WorkOrderDetailVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -554,7 +550,7 @@ namespace CatchBasin.ViewModel
             
             Status = MaximoWorkOrder.status;
 
-            // todo : make test!
+           
             Problem = MaximoWorkOrder.problemcode;
             if (MaximoWorkOrder.failureReportList.Count > 1)
             {
@@ -616,15 +612,7 @@ namespace CatchBasin.ViewModel
           
                 }
             }
-           
-
-            // todo:
-            // Remarks
-            // Cause
-            // Remedy
-
-
-
+          
             Show();
             isDirty = false;
         }
