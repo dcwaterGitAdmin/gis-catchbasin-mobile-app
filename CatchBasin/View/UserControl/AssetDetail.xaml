@@ -7,62 +7,99 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="300">
     <Grid>
-        <ScrollViewer>
-            <StackPanel Margin="10">
-                <Label Content="Asset Tag" FontWeight="Bold"/>
-                <TextBlock TextWrapping="Wrap" Text="C-277-060-804-665"/>
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1231*"/>
+                    <RowDefinition Height="69*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding CancelWorkOrderCommand}" Grid.Column="0">Cancel</Button>
+                <Button Command="{Binding SaveWorkOrderCommand}" Grid.Column="1">Save</Button>
+            </Grid>
+            <ScrollViewer>
+                <StackPanel Margin="10">
+                    <Label Content="Asset Tag" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding AssetTag, Mode=TwoWay}" TextWrapping="Wrap"/>
 
-                <Label Content="Type" FontWeight="Bold"/>
-                <ComboBox></ComboBox>
+                    <Label Content="Type" FontWeight="Bold"/>
+                    <ComboBox  ItemsSource="{Binding TypeList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="value"
+                             SelectedValue="{Binding Type, Mode=TwoWay}"/>
 
-                <Label Content="Top Material" FontWeight="Bold"/>
-                <ComboBox></ComboBox>
+                    <Label Content="Top Material" FontWeight="Bold"/>
+                    <ComboBox  ItemsSource="{Binding TopMaterialList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="value"
+                             SelectedValue="{Binding TopMaterial, Mode=TwoWay}"/>
 
-                <Label Content="Top Thickness" FontWeight="Bold"/>
-                <ComboBox></ComboBox>
+                    <Label Content="Top Thickness" FontWeight="Bold"/>
+                    <ComboBox  ItemsSource="{Binding TopThicknessList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="value"
+                             SelectedValue="{Binding TopThickness, Mode=TwoWay}"/>
 
-                <Label Content="Grate Type" FontWeight="Bold"/>
-                <ComboBox></ComboBox>
+                    <Label Content="Grate Type" FontWeight="Bold"/>
+                    <ComboBox ItemsSource="{Binding GrateTypeList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="value"
+                             SelectedValue="{Binding GrateType, Mode=TwoWay}"/>
 
-                <Label Content="Number of Chambers" FontWeight="Bold"/>
-                <TextBox></TextBox>
+                    <Label Content="Number of Chambers" FontWeight="Bold"/>
+                    <TextBox  Text="{Binding NumberOfChambers, Mode=TwoWay}" ></TextBox>
 
-                <Label Content="Number of Throats" FontWeight="Bold"/>
-                <TextBox></TextBox>
+                    <Label Content="Number of Throats" FontWeight="Bold"/>
+                    <TextBox Text="{Binding NumberOfThroats, Mode=TwoWay}"></TextBox>
 
-                <Label Content="Location Detail" FontWeight="Bold"/>
-                <TextBox></TextBox>
+                    <Label Content="Location Detail" FontWeight="Bold"/>
+                    <TextBox Text="{Binding LocationDetail, Mode=TwoWay}"></TextBox>
 
-                <Label Content="Owner" FontWeight="Bold"/>
-                <ComboBox></ComboBox>
+                    <Label Content="Owner" FontWeight="Bold"/>
+                    <ComboBox ItemsSource="{Binding OwnerList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="value"
+                             SelectedValue="{Binding CleaningResponsibility, Mode=TwoWay}"/>
 
-                <Label Content="Cleaning Responsibility" FontWeight="Bold"/>
-                <ComboBox></ComboBox>
+                    <Label Content="Cleaning Responsibility" FontWeight="Bold"/>
+                    <ComboBox ItemsSource="{Binding CleaningResponsibilityList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="value"
+                             SelectedValue="{Binding Owner, Mode=TwoWay}"/>
 
-                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
-                    Is Water Quality?
-                </CheckBox>
-                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
-                    Is In MS4?
-                </CheckBox>
-                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
-                    Is Corner CB?
-                </CheckBox>
-                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
-                    Has Biofilter?
-                </CheckBox>
+                    <CheckBox IsChecked="{Binding WaterQuality, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
+                        Is Water Quality?
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding InMS4, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
+                        Is In MS4?
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding CornerCB, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
+                        Is Corner CB?
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding Biofilter, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
+                        Has Biofilter?
+                    </CheckBox>
 
-                <Label Content="Flow Restrictor Type" FontWeight="Bold"/>
-                <ComboBox></ComboBox>
+                    <Label Content="Flow Restrictor Type" FontWeight="Bold"/>
+                    <ComboBox ItemsSource="{Binding FlowRestrictorTypeList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="code"
+                             SelectedValue="{Binding FlowRestrictorType}"/>
 
-                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
-                    Has Sump?
-                </CheckBox>
-                <CheckBox VerticalAlignment="Center" FontWeight="Bold" >
-                    Has Water Seal?
-                </CheckBox>
+                    <CheckBox  IsChecked="{Binding Sump, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
+                        Has Sump?
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding WaterSeal, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
+                        Has Water Seal?
+                    </CheckBox>
 
-            </StackPanel>
-        </ScrollViewer>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+        
+        
     </Grid>
 </UserControl>

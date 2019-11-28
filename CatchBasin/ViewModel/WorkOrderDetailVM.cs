@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace CatchBasin.ViewModel
 {
-    class WorkOrderDetailVM : BaseVM
+    class WorkOrderDetailVM : BaseVM, Helper.IDetailVM
     {
         private MapVM mapVM;
 
@@ -457,19 +457,19 @@ namespace CatchBasin.ViewModel
             get { return selectAssetOnMapCommand; }
             set { selectAssetOnMapCommand = value; }
         }
-        private Command.CancelWorkOrderCommand cancelWorkOrderCommand;
+        private Command.CancelCommand cancelCommand;
 
-        public Command.CancelWorkOrderCommand CancelWorkOrderCommand
+        public Command.CancelCommand CancelCommand
         {
-            get { return cancelWorkOrderCommand; }
-            set { cancelWorkOrderCommand = value; }
+            get { return cancelCommand; }
+            set { cancelCommand = value; }
         }
-        private Command.SaveWorkOrderCommand saveWorkOrderCommand;
+        private Command.SaveCommand saveCommand;
 
-        public Command.SaveWorkOrderCommand SaveWorkOrderCommand
+        public Command.SaveCommand SaveCommand
         {
-            get { return saveWorkOrderCommand; }
-            set { saveWorkOrderCommand = value; }
+            get { return saveCommand; }
+            set { saveCommand = value; }
         }
 
         private List<FailureCode> problemList;
@@ -516,15 +516,11 @@ namespace CatchBasin.ViewModel
             ShowAssetCommand = new Command.ShowAssetCommand(this);
             SelectAssetOnMapCommand = new Command.SelectAssetOnMapCommand(this);
             CreateAssetOnMapCommand = new Command.CreateAssetOnMapCommand(this);
-            CancelWorkOrderCommand = new Command.CancelWorkOrderCommand(this);
-            SaveWorkOrderCommand = new Command.SaveWorkOrderCommand(this);
+            CancelCommand = new Command.CancelCommand<WorkOrderDetailVM>(this);
+            SaveCommand = new Command.SaveCommand<WorkOrderDetailVM>(this);
 
             ProblemList = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("type", "PROBLEM").Select(x => x.failurecode[0]).ToList<FailureCode>();
-
-
-
             StatusList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("WOSTATUS").synonymdomain;
-            // Status
         }
 
         private void WorkOrderDetailVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -554,7 +550,7 @@ namespace CatchBasin.ViewModel
             
             Status = MaximoWorkOrder.status;
 
-            // todo : make test!
+           
             Problem = MaximoWorkOrder.problemcode;
             if (MaximoWorkOrder.failureReportList.Count > 1)
             {
@@ -616,15 +612,7 @@ namespace CatchBasin.ViewModel
           
                 }
             }
-           
-
-            // todo:
-            // Remarks
-            // Cause
-            // Remedy
-
-
-
+          
             Show();
             isDirty = false;
         }
