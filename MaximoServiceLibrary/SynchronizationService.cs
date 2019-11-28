@@ -17,6 +17,7 @@ namespace MaximoServiceLibrary
 		private DomainRepository domainRepository;
 		private AttributeRepository attributeRepository;
         private FailureListRepository failureListRepository;
+        
         public SynchronizationService(MaximoService _maximoService, 
 			WorkOrderRepository _workOrderRepository,
 			AssetRepository _assetRepository,
@@ -35,6 +36,11 @@ namespace MaximoServiceLibrary
             failureListRepository = _failureListRepository;
         }
 
+        public async void synchronizeInBackgroun()
+        {
+	        
+        }
+        
 		public async void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
 		{
 

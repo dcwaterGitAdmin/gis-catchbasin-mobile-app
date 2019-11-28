@@ -27,6 +27,10 @@ namespace MaximoServiceLibrary.model
 		public string href { get; set; }
 	}
 
+	public class MaximoPersonGroupRestResponse : MaximoBaseRestResponse<MaximoPersonGroup>
+	{
+	}
+	
 	public class MaximoWorkOrderPageableRestResponse : MaximoBasePageableRestResponse<MaximoWorkOrder>
 	{
 	}

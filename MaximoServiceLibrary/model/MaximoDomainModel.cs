@@ -16,9 +16,24 @@ namespace MaximoServiceLibrary.model
         public string localref { get; set; }
     }
 
+	/**
+	 * this class combines relevant data for a specific user, like the current selected crew id, etc.
+	 */
+	public class UserPreferences
+	{
+
+		public string selectedPersonGroup { get; set; }
+
+		public DateTime lastSyncTime { get; set; }
+
+	}
 
 	public class MaximoUser : MaximoBaseEntity
 	{
+		public UserPreferences userPreferences { get; set; }
+		
+		public List<MaximoPersonGroup> personGroupList { get; set; }
+		
 		public string userName { get; set; }
 		
 		public string password { get; set; }
@@ -37,6 +52,12 @@ namespace MaximoServiceLibrary.model
 		public string baseCalendar { get; set; }
 		public string insertSite { get; set; }
 		public string displayName { get; set; }
+
+		public void mergeFrom(MaximoUser source)
+		{
+			// TODO - merge fields from source object to this object...
+			this.displayName = source.displayName;
+		}
 	}
 
 	public class MaximoPersonGroup : MaximoBaseEntity

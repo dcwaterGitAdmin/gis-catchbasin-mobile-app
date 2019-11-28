@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using LocalDBLibrary;
@@ -100,6 +101,16 @@ namespace MaximoServiceLibrary
 			return request;
 		}
 
+		public bool checkIsOnline()
+		{
+			var request = createRequest("/whoami");
+
+			var response = restClient.Execute(request);
+
+			this.isOnline = (response.ResponseStatus == ResponseStatus.Completed);
+			return this.isOnline;
+		}
+
 		public bool login(string username, string password)
 		{
 			this.username = username;
@@ -184,14 +195,22 @@ namespace MaximoServiceLibrary
 
 				var response = restClient.Execute(request);
 
-				mxuser = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
+				MaximoUser mxuserFromMaximo = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
 
-				MaximoUser maximoUserFromDb = userRepository.findOne(mxuser.userName);
-				if (maximoUserFromDb != null)
+				mxuser = userRepository.findOne(this.username);
+				if (mxuser == null)
 				{
-					mxuser.Id = maximoUserFromDb.Id;
+					mxuser = mxuserFromMaximo;
+					mxuser.userPreferences = new UserPreferences();
+				}
+				else
+				{
+					// merge user data returned from Maximo server to local db entity
+					mxuser.mergeFrom(mxuserFromMaximo);
 				}
 
+				mxuser.personGroupList = getPersonGroupList();
+				
 				mxuser.password = this.password;
 
 				userRepository.upsert(mxuser);
@@ -206,38 +225,58 @@ namespace MaximoServiceLibrary
 			sessionId = null;
 		}
 
-		public string findPersonGroup()
+		public List<MaximoPersonGroup> getPersonGroupList()
 		{
-			var persongrops = "\"CB00\"";
-
 			var request = createRequest("/os/mxl_pergrp");
 			request.AddQueryParameter("oslc.select", "*");
 			request.AddQueryParameter("oslc.where", "allpersongroupteam.resppartygroup=\"" + mxuser.personId + "\"");
 
 
 			var response = restClient.Execute(request);
-			MaximoPersonGroupMember mxpergrpM =
-				JsonConvert.DeserializeObject<MaximoPersonGroupMember>(response.Content);
-			foreach (MaximoPersonGroup mxpergrp in mxpergrpM.member)
-			{
-				persongrops += ",\"" + mxpergrp.persongroup + "\"";
-			}
+			MaximoPersonGroupRestResponse maximoPersonGroupRestResponse = JsonConvert.DeserializeObject<MaximoPersonGroupRestResponse>(response.Content);
 
-			return persongrops;
+			return maximoPersonGroupRestResponse.member;
 		}
 
 		// methods
 
 		public List<MaximoWorkOrder> getWorkOrders()
 		{
+			return getWorkOrders(null);
+		}
+		
+		public List<MaximoWorkOrder> getWorkOrders(DateTime? lastSyncTime)
+		{
+			var persongroupParam = "\"CB00\"";
+
+			if (mxuser.userPreferences != null && mxuser.userPreferences.selectedPersonGroup != null)
+			{
+				persongroupParam += "," + persongroupParam;
+			}
+			else
+			{
+				if (mxuser.personGroupList != null)
+				{
+					foreach (var maximoPersonGroup in mxuser.personGroupList)
+					{
+						persongroupParam += "," + maximoPersonGroup.persongroup;
+					}
+				}
+			}
+
 			string where = "failurecode=\"CATCHBASIN\"" +
 			               " and siteid=\"DWS_DSS\"" +
 			               " and service=\"DSS\"" +
 			               " and historyflag=0" +
 			               " and status=\"DISPTCHD\"" +
 			               " and worktype in [\"INV\",\"EMERG\",\"PM\"]" +
-			               " and persongroup in [" + findPersonGroup() + "]" +
+			               " and persongroup in [" + persongroupParam + "]" +
 			               " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
+
+			if (lastSyncTime != null && lastSyncTime.HasValue)
+			{
+				where += " and changedate>=\"" + lastSyncTime.GetValueOrDefault().ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
+			}
 
 			var request = createRequest("/os/mxwo");
 			request.AddQueryParameter("oslc.where", where);
