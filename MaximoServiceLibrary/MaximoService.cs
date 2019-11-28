@@ -201,12 +201,16 @@ namespace MaximoServiceLibrary
 				if (mxuser == null)
 				{
 					mxuser = mxuserFromMaximo;
-					mxuser.userPreferences = new UserPreferences();
 				}
 				else
 				{
 					// merge user data returned from Maximo server to local db entity
 					mxuser.mergeFrom(mxuserFromMaximo);
+				}
+
+				if (mxuser.userPreferences == null)
+				{
+					mxuser.userPreferences = new UserPreferences();
 				}
 
 				mxuser.personGroupList = getPersonGroupList();

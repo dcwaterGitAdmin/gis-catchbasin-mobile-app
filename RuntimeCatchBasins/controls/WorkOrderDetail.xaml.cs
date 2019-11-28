@@ -36,7 +36,7 @@ namespace RuntimeCatchBasins.controls
                 {
                     Visibility = Visibility.Visible;
                     panel.Children.Clear();
-                    foreach (var assetSpec in wo.asset.assetspec)
+                    foreach (var assetSpec in wo.asset.assetspecList)
                     {
 
                         panel.Children.Add(new DetailRow(assetSpec));

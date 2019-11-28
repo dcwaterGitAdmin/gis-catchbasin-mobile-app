@@ -34,6 +34,8 @@ namespace MaximoServiceTestConsoleApplication
 				synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
 			}
 
+			synchronizationService.synchronizeInBackground();
+			
 			Console.WriteLine("work order count : " + maximoServiceLibraryBeanConfiguration.workOrderRepository.count());
 			Console.WriteLine("asset count : " + maximoServiceLibraryBeanConfiguration.assetRepository.count());
 
