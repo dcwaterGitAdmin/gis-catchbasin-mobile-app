@@ -550,23 +550,23 @@ namespace CatchBasin.ViewModel
             Contact = MaximoWorkOrder.wolo4;
             Phone = MaximoWorkOrder.wolo2;
             AssetTag = MaximoWorkOrder.asset?.assettag;
-            Remarks = MaximoWorkOrder.failureremark?.description;
+            Remarks = MaximoWorkOrder.failureRemark?.description;
             
             Status = MaximoWorkOrder.status;
 
             // todo : make test!
             Problem = MaximoWorkOrder.problemcode;
-            if (MaximoWorkOrder.failurereport.Count > 1)
+            if (MaximoWorkOrder.failureReportList.Count > 1)
             {
-                Cause = MaximoWorkOrder.failurereport[1].failurecode;
+                Cause = MaximoWorkOrder.failureReportList[1].failurecode;
             }
-            if (MaximoWorkOrder.failurereport.Count > 2)
+            if (MaximoWorkOrder.failureReportList.Count > 2)
             {
-                Remedy = MaximoWorkOrder.failurereport[2].failurecode;
+                Remedy = MaximoWorkOrder.failureReportList[2].failurecode;
             }
            
 
-            foreach (var workOrderSpec in MaximoWorkOrder.workorderspec ?? new List<MaximoWorkOrderSpec>())
+            foreach (var workOrderSpec in MaximoWorkOrder.workorderspecList ?? new List<MaximoWorkOrderSpec>())
             {
                 switch (workOrderSpec.assetattrid)
                 {

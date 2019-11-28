@@ -12,8 +12,8 @@ namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		//private static readonly string BASE_HOST = "http://localhost:8080";
-		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		private static readonly string BASE_HOST = "http://localhost:8080";
+		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -322,7 +322,7 @@ namespace MaximoServiceLibrary
 
         }
 
-        public FailureRemark getWorkOrderFailureRemark(string workOrderHref)
+        public MaximoWorkOrderFailureRemark getWorkOrderFailureRemark(string workOrderHref)
         {
             var request = createRequest(workOrderHref + "/failureremark", true);
             request.AddQueryParameter("oslc.select", "*");
@@ -331,17 +331,17 @@ namespace MaximoServiceLibrary
             if (!response.IsSuccessful)
             {
                 Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                return new FailureRemark();
+                return new MaximoWorkOrderFailureRemark();
             }
 
             
             FailureRemarkPageableRestResponse mxwospecPageableRestResponse =
                 JsonConvert.DeserializeObject<FailureRemarkPageableRestResponse>(response.Content);
 
-            return mxwospecPageableRestResponse.member.Count > 0 ? mxwospecPageableRestResponse.member[0] : new FailureRemark();
+            return mxwospecPageableRestResponse.member.Count > 0 ? mxwospecPageableRestResponse.member[0] : new MaximoWorkOrderFailureRemark();
         }
 
-        public List<FailureReport> getWorkOrderFailureReport(string workOrderHref)
+        public List<MaximoWorkOrderFailureReport> getWorkOrderFailureReport(string workOrderHref)
         {
             var request = createRequest(workOrderHref + "/failurereport", true);
             request.AddQueryParameter("oslc.select", "*");
@@ -350,12 +350,12 @@ namespace MaximoServiceLibrary
             if (!response.IsSuccessful)
             {
                 Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                return new List<FailureReport>();
+                return new List<MaximoWorkOrderFailureReport>();
             }
 
             FailureReportPageableRestResponse frPageableRestResponse =
                 JsonConvert.DeserializeObject<FailureReportPageableRestResponse>(response.Content);
-            return frPageableRestResponse.member ?? new List<FailureReport>();
+            return frPageableRestResponse.member ?? new List<MaximoWorkOrderFailureReport>();
         }
 
         public List<FailureList> getFailureList(string parentIds)

@@ -47,11 +47,11 @@ namespace MaximoServiceLibrary.model
     {
     }
 
-    public class FailureRemarkPageableRestResponse : MaximoBasePageableRestResponse<FailureRemark>
+    public class FailureRemarkPageableRestResponse : MaximoBasePageableRestResponse<MaximoWorkOrderFailureRemark>
     {
     }
 
-    public class FailureReportPageableRestResponse : MaximoBasePageableRestResponse<FailureReport>
+    public class FailureReportPageableRestResponse : MaximoBasePageableRestResponse<MaximoWorkOrderFailureReport>
     {
     }
 

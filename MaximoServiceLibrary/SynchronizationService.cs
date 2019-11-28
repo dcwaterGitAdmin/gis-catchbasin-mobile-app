@@ -80,9 +80,9 @@ namespace MaximoServiceLibrary
 
                 maximoWorkOrder.asset = maximoAsset;
               
-                maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder.href); 
-                maximoWorkOrder.failureremark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-                maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
+                maximoWorkOrder.workorderspecList = maximoService.getWorkOrderSpec(maximoWorkOrder.href); 
+                maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
+                maximoWorkOrder.failureReportList = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
                 // synchronize maximoWorkOrder in local db
                 MaximoWorkOrder maximoWorkOrderFromDb = workOrderRepository.findOne(maximoWorkOrder.wonum);
 				if (maximoWorkOrderFromDb != null)
