@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
+using CatchBasin.ViewModel.Helper;
 namespace CatchBasin.ViewModel.Command
 {
-    class SaveWorkOrderCommand : ICommand
+    class CancelCommand<T> : ICommand where T : IDetailVM
     {
         public event EventHandler CanExecuteChanged
         {
@@ -21,11 +21,11 @@ namespace CatchBasin.ViewModel.Command
             }
         }
 
-        WorkOrderDetailVM WorkOrderDetailVM;
+        T VM;
 
-        public SaveWorkOrderCommand(WorkOrderDetailVM workOrderDetailVM)
+        public CancelCommand(T vm)
         {
-            WorkOrderDetailVM = workOrderDetailVM;
+            VM = vm;
         }
 
         public bool CanExecute(object parameter)
@@ -35,7 +35,7 @@ namespace CatchBasin.ViewModel.Command
 
         public void Execute(object parameter)
         {
-            WorkOrderDetailVM.Save();
+            T.Cancel();
         }
 
     }

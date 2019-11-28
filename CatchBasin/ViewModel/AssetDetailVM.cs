@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace CatchBasin.ViewModel
 {
-    class AssetDetailVM :BaseVM
+    class AssetDetailVM :BaseVM, Helper.IDetailVM
     {
         private MapVM mapVM;
 
@@ -197,6 +197,20 @@ namespace CatchBasin.ViewModel
             set { flowRestrictorTypeList = value;  OnPropertyChanged("FlowRestrictorTypeList");}
         }
 
+        private Command.CancelCommand cancelCommand;
+
+        public Command.CancelCommand CancelWorkOrderCommand
+        {
+            get { return cancelCommand; }
+            set { cancelCommand = value; }
+        }
+        private Command.SaveCommand saveCommand;
+
+        public Command.SaveCommand SaveCommand
+        {
+            get { return saveCommand; }
+            set { saveCommand = value; }
+        }
 
         private bool isDirty;
         MaximoAsset Asset;
@@ -223,6 +237,7 @@ namespace CatchBasin.ViewModel
             FlowRestrictorTypeList.Add(new StaticDomain("WEIR", "Weir"));
             FlowRestrictorTypeList.Add(new StaticDomain("OTHER", "Other"));
 
+            SaveCommand = new Command.SaveCommand<AssetDetailVM>(this);
         }
 
         private void AssetDetailVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
