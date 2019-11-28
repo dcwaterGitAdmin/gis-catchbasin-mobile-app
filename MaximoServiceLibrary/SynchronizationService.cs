@@ -36,9 +36,55 @@ namespace MaximoServiceLibrary
             failureListRepository = _failureListRepository;
         }
 
-        public async void synchronizeInBackgroun()
+        public async void synchronizeInBackground()
         {
+	        bool isOnline = maximoService.checkIsOnline();
+
+	        if (!isOnline)
+		        return;
+
+	        List<MaximoWorkOrder> maximoWorkOrdersFromMaximo = fetchChangedWorkOrdersFromMaximoSinceLastSyncTime();
+
+        }
+
+        private List<MaximoWorkOrder> fetchChangedWorkOrdersFromMaximoSinceLastSyncTime()
+        {
+	        DateTime lastSyncTime = maximoService.mxuser.userPreferences.lastSyncTime;
 	        
+            List<MaximoWorkOrder> maximoWorkOrders = maximoService.getWorkOrders();
+			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
+			
+			/*
+			 * for each work order, fetch its details (asset, etc.) 
+			 */
+			foreach (var maximoWorkOrder in maximoWorkOrders)
+			{
+
+				MaximoAsset maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
+                if (maximoAsset != null)
+                {
+                    if (maximoAsset.assetspecList != null)
+                    {
+	                    List<MaximoAssetSpec> assetSpecs = new List<MaximoAssetSpec>();
+	                    foreach (var assetSpec in maximoAsset.assetspecList)
+	                    {
+                            assetSpec.assetnum = maximoAsset.assetnum;
+		                    assetSpecs.Add(assetSpec);
+
+	                    }
+
+	                    maximoAsset.assetspecList = assetSpecs;
+                    }
+                }
+
+                maximoWorkOrder.asset = maximoAsset;
+                
+                maximoWorkOrder.workorderspecList = maximoService.getWorkOrderSpec(maximoWorkOrder.href); 
+                maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
+                maximoWorkOrder.failureReportList = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
+			}
+
+			return maximoWorkOrders;
         }
         
 		public async void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
@@ -64,17 +110,17 @@ namespace MaximoServiceLibrary
 
                     if (maximoAsset != null)
                     {
-	                    if (maximoAsset.assetspec != null)
+	                    if (maximoAsset.assetspecList != null)
 	                    {
 		                    List<MaximoAssetSpec> assetSpecs = new List<MaximoAssetSpec>();
-		                    foreach (var assetSpec in maximoAsset.assetspec)
+		                    foreach (var assetSpec in maximoAsset.assetspecList)
 		                    {
                                 assetSpec.assetnum = maximoAsset.assetnum;
 			                    assetSpecs.Add(assetSpecRepository.insert(assetSpec));
 
 		                    }
 
-		                    maximoAsset.assetspec = assetSpecs;
+		                    maximoAsset.assetspecList = assetSpecs;
 	                    }
 	                    
 	                    
@@ -127,7 +173,7 @@ namespace MaximoServiceLibrary
             foreach (var assetnum in maximoAssetSpecs.Select(x => x.assetnum).Distinct())
 			{
                 var asset = assetRepository.findOne(assetnum);
-                asset.assetspec = assetSpecRepository.Find("assetnum", assetnum).ToList(); ;
+                asset.assetspecList = assetSpecRepository.Find("assetnum", assetnum).ToList(); ;
 
 				bool isSuccessful = maximoService.updateAsset(asset);
 
