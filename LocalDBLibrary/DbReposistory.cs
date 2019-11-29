@@ -52,6 +52,18 @@ namespace LocalDBLibrary
             return collection.FindAll();
         }
 
+        public IEnumerable<T> findAllToBeScynced()
+        {
+	        BsonValue[] values = 
+	        {
+				new BsonValue("CREATED"),
+				new BsonValue("MODIFIED")
+	        };
+	        
+	        var collection = dbConnection.db.GetCollection<T>(tableName());
+	        return collection.Find(Query.In("syncronizationStatus", values));
+        }
+        
         public IEnumerable<T> Find(string field, object value)
 		{
 			var collection = dbConnection.db.GetCollection<T>(tableName());
@@ -83,6 +95,7 @@ namespace LocalDBLibrary
 		public T update(T t)
 		{
 			t.editedFromApp = true;
+			t.syncronizationStatus = SyncronizationStatus.MODIFIED;
 			
 			var collection = dbConnection.db.GetCollection<T>(tableName());
 			collection.Update(t);

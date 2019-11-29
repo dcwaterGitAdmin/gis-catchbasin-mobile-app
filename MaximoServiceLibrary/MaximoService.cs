@@ -103,11 +103,19 @@ namespace MaximoServiceLibrary
 
 		public bool checkIsOnline()
 		{
+			bool previousIsOnline = isOnline;
+			
 			var request = createRequest("/whoami");
 
 			var response = restClient.Execute(request);
 
 			this.isOnline = (response.ResponseStatus == ResponseStatus.Completed);
+
+			if (!previousIsOnline && isOnline)
+			{
+				this.login(username, password);
+			}
+			
 			return this.isOnline;
 		}
 

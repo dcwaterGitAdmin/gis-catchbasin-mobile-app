@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using LocalDBLibrary;
 using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
@@ -34,7 +35,7 @@ namespace MaximoServiceTestConsoleApplication
 
 			SynchronizationService synchronizationService = maximoServiceLibraryBeanConfiguration.synchronizationService;
 
-			synchronizationService.synchronizeInBackground();
+			synchronizationService.startSyncronizationTimer();
 			
 			//if (maximoService.isOnline)
 			//{
@@ -48,61 +49,21 @@ namespace MaximoServiceTestConsoleApplication
 			
 			Console.WriteLine("domain count : " + maximoServiceLibraryBeanConfiguration.domainRepository.count());
 			Console.WriteLine("attribute count : " + maximoServiceLibraryBeanConfiguration.attributeRepository.count());
-			
-			//foreach (var assetSpec in synchronizationService.assetRepository.findOne("442605").assetspec)
-			//{
-			//	var attribute = synchronizationService.attributeRepository.findOne(assetSpec.assetattrid);
-			//	if (attribute == null) continue;
-			//	Console.WriteLine("Attribute : " +attribute.description);
-			//	if (attribute.domainid != null)
-			//	{
-			//		var domain = synchronizationService.domainRepository.findOne(attribute.domainid);
-			//		Console.WriteLine("Domain  : " +domain.description);
-			//	}
-			//	else
-			//	{
-			//		Console.WriteLine("DataType  : " +attribute.datatype);
-			//	}
-
-			//}
-
-//			foreach (var domain in synchronizationService.domainRepository.findAll())
-//            {
-//                Console.WriteLine(domain.domaintype);
-//            }
-//            Console.ReadKey();
-//
-//			foreach (var assetSpec in synchronizationService.assetRepository.findOne("442605").assetspec)
-//			{
-//				var attribute = synchronizationService.attributeRepository.findOne(assetSpec.assetattrid);
-//				if (attribute == null) continue;
-//				Console.WriteLine("Attribute : " +attribute.description);
-//				if (attribute.domainid != null)
-//				{
-//					var domain = synchronizationService.domainRepository.findOne(attribute.domainid);
-//					Console.WriteLine("Domain  : " +domain.description);
-//				}
-//				else
-//				{
-//					Console.WriteLine("DataType  : " +attribute.datatype);
-//				}
-//
-//			}
 
 			MaximoWorkOrder woUpdated = maximoServiceLibraryBeanConfiguration.workOrderRepository.findOne("19-661918");
-			Console.WriteLine($"wonum : {woUpdated.wonum}, edited: {woUpdated.editedFromApp}, actlabcost: {woUpdated.actlabcost}");
+			Console.WriteLine($"wonum : {woUpdated.wonum}, syncStatus: {woUpdated.syncronizationStatus}, actlabcost: {woUpdated.actlabcost}");
 			
 			woUpdated.actlabcost += 1;
-			maximoServiceLibraryBeanConfiguration.workOrderRepository.update(woUpdated);
+			//maximoServiceLibraryBeanConfiguration.workOrderRepository.update(woUpdated);
 
 			// find again
 			woUpdated = maximoServiceLibraryBeanConfiguration.workOrderRepository.findOne("19-661918");
-			Console.WriteLine($"wonum : {woUpdated.wonum}, edited: {woUpdated.editedFromApp}, actlabcost: {woUpdated.actlabcost}");
+			Console.WriteLine($"wonum : {woUpdated.wonum}, syncStatus: {woUpdated.syncronizationStatus}, actlabcost: {woUpdated.actlabcost}");
 			
-			synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();
+			//synchronizationService.synchronizeWorkOrderCompositeFromLocalDbToMaximo();
 
 			
-
+			Thread.Sleep(100000);
 			/*
 			List<MaximoWorkOrder> workOrders = maximoService.getWorkOrders();
 			Console.WriteLine(workOrders[0].wonum);
