@@ -69,13 +69,20 @@
     <Compile Include="ViewModel\Command\CreateAssetOnMapCommand.cs" />
     <Compile Include="ViewModel\Command\CancelCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAssetCommand.cs" />
+    <Compile Include="ViewModel\Helper\EnumMatchToBooleanConverter.cs" />
     <Compile Include="ViewModel\Helper\PasswordHelper.cs" />
     <Compile Include="ViewModel\Helper\IDetailVM.cs" />
     <Compile Include="ViewModel\LoginVM.cs" />
     <Compile Include="ViewModel\WorkOrderDetailVM.cs" />
     <Compile Include="ViewModel\WorkOrderListVM.cs" />
+    <Compile Include="View\Labor.xaml.cs">
+      <DependentUpon>Labor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Tool.xaml.cs">
+      <DependentUpon>Tool.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\UserControl\AssetDetail.xaml.cs">
       <DependentUpon>AssetDetail.xaml</DependentUpon>
@@ -86,6 +93,10 @@
     <Compile Include="View\UserControl\WorkOrderList.xaml.cs">
       <DependentUpon>WorkOrderList.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\Labor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Map.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -100,6 +111,10 @@
     </Compile>
     <Compile Include="ViewModel\MapVM.cs" />
     <Page Include="View\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Tool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
