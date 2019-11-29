@@ -60,7 +60,7 @@ namespace MaximoServiceLibrary
 	        }
 
 	        maximoService.mxuser.userPreferences.lastSyncTime = lastSyncTime;
-	        UserRepository.
+	        userRepository.upsert(maximoService.mxuser);
         }
 
         private T syncEntityFromMaximoToLocalDb<K, T>(DbReposistory<K, T> dbRepository, T entityFromMaximo, K entityKeyValue) where T : BasePersistenceEntity
