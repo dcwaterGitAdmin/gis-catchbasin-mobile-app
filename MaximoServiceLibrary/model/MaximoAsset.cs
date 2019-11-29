@@ -46,7 +46,7 @@ namespace MaximoServiceLibrary.model
 		public bool tloampartition { get; set; } 
 
 		// Total Downtime
-		public string totdowntime { get; set; } 
+		public double totdowntime { get; set; } 
 
 		// Loop Number
 		public string pluscloopnum { get; set; } 

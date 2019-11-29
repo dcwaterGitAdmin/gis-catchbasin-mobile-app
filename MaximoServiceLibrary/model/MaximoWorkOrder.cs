@@ -17,7 +17,7 @@ namespace MaximoServiceLibrary.model
 		// auto-generated fields
 
 		// Actual Hours of External Labor
-		public double actoutlabhrs { get; set; } 
+		public double? actoutlabhrs { get; set; } 
 
 		// JOBTASKID
 		public Int64? jobtaskid { get; set; } 
@@ -197,7 +197,7 @@ namespace MaximoServiceLibrary.model
 		public bool debris { get; set; } 
 
 		// Estimated Hours of External Labor
-		public double estoutlabhrs { get; set; } 
+		public double? estoutlabhrs { get; set; } 
 
 		// Velocitypres
 		public double? velocitypres { get; set; } 
@@ -347,7 +347,7 @@ namespace MaximoServiceLibrary.model
 		public int? genforporevision { get; set; } 
 
 		// Estimated Hours of Internal Labor
-		public double estintlabhrs { get; set; } 
+		public double? estintlabhrs { get; set; } 
 
 		// Owner Group
 		public string ownergroup { get; set; } 
@@ -476,7 +476,7 @@ namespace MaximoServiceLibrary.model
 		public string wolo3 { get; set; } 
 
 		// Estiamted Cost of External Labor
-		public double estatapproutlabhrs { get; set; } 
+		public double? estatapproutlabhrs { get; set; } 
 
 		// Customer's Name
 		public string wolo4 { get; set; } 
@@ -497,7 +497,7 @@ namespace MaximoServiceLibrary.model
 		public double? wolo8 { get; set; } 
 
 		// Estiamted Hours of Internal Labor
-		public double estatapprintlabhrs { get; set; } 
+		public double? estatapprintlabhrs { get; set; } 
 
 		// Water Odor
 		public bool waterodor { get; set; } 
@@ -602,7 +602,7 @@ namespace MaximoServiceLibrary.model
 		public double estlabcost { get; set; } 
 
 		// Duration
-		public string estdur { get; set; } 
+		public double estdur { get; set; } 
 
 		// Vehicle #
 		public string wo10 { get; set; } 
@@ -933,7 +933,7 @@ namespace MaximoServiceLibrary.model
 		public string targetdesc { get; set; } 
 
 		// Actual Hours of Internal Labor
-		public string actintlabhrs { get; set; } 
+		public double? actintlabhrs { get; set; } 
 
 		// Inspector
 		public string inspector { get; set; } 
@@ -948,7 +948,7 @@ namespace MaximoServiceLibrary.model
 		public double? estintlabcost { get; set; } 
 
 		// Actual Labor Hours
-		public string actlabhrs { get; set; } 
+		public double actlabhrs { get; set; } 
 
 		// Failure Class
 		public string failurecode { get; set; } 
@@ -963,7 +963,7 @@ namespace MaximoServiceLibrary.model
 		public string risk { get; set; } 
 
 		// Estimated Labor Hours
-		public string estlabhrs { get; set; } 
+		public double estlabhrs { get; set; } 
 
 		// As-Built Recorded
 		public bool asbuiltrecd { get; set; } 
@@ -978,7 +978,7 @@ namespace MaximoServiceLibrary.model
 		public string plumberlicnum { get; set; } 
 
 		// Estimate Labor Hours at Approval
-		public string estatapprlabhrs { get; set; } 
+		public double estatapprlabhrs { get; set; } 
 
 		// Location Details
 		public string locationdetails { get; set; } 
@@ -1026,7 +1026,7 @@ namespace MaximoServiceLibrary.model
 		public string wojo3 { get; set; } 
 
 		// Time Remaining
-		public string remdur { get; set; } 
+		public double? remdur { get; set; } 
 
 		// Service
 		public string commodity { get; set; } 
@@ -1036,7 +1036,7 @@ namespace MaximoServiceLibrary.model
 
 		// Streeet Address
 		public string customerstreet { get; set; }
-		
+
 	}
 	
 	// todo : control
