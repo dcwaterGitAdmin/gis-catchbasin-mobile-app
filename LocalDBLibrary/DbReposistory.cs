@@ -33,6 +33,13 @@ namespace LocalDBLibrary
 			var collection = dbConnection.db.GetCollection<T>(tableName());
 			return collection.FindOne(Query.EQ(keyField(), new BsonValue(k)));
 		}
+
+		public T findOneIgnoreCase(string k)
+		{
+			var collection = dbConnection.db.GetCollection<T>(tableName());
+			return collection.FindOne(Query.Where(keyField(), keyValue => keyValue.AsString.ToLower().Equals(k.ToLower())));
+		}
+		
         public T findById(int k)
         {
             var collection = dbConnection.db.GetCollection<T>(tableName());

@@ -166,7 +166,7 @@ namespace MaximoServiceLibrary
 			else 
 			{
                
-				MaximoUser maximoUser = userRepository.findOne(username);
+				MaximoUser maximoUser = userRepository.findOneIgnoreCase(username);
 				if (maximoUser.password.Equals(password))
 				{
 					mxuser = maximoUser;
@@ -197,7 +197,7 @@ namespace MaximoServiceLibrary
 
 				MaximoUser mxuserFromMaximo = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
 
-				mxuser = userRepository.findOne(this.username);
+				mxuser = userRepository.findOneIgnoreCase(this.username);
 				if (mxuser == null)
 				{
 					mxuser = mxuserFromMaximo;

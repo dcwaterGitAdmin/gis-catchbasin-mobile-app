@@ -16,12 +16,17 @@ namespace MaximoServiceTestConsoleApplication
 			MaximoService maximoService = maximoServiceLibraryBeanConfiguration.maximoService;
 			DbConnection dbConnection = maximoServiceLibraryBeanConfiguration.dbConnection;
 			UserRepository userRepository = maximoServiceLibraryBeanConfiguration.userRepository;
+			
+			//userRepository.removeCollection();
 
 			
-			bool isLoggedIn = maximoService.login("EDELIOGLU", "password");
+			bool isLoggedIn = maximoService.login("edelioglu", "password");
+			MaximoUser maximoUser = userRepository.findOneIgnoreCase("EdelIOglu");
+			Console.WriteLine($"found user from local DB: {maximoUser.userName}");
+			
 			Console.WriteLine($"is user Logged in Maximo: {isLoggedIn}");
 
-			MaximoUser maximoUser = maximoService.mxuser;
+			maximoUser = maximoService.mxuser;
 
 			Console.WriteLine($"userid: {maximoUser.userName}");
 			
