@@ -552,13 +552,16 @@ namespace CatchBasin.ViewModel
 
            
             Problem = MaximoWorkOrder.problemcode;
-            if (MaximoWorkOrder.failureReportList.Count > 1)
+            if(MaximoWorkOrder.failureReportList != null)
             {
-                Cause = MaximoWorkOrder.failureReportList[1].failurecode;
-            }
-            if (MaximoWorkOrder.failureReportList.Count > 2)
-            {
-                Remedy = MaximoWorkOrder.failureReportList[2].failurecode;
+                if (MaximoWorkOrder.failureReportList.Count > 1)
+                {
+                    Cause = MaximoWorkOrder.failureReportList[1].failurecode;
+                }
+                if (MaximoWorkOrder.failureReportList.Count > 2)
+                {
+                    Remedy = MaximoWorkOrder.failureReportList[2].failurecode;
+                }
             }
            
 
@@ -613,12 +616,100 @@ namespace CatchBasin.ViewModel
                 }
             }
           
+            
+      
+
             Show();
             isDirty = false;
         }
 
         public void Save()
         {
+
+
+            MaximoWorkOrder.wonum = WorkOrder;
+            MaximoWorkOrder.description = Description;
+            MaximoWorkOrder.location = Location;
+            MaximoWorkOrder.wolo4 = Contact;
+            MaximoWorkOrder.wolo2 = Phone;
+            MaximoWorkOrder.status = Status;
+
+            for (int i = 0; i < MaximoWorkOrder.workorderspecList.Count; i++)
+            {
+                switch (MaximoWorkOrder.workorderspecList[i].assetattrid)
+                {
+                    case "CBDUMPEST":
+                        MaximoWorkOrder.workorderspecList[i].numvalue = DumpEst;
+                        break;
+                    case "CBFUBT":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = BrokenTop ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUCCTV":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = CCTV ? "Y" : "N";
+                       
+                        break;
+                    case "CBFUFAG":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = FlushAlleyGrate ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUJB":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = JettingBlown ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUMC":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = ManualCleaning ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUML":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = MissingLid ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUNCB":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = NeedsCheckBlock ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUNM":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = NeedsMasonry ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUOSID":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = OilSpill ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUTNR":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = TopNeedsReset ? "Y" : "N";
+                        
+                        break;
+                    case "CBFUTR":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = TreeRoots ? "Y" : "N";
+
+                        break;
+                    case "CBFUVAC":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = Vacuuming ? "Y" : "N";
+
+                        break;
+                    case "CBFUWNR":
+                        MaximoWorkOrder.workorderspecList[i].alnvalue = WallsNeedRepair ? "Y" : "N";
+
+                        break;
+
+
+                }
+            }
+
+
+            //todo
+            //Problem x2 (failurecode and wo)
+            //Cause
+            // Remedy
+
+            if (MaximoWorkOrder.Id > 0)
+            {
+                MaximoServiceLibraryBeanConfiguration.workOrderRepository.update(MaximoWorkOrder);
+            }
+            
+
             isDirty = false;
             MapVM.HideWorkOrderDetail();
         }
@@ -627,16 +718,16 @@ namespace CatchBasin.ViewModel
         {
             if (isDirty)
             {
-                MessageBoxResult messageBoxResult = MessageBox.Show("Workorder was modified. Discard Changes?", "Workorder :" + MaximoWorkOrder.wonum, MessageBoxButton.YesNo,MessageBoxImage.Warning);
+                MessageBoxResult messageBoxResult = MessageBox.Show("Workorder was modified. Save Changes?", "Workorder :" + MaximoWorkOrder.wonum, MessageBoxButton.YesNo,MessageBoxImage.Warning);
 
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    MapVM.HideWorkOrderDetail();
+                    Save();
                 }
                 else if (messageBoxResult == MessageBoxResult.No)
                 {
-                    Save();
-                   
+                    
+                    MapVM.HideWorkOrderDetail();
                 }
             }
         }
@@ -748,7 +839,22 @@ namespace CatchBasin.ViewModel
 
         public void ShowAssetDetail()
         {
-            MapVM.ShowAssetDetail(MaximoWorkOrder);
+            if(MaximoWorkOrder != null && MaximoWorkOrder.asset != null)
+            {
+
+                MaximoAsset asset = MaximoServiceLibraryBeanConfiguration.assetRepository.findOne(MaximoWorkOrder.asset.assetnum);
+               MapVM.ShowAssetDetail(asset);
+            }
+            else
+            {
+                // todo message
+            }
+            
+        }
+
+        public void HideAssetDetail()
+        {
+            MapVM.HideAssetDetail();
         }
 
         public void SetCauseList()

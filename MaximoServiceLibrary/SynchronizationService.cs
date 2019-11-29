@@ -109,17 +109,17 @@ namespace MaximoServiceLibrary
 				MaximoAsset maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
                 if (maximoAsset != null)
                 {
-                    if (maximoAsset.assetspecList != null)
+                    if (maximoAsset.assetspec != null)
                     {
 	                    List<MaximoAssetSpec> assetSpecs = new List<MaximoAssetSpec>();
-	                    foreach (var assetSpec in maximoAsset.assetspecList)
+	                    foreach (var assetSpec in maximoAsset.assetspec)
 	                    {
                             assetSpec.assetnum = maximoAsset.assetnum;
 		                    assetSpecs.Add(assetSpec);
 
 	                    }
 
-	                    maximoAsset.assetspecList = assetSpecs;
+	                    maximoAsset.assetspec = assetSpecs;
                     }
                 }
 
@@ -133,7 +133,7 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrders;
         }
         
-		public async void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
+		public void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
 		{
 
             clearWorkOrderCompositeFromLocalDb();
@@ -156,20 +156,6 @@ namespace MaximoServiceLibrary
 
                     if (maximoAsset != null)
                     {
-	                    if (maximoAsset.assetspecList != null)
-	                    {
-		                    List<MaximoAssetSpec> assetSpecs = new List<MaximoAssetSpec>();
-		                    foreach (var assetSpec in maximoAsset.assetspecList)
-		                    {
-                                assetSpec.assetnum = maximoAsset.assetnum;
-			                    assetSpecs.Add(assetSpecRepository.insert(assetSpec));
-
-		                    }
-
-		                    maximoAsset.assetspecList = assetSpecs;
-	                    }
-	                    
-	                    
                         maximoAsset = assetRepository.upsert(maximoAsset);
                     }
 
@@ -219,7 +205,7 @@ namespace MaximoServiceLibrary
             foreach (var assetnum in maximoAssetSpecs.Select(x => x.assetnum).Distinct())
 			{
                 var asset = assetRepository.findOne(assetnum);
-                asset.assetspecList = assetSpecRepository.Find("assetnum", assetnum).ToList(); ;
+                asset.assetspec = assetSpecRepository.Find("assetnum", assetnum).ToList(); ;
 
 				bool isSuccessful = maximoService.updateAsset(asset);
 

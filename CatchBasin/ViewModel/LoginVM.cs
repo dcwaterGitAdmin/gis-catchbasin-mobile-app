@@ -54,7 +54,7 @@ namespace CatchBasin.ViewModel
             {
                 if (MaximoServiceLibraryBeanConfiguration.maximoService.login(UserName, Password))
                 {
-                    MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+                   // MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
                    // MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
                     new Map().Show();
                     window.Close();

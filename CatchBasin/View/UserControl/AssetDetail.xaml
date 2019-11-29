@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CatchBasin.View.UserControl"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="300">
-    <Grid>
+    <Grid Width="300">
         <DockPanel LastChildFill="True">
             <Grid DockPanel.Dock="Bottom">
                 <Grid.RowDefinitions>
@@ -20,8 +20,8 @@
                 <Button Command="{Binding CancelCommand}" Grid.Column="0">Cancel</Button>
                 <Button Command="{Binding SaveCommand}" Grid.Column="1">Save</Button>
             </Grid>
-            <ScrollViewer>
-                <StackPanel Margin="10">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                <StackPanel ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="10">
                     <Label Content="Asset Tag" FontWeight="Bold"/>
                     <TextBlock Text="{Binding AssetTag, Mode=TwoWay}" TextWrapping="Wrap"/>
 

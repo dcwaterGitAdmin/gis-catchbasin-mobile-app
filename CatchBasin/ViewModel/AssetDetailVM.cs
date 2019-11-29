@@ -11,12 +11,12 @@ namespace CatchBasin.ViewModel
 {
     class AssetDetailVM :BaseVM, Helper.IDetailVM
     {
-        private MapVM mapVM;
+        private WorkOrderDetailVM workOrderDetailVM;
 
-        public MapVM MapVM
+        public WorkOrderDetailVM WorkOrderDetailVM
         {
-            get { return mapVM; }
-            set { mapVM = value;  OnPropertyChanged("MapVM");}
+            get { return workOrderDetailVM; }
+            set { workOrderDetailVM = value;  OnPropertyChanged("WorkOrderDetailVM");}
         }
 
         private string assetTag;
@@ -199,27 +199,27 @@ namespace CatchBasin.ViewModel
 
         private Command.CancelCommand<AssetDetailVM> cancelCommand;
 
-        public Command.CancelCommand<AssetDetailVM> CancelWorkOrderCommand
+        public Command.CancelCommand<AssetDetailVM> CancelCommand
         {
             get { return cancelCommand; }
-            set { cancelCommand = value; }
+            set { cancelCommand = value; OnPropertyChanged("CancelCommand"); }
         }
         private Command.SaveCommand<AssetDetailVM> saveCommand;
 
         public Command.SaveCommand<AssetDetailVM> SaveCommand
         {
             get { return saveCommand; }
-            set { saveCommand = value; }
+            set { saveCommand = value; OnPropertyChanged("SaveCommand"); }
         }
 
         private bool isDirty;
         MaximoAsset Asset;
         public MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
 
-        public AssetDetailVM(MapVM _mapVM)
+        public AssetDetailVM(WorkOrderDetailVM _workOrderDetailVM)
         {
             PropertyChanged += AssetDetailVM_PropertyChanged;
-            MapVM = _mapVM;
+            WorkOrderDetailVM = _workOrderDetailVM;
             
             MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
 
@@ -231,13 +231,14 @@ namespace CatchBasin.ViewModel
             OwnerList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("OWNER").alndomain;
             CleaningResponsibilityList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("CLNRESP").alndomain;
 
-           
+            FlowRestrictorTypeList = new List<StaticDomain>();
             FlowRestrictorTypeList.Add(new StaticDomain("ORIFICE", "Orifice"));
             FlowRestrictorTypeList.Add(new StaticDomain("BAFFLE", "Baffle"));
             FlowRestrictorTypeList.Add(new StaticDomain("WEIR", "Weir"));
             FlowRestrictorTypeList.Add(new StaticDomain("OTHER", "Other"));
 
             SaveCommand = new Command.SaveCommand<AssetDetailVM>(this);
+            CancelCommand = new Command.CancelCommand<AssetDetailVM>(this);
         }
 
         private void AssetDetailVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -336,86 +337,91 @@ namespace CatchBasin.ViewModel
         {
             Asset.eq3 = LocationDetail;
 
-            foreach (MaximoAssetSpec assetSpec in Asset.assetspec)
+            for (int i = 0; i < Asset.assetspec.Count; i++)
             {
-                switch (assetSpec.assetattrid)
+                switch (Asset.assetspec[i].assetattrid)
                 {
                     case "CB_SUBT":
-                        assetSpec.alnvalue = Type;
+                        Asset.assetspec[i].alnvalue = Type;
                         break;
                     case "TOPMATRL":
-                        assetSpec.alnvalue = TopMaterial;
+                        Asset.assetspec[i].alnvalue = TopMaterial;
                         break;
                     case "TOPTHICK":
-                        assetSpec.numvalue = TopThickness;
+                        Asset.assetspec[i].numvalue = TopThickness;
                         break;
                     case "GRATETY":
-                        assetSpec.alnvalue = GrateType;
+                        Asset.assetspec[i].alnvalue = GrateType;
                         break;
                     case "NUMCHAMB":
-                        assetSpec.numvalue = NumberOfChambers;
+                        Asset.assetspec[i].numvalue = NumberOfChambers;
                         break;
                     case "NUMTHROAT":
-                        assetSpec.numvalue = NumberOfThroats;
+                        Asset.assetspec[i].numvalue = NumberOfThroats;
                         break;
                     case "OWNER":
-                        assetSpec.alnvalue = Owner;
+                        Asset.assetspec[i].alnvalue = Owner;
                         break;
                     case "CLN_RESP":
-                        assetSpec.alnvalue = CleaningResponsibility;
+                        Asset.assetspec[i].alnvalue = CleaningResponsibility;
                         break;
                     case "WQ":
-                        assetSpec.alnvalue = WaterQuality == true ? "Y" : "N" ;
+                        Asset.assetspec[i].alnvalue = WaterQuality == true ? "Y" : "N";
                         break;
                     case "INMS4":
-                        assetSpec.alnvalue = InMS4 == true ? "Y" : "N";
+                        Asset.assetspec[i].alnvalue = InMS4 == true ? "Y" : "N";
                         break;
                     case "ISCORNRCB":
-                        assetSpec.alnvalue = CornerCB == true ? "Y" : "N";
+                        Asset.assetspec[i].alnvalue = CornerCB == true ? "Y" : "N";
                         break;
                     case "BIOFLTR":
-                        assetSpec.alnvalue = Biofilter == true ? "Y" : "N";
+                        Asset.assetspec[i].alnvalue = Biofilter == true ? "Y" : "N";
                         break;
                     case "FLORESTY":
-                        assetSpec.alnvalue = FlowRestrictorType;
+                        Asset.assetspec[i].alnvalue = FlowRestrictorType;
                         break;
                     case "HASSUMP":
-                        assetSpec.alnvalue = Sump == true ? "Y" : "N";
+                        Asset.assetspec[i].alnvalue = Sump == true ? "Y" : "N";
                         break;
                     case "HASWATERSEAL":
-                        assetSpec.alnvalue = WaterSeal == true ? "Y" : "N";
+                        Asset.assetspec[i].alnvalue = WaterSeal == true ? "Y" : "N";
                         break;
 
                 }
             }
             // asset maybe choosed or created on map!
             if (Asset.Id > 0){
-                MaximoServiceLibraryBeanConfiguration.assetRepository.update(Asset);
+                var asset =MaximoServiceLibraryBeanConfiguration.assetRepository.update(Asset);
+                Asset = asset;
             }
             else
             {
                 Asset.editedFromApp = true;
                 MaximoServiceLibraryBeanConfiguration.assetRepository.insert(Asset);
             }
-
-            MapVM.HideAssetDetail();
+            isDirty = false;
+            WorkOrderDetailVM.HideAssetDetail();
         }
 
         public void Cancel()
         {
             if (isDirty)
             {
-                MessageBoxResult messageBoxResult = MessageBox.Show("Asset was modified. Discard Changes?", "Asset :" + Asset.assetnum, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                MessageBoxResult messageBoxResult = MessageBox.Show("Asset was modified. Save Changes?", "Asset :" + Asset.assetnum, MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    MapVM.HideAssetDetail();
+                    Save();
                 }
                 else if (messageBoxResult == MessageBoxResult.No)
                 {
-                    Save();
+                    WorkOrderDetailVM.HideAssetDetail();
 
                 }
+            }
+            else
+            {
+                WorkOrderDetailVM.HideAssetDetail();
             }
         }
     }

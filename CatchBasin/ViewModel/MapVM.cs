@@ -35,7 +35,7 @@ namespace CatchBasin.ViewModel
         {
             WorkOrderListVM = new WorkOrderListVM(this);
             WorkOrderDetailVM = new WorkOrderDetailVM(this);
-            AssetDetailVM = new AssetDetailVM(this);
+            AssetDetailVM = new AssetDetailVM(workOrderDetailVM);
             IdentifyCommand = new IdentifyCommand(this);
 
             MeasureIsVisible = false;
@@ -56,6 +56,9 @@ namespace CatchBasin.ViewModel
             GPSLocationIsVisible = false;
             ShowGPSInfoCommand = new ShowGPSInfoCommand(this);
             PanToGPSCommand = new PanToGPSCommand(this);
+
+            AssetDetailIsVisible = false;
+            WorkOrderDetailIsVisible = false;
           
         }
 
@@ -93,8 +96,16 @@ namespace CatchBasin.ViewModel
 
         public void ShowWorkOrderDetail(MaximoWorkOrder wo)
         {
-            WorkOrderDetailIsVisible = true;
+            if (AssetDetailIsVisible)
+            {
+                AssetDetailVM.Cancel();
+            }
+            if (WorkOrderDetailIsVisible)
+            {
+                WorkOrderDetailVM.Cancel();
+            }
             WorkOrderDetailVM.Update(wo);
+            WorkOrderDetailIsVisible = true;
         }
 
         public void HideWorkOrderDetail()
@@ -120,14 +131,11 @@ namespace CatchBasin.ViewModel
             set { assetDetailIsVisible = value; OnPropertyChanged("AssetDetailIsVisible"); }
         }
 
-        public void ShowAssetDetail(MaximoWorkOrder wo)
+        public void ShowAssetDetail(MaximoAsset asset)
         {
-            AssetDetailIsVisible = true;
-            if(wo != null && wo.asset != null)
-            {
-                AssetDetailVM.Update(wo.asset);
-            }
             
+            AssetDetailVM.Update(asset);
+            AssetDetailIsVisible = true;
         }
 
         public void HideAssetDetail()
