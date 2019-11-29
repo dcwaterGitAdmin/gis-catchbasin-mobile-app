@@ -37,6 +37,7 @@ namespace MaximoServiceLibrary
             maximoService = new MaximoService(dbConnection, userRepository);
 
             synchronizationService = new SynchronizationService(maximoService,
+                userRepository,
                 workOrderRepository,
                 assetRepository,
                 assetSpecRepository,

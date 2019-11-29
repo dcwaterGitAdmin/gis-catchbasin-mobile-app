@@ -4,7 +4,7 @@ using MaximoServiceLibrary.model;
 
 namespace MaximoServiceLibrary.repository
 {
-	public class UserRepository : DbReposistory<String, MaximoUser>
+	public class UserRepository : DbReposistory<string, MaximoUser>
 	{
 		public UserRepository(DbConnection dbConnection) : base(dbConnection)
 		{
@@ -22,7 +22,7 @@ namespace MaximoServiceLibrary.repository
 		
 	}
 	
-	public class WorkOrderRepository : DbReposistory<String, MaximoWorkOrder>
+	public class WorkOrderRepository : DbReposistory<string, MaximoWorkOrder>
 	{
 		public WorkOrderRepository(DbConnection dbConnection) : base(dbConnection)
 		{
@@ -40,7 +40,7 @@ namespace MaximoServiceLibrary.repository
 		
 	}
 
-	public class AssetRepository : DbReposistory<String, MaximoAsset>
+	public class AssetRepository : DbReposistory<string, MaximoAsset>
 	{
 		public AssetRepository(DbConnection dbConnection) : base(dbConnection)
 		{
@@ -78,7 +78,7 @@ namespace MaximoServiceLibrary.repository
 
     }
 	
-	public class AttributeRepository : DbReposistory<String, MaximoAttribute>
+	public class AttributeRepository : DbReposistory<string, MaximoAttribute>
 	{
 		public AttributeRepository(DbConnection dbConnection) : base(dbConnection)
 		{
@@ -96,7 +96,7 @@ namespace MaximoServiceLibrary.repository
 		
 	}
 
-	public class DomainRepository : DbReposistory<String, MaximoDomain>
+	public class DomainRepository : DbReposistory<string, MaximoDomain>
 	{
 		public DomainRepository(DbConnection dbConnection) : base(dbConnection)
 		{

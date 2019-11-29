@@ -29,13 +29,13 @@ namespace MaximoServiceTestConsoleApplication
 
 			SynchronizationService synchronizationService = maximoServiceLibraryBeanConfiguration.synchronizationService;
 
-			if (maximoService.isOnline)
-			{
-				synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
-			}
-
 			synchronizationService.synchronizeInBackground();
 			
+			//if (maximoService.isOnline)
+			//{
+			//	synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
+			//}
+
 			Console.WriteLine("work order count : " + maximoServiceLibraryBeanConfiguration.workOrderRepository.count());
 			Console.WriteLine("asset count : " + maximoServiceLibraryBeanConfiguration.assetRepository.count());
 

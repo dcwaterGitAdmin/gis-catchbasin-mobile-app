@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LocalDBLibrary;
+using LocalDBLibrary.model;
 using MaximoServiceLibrary.model;
 using MaximoServiceLibrary.repository;
 
@@ -11,6 +12,7 @@ namespace MaximoServiceLibrary
 	{
 		private MaximoService maximoService;
 
+		private UserRepository userRepository;
 		private WorkOrderRepository workOrderRepository;
 		private AssetRepository assetRepository;
 		private AssetSpecRepository assetSpecRepository;
@@ -19,6 +21,7 @@ namespace MaximoServiceLibrary
         private FailureListRepository failureListRepository;
         
         public SynchronizationService(MaximoService _maximoService, 
+	        UserRepository _userRepository,
 			WorkOrderRepository _workOrderRepository,
 			AssetRepository _assetRepository,
 			AssetSpecRepository _assetSpecRepository,
@@ -27,7 +30,8 @@ namespace MaximoServiceLibrary
             FailureListRepository _failureListRepository)
 		{
 			this.maximoService = _maximoService;
-			
+
+			this.userRepository = _userRepository;
 			workOrderRepository = _workOrderRepository;
 			assetRepository = _assetRepository;
 			assetSpecRepository = _assetSpecRepository;
@@ -39,19 +43,61 @@ namespace MaximoServiceLibrary
         public async void synchronizeInBackground()
         {
 	        bool isOnline = maximoService.checkIsOnline();
+	        var lastSyncTime = DateTime.Now;
 
 	        if (!isOnline)
 		        return;
 
 	        List<MaximoWorkOrder> maximoWorkOrdersFromMaximo = fetchChangedWorkOrdersFromMaximoSinceLastSyncTime();
 
+	        // sync the work orders fetched from Maximo to local db
+	        foreach (var workOrderFromMaximo in maximoWorkOrdersFromMaximo)
+	        {
+		        syncEntityFromMaximoToLocalDb<string, MaximoWorkOrder>(workOrderRepository, workOrderFromMaximo, workOrderFromMaximo.wonum);
+
+		        MaximoAsset maximoAsset = workOrderFromMaximo.asset;
+		        syncEntityFromMaximoToLocalDb<string, MaximoAsset>(assetRepository, maximoAsset, maximoAsset.assetnum);
+	        }
+
+	        maximoService.mxuser.userPreferences.lastSyncTime = lastSyncTime;
+	        UserRepository.
         }
 
+        private T syncEntityFromMaximoToLocalDb<K, T>(DbReposistory<K, T> dbRepository, T entityFromMaximo, K entityKeyValue) where T : BasePersistenceEntity
+        {
+	        BasePersistenceEntity entityFromDb = dbRepository.findOne(entityKeyValue);
+	        if (entityFromDb == null)
+	        {
+		        Console.WriteLine($"inserting entity [{typeof (T)}: {entityKeyValue}] fetched from Maximo to local db");
+		        entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+		        dbRepository.insert(entityFromMaximo);
+	        }
+	        else
+	        {
+		        if (entityFromDb.syncronizationStatus == null ||
+		            entityFromDb.syncronizationStatus == SyncronizationStatus.SYNCED)
+		        {
+			        Console.WriteLine($"upserting entity [{typeof (T)}: {entityKeyValue}] fetched from Maximo to local db");
+			        entityFromMaximo.Id = entityFromDb.Id;
+			        entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+			        dbRepository.upsert(entityFromMaximo);
+		        }
+		        else
+		        {
+			        Console.WriteLine($"sync CONFLICT at entity [{typeof (T)}: {entityKeyValue}] fetched from Maximo to local db");
+			        // this is a conflicting scenario, what should we do here? 
+			        // TODO - decide what to do here
+		        }
+	        }
+
+	        return entityFromMaximo;
+        }
+        
         private List<MaximoWorkOrder> fetchChangedWorkOrdersFromMaximoSinceLastSyncTime()
         {
 	        DateTime lastSyncTime = maximoService.mxuser.userPreferences.lastSyncTime;
 	        
-            List<MaximoWorkOrder> maximoWorkOrders = maximoService.getWorkOrders();
+            List<MaximoWorkOrder> maximoWorkOrders = maximoService.getWorkOrders(lastSyncTime);
 			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
 			
 			/*
