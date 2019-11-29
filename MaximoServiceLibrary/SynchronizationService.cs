@@ -112,8 +112,10 @@ namespace MaximoServiceLibrary
 
 					if (isSuccessfulAssetOperation)
 					{
-						assetToBeSyncedFromDb.syncronizationStatus = SyncronizationStatus.SYNCED;
-						assetRepository.upsert(assetToBeSyncedFromDb);
+						MaximoAsset maximoAssetFreshCopyFromServer = maximoService.getAsset(assetToBeSyncedFromDb.assetnum);
+						maximoAssetFreshCopyFromServer.Id = assetToBeSyncedFromDb.Id;
+						maximoAssetFreshCopyFromServer.syncronizationStatus = SyncronizationStatus.SYNCED;
+						assetRepository.upsert(maximoAssetFreshCopyFromServer);
 					}
 				}
 
