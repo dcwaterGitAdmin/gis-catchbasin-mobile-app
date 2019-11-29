@@ -163,7 +163,7 @@
 
             <uc:WorkOrderList DataContext="{Binding WorkOrderListVM}" DockPanel.Dock="Left" Visibility="{Binding MapVM.WorkOrdersIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" />
             <uc:WorkOrderDetail DataContext="{Binding WorkOrderDetailVM}" DockPanel.Dock="Left" Visibility="{Binding MapVM.WorkOrderDetailIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" />
-            <uc:AssetDetail DataContext="{Binding AssetDetailVM}" DockPanel.Dock="Left" Visibility="{Binding MapVM.AssetDetailIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" />
+            <uc:AssetDetail DataContext="{Binding AssetDetailVM}" DockPanel.Dock="Left" Visibility="{Binding WorkOrderDetailVM.MapVM.AssetDetailIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" />
             
             <esri:TableOfContents x:Name="TOC" Visibility="{Binding TOCIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}" DockPanel.Dock="Right" Width="300" GeoView="{Binding ElementName=mapView}" ShowLegend="True" />
             

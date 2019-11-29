@@ -1135,7 +1135,7 @@ namespace MaximoServiceLibrary.model
 		//public List<ASSETUSERCUST> assetusercust { get; set; } 
 
 		// ASSETSPECCLASS
-		public List<MaximoAssetSpec> assetspecList { get; set; }
+		public List<MaximoAssetSpec> assetspec { get; set; }
 
 
 		// auto-generated fields

@@ -263,7 +263,7 @@ namespace MaximoServiceLibrary
 				{
 					foreach (var maximoPersonGroup in mxuser.personGroupList)
 					{
-						persongroupParam += "," + maximoPersonGroup.persongroup;
+						persongroupParam += "," +"\""+ maximoPersonGroup.persongroup+ "\"" ;
 					}
 				}
 			}
