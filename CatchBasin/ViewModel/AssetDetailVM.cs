@@ -212,7 +212,16 @@ namespace CatchBasin.ViewModel
             set { saveCommand = value; OnPropertyChanged("SaveCommand"); }
         }
 
-        private bool isDirty;
+		private string syncStatus;
+
+		public string SyncStatus
+		{
+			get { return syncStatus; }
+			set { syncStatus = value; OnPropertyChanged("SyncStatus"); }
+		}
+
+
+		private bool isDirty;
         MaximoAsset Asset;
         public MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
 
@@ -250,7 +259,9 @@ namespace CatchBasin.ViewModel
         {
             Asset = asset;
 
-            AssetTag = Asset.assettag;
+			SyncStatus = Asset.syncronizationStatus.ToString();
+
+			AssetTag = Asset.assettag;
             LocationDetail = Asset.eq3;
 
             foreach (MaximoAssetSpec assetSpec in Asset.assetspec)
@@ -389,7 +400,10 @@ namespace CatchBasin.ViewModel
 
                 }
             }
-            // asset maybe choosed or created on map!
+
+			Asset.changedate = DateTime.Now;
+			Asset.changeby = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser.personId;
+			// asset maybe choosed or created on map!
             if (Asset.Id > 0){
                 var asset =MaximoServiceLibraryBeanConfiguration.assetRepository.update(Asset);
                 Asset = asset;

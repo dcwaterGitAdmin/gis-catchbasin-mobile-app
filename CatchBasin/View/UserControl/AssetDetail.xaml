@@ -95,8 +95,8 @@
                     <CheckBox IsChecked="{Binding WaterSeal, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
                         Has Water Seal?
                     </CheckBox>
-
-                </StackPanel>
+					<TextBlock Text="{Binding SyncStatus}"/>
+				</StackPanel>
             </ScrollViewer>
         </DockPanel>
         

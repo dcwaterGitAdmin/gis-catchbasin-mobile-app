@@ -13,6 +13,21 @@ namespace MaximoServiceTestConsoleApplication
 		public static void Main(string[] args)
 		{
 			MaximoServiceLibraryBeanConfiguration maximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
+			var assets = maximoServiceLibraryBeanConfiguration.assetRepository.findAllToBeScynced();
+			foreach (var asset in assets)
+			{
+				asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.SYNCED;
+				maximoServiceLibraryBeanConfiguration.assetRepository.upsert(asset);
+			}
+			foreach (var wo in maximoServiceLibraryBeanConfiguration.workOrderRepository.findAllToBeScynced())
+			{
+				wo.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.SYNCED;
+				maximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
+			}
+
+
+			return;
+
 			
 			MaximoService maximoService = maximoServiceLibraryBeanConfiguration.maximoService;
 			DbConnection dbConnection = maximoServiceLibraryBeanConfiguration.dbConnection;

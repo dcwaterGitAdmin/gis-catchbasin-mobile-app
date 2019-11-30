@@ -39,8 +39,9 @@ namespace CatchBasin.ViewModel
         public LoginVM()
         {
             LoginCommand = new LoginCommand(this);
-            MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
-        }
+			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
+
+		}
 
 
         public void DoLogin(Window window)
@@ -54,9 +55,11 @@ namespace CatchBasin.ViewModel
             {
                 if (MaximoServiceLibraryBeanConfiguration.maximoService.login(UserName, Password))
                 {
-                   // MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
-                   // MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
-                    new Map().Show();
+					 //MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+					// MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
+					MaximoServiceLibraryBeanConfiguration.synchronizationService.startSyncronizationTimer();
+					
+					new Map().Show();
                     window.Close();
                 }
                 else

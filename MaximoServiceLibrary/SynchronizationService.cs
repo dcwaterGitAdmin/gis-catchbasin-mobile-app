@@ -86,8 +86,12 @@ namespace MaximoServiceLibrary
 						workOrderFromMaximo.wonum);
 
 					MaximoAsset maximoAsset = workOrderFromMaximo.asset;
-					syncEntityFromMaximoToLocalDb<string, MaximoAsset>(assetRepository, maximoAsset,
+					if(maximoAsset != null)
+					{
+						syncEntityFromMaximoToLocalDb<string, MaximoAsset>(assetRepository, maximoAsset,
 						maximoAsset.assetnum);
+					}
+					
 				}
 
 				IEnumerable<MaximoWorkOrder> workOrdersToBeScyncedFromDb = workOrderRepository.findAllToBeScynced();
@@ -132,7 +136,7 @@ namespace MaximoServiceLibrary
 			T entityFromDb = dbRepository.findOne(entityKeyValue);
 			if (entityFromDb == null)
 			{
-				//Console.WriteLine($"inserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
+				Console.WriteLine($"inserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
 				entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 				dbRepository.insert(entityFromMaximo);
 			}
@@ -141,7 +145,7 @@ namespace MaximoServiceLibrary
 				if (entityFromDb.syncronizationStatus == null ||
 				    entityFromDb.syncronizationStatus == SyncronizationStatus.SYNCED)
 				{
-					//Console.WriteLine($"upserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
+					Console.WriteLine($"upserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
 					entityFromMaximo.Id = entityFromDb.Id;
 					entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 					dbRepository.upsert(entityFromMaximo);
@@ -287,20 +291,20 @@ namespace MaximoServiceLibrary
 		// todo: change function name
 		public void synchronizeHelperFromMaximoToLocalDb()
 		{
-			//         clearHelperFromLocalDb();
-			//List<MaximoDomain> domains = maximoService.getDomains();
+			clearHelperFromLocalDb();
+			List<MaximoDomain> domains = maximoService.getDomains();
 
-			//foreach (var domain in domains)
-			//{
-			//	domainRepository.insert(domain);
-			//}
+			foreach (var domain in domains)
+			{
+				domainRepository.insert(domain);
+			}
 
 
-			//List<MaximoAttribute> attributes = maximoService.getAttributes();
-			//foreach (var attribute in attributes)
-			//{
-			//	attributeRepository.insert(attribute);
-			//}
+			List<MaximoAttribute> attributes = maximoService.getAttributes();
+			foreach (var attribute in attributes)
+			{
+				attributeRepository.insert(attribute);
+			}
 
 			// 1283 CatchBasin failurelist id
 			List<FailureList> failureLists = new List<FailureList>();
@@ -324,6 +328,7 @@ namespace MaximoServiceLibrary
 		{
 			domainRepository.removeCollection();
 			assetRepository.removeCollection();
+			failureListRepository.removeCollection();
 		}
 	}
 }

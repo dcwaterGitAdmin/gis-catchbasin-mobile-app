@@ -70,9 +70,13 @@ namespace CatchBasin.ViewModel
         {
             if(e.PropertyName == "SelectedIndex")
             {
-                var wo = WorkOrders[this.SelectedIndex];
-                createWorkOrderList(wo);
-                showWorkOrder(wo);
+				if (this.SelectedIndex > 0)
+				{
+					var wo = WorkOrders[this.SelectedIndex];
+					createWorkOrderList(wo);
+					showWorkOrder(wo);
+				}
+               
             }
         }
 
@@ -86,8 +90,10 @@ namespace CatchBasin.ViewModel
 
         public void showWorkOrder(MaximoWorkOrder wo)
         {
-            MapVM.ShowWorkOrderDetail(wo);
-           // MapVM.ShowAssetDetail(wo);
-        }
+			WorkOrders = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findAll().ToList();
+			MapVM.ShowWorkOrderDetail(wo);
+			
+			// MapVM.ShowAssetDetail(wo);
+		}
     }
 }
