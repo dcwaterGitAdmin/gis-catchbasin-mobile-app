@@ -128,6 +128,17 @@ namespace MaximoServiceLibrary
 						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
 
 						workOrderToBeSyncedFromDb.syncronizationStatus = SyncronizationStatus.SYNCED;
+						
+						foreach (var maximoWorkOrderSpec in workOrderToBeSyncedFromDb.workorderspecList)
+						{
+							maximoWorkOrderSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
+						}
+						
+						foreach (var maximoWorkOrderFailureReport in workOrderToBeSyncedFromDb.failureReportList)
+						{
+							maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
+						}
+						
 						workOrderRepository.upsert(workOrderToBeSyncedFromDb);
 					}
 					else
