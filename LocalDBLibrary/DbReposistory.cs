@@ -94,7 +94,7 @@ namespace LocalDBLibrary
 
 		public T update(T t)
 		{
-			t.editedFromApp = true;
+		
 			t.syncronizationStatus = SyncronizationStatus.MODIFIED;
 			
 			var collection = dbConnection.db.GetCollection<T>(tableName());

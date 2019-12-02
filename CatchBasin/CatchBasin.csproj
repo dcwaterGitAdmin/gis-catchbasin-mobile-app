@@ -39,9 +39,20 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevExpress.Data.v19.2, Version=19.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Images.v19.2, Version=19.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Mvvm.v19.2, Version=19.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v19.2.Core, Version=19.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v19.2.Core, Version=19.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Controls.v19.2, Version=19.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Core.v19.2, Version=19.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Controls.Ribbon" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -51,6 +62,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -62,6 +75,9 @@
     </ApplicationDefinition>
     <Compile Include="ViewModel\AssetDetailVM.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
+    <Compile Include="ViewModel\Command\AttachCommand.cs" />
+    <Compile Include="ViewModel\Command\ToolCommand.cs" />
+    <Compile Include="ViewModel\Command\LaborCommand.cs" />
     <Compile Include="ViewModel\Command\SaveCommand.cs" />
     <Compile Include="ViewModel\Command\SelectAssetOnMapCommand.cs" />
     <Compile Include="ViewModel\Command\MapCommands.cs" />
@@ -70,9 +86,12 @@
     <Compile Include="ViewModel\Command\CancelCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAssetCommand.cs" />
     <Compile Include="ViewModel\Helper\EnumMatchToBooleanConverter.cs" />
+    <Compile Include="ViewModel\Helper\Model.cs" />
     <Compile Include="ViewModel\Helper\PasswordHelper.cs" />
     <Compile Include="ViewModel\Helper\IDetailVM.cs" />
+    <Compile Include="ViewModel\LaborVM.cs" />
     <Compile Include="ViewModel\LoginVM.cs" />
+    <Compile Include="ViewModel\ToolVM.cs" />
     <Compile Include="ViewModel\WorkOrderDetailVM.cs" />
     <Compile Include="ViewModel\WorkOrderListVM.cs" />
     <Compile Include="View\Labor.xaml.cs">
@@ -145,6 +164,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Properties\Licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

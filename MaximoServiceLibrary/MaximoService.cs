@@ -456,7 +456,7 @@ namespace MaximoServiceLibrary
 		{
 			var request = createRequest(maximoWorkOrder.href, true, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
-
+			
 			request.AddJsonBody(maximoWorkOrder);
 			
 			var response = restClient.Execute(request);
@@ -533,6 +533,47 @@ namespace MaximoServiceLibrary
 			
 		}
 		
+		public List<MaximoInventory> getTools()
+		{
+			var request = createRequest("/os/mxinventory");
+			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.pageSize", "10");
+			request.AddQueryParameter("pageno", "1");
+			request.AddQueryParameter("oslc.where", "location=\"OSTFLEET\" and binnum=\"CBTRUCKS\"");
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoInventory>();
+			}
+			List<MaximoInventory> tools = new List<MaximoInventory>();
+
+			MaximoInventoryPageableRestResponse mxinventoryPageableRestResponse =
+				JsonConvert.DeserializeObject<MaximoInventoryPageableRestResponse>(response.Content);
+			tools.AddRange(mxinventoryPageableRestResponse.member);
+
+			// get next pages if there is any
+			while (mxinventoryPageableRestResponse.responseInfo.nextPage != null)
+			{
+				request = createRequest(mxinventoryPageableRestResponse.responseInfo.nextPage.href, true);
+
+				response = restClient.Execute(request);
+
+				if (!response.IsSuccessful)
+				{
+					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					// todo - throw exception here?
+					return tools;
+				}
+
+				mxinventoryPageableRestResponse =
+					JsonConvert.DeserializeObject<MaximoInventoryPageableRestResponse>(response.Content);
+				tools.AddRange(mxinventoryPageableRestResponse.member);
+			}
+
+			return tools;
+		}
 		
 		public List<MaximoDomain> getDomains()
 		{

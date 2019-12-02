@@ -112,6 +112,7 @@ namespace CatchBasin.ViewModel
         {
             WorkOrderDetailIsVisible = false;
             WorkOrderDetailVM.Clear();
+			WorkOrderListVM.Update();
         }
 
 
@@ -142,28 +143,6 @@ namespace CatchBasin.ViewModel
         {
             AssetDetailIsVisible = false;
             AssetDetailVM.Clear();
-        }
-
-
-        private List<RibbonButton> createWorkOrderList;
-
-        public List<RibbonButton> CreateWorkOrderList
-        {
-            get { return createWorkOrderList; }
-            set { createWorkOrderList = value; OnPropertyChanged("CreateWorkOrderList"); }
-        }
-
-        public void generateCreateWorkOrderList(List<string> list)
-        {
-            List<RibbonButton> menuList = new List<RibbonButton>();
-            foreach (string item in list)
-            {
-                RibbonButton ribbonMenuButton = new RibbonButton();
-                ribbonMenuButton.Label = item;
-                ribbonMenuButton.Command = CreateWorkOrderCommand;
-                menuList.Add(ribbonMenuButton);
-            }
-            CreateWorkOrderList = menuList;
         }
 
 
@@ -278,6 +257,7 @@ namespace CatchBasin.ViewModel
         public void ShowWorkOrders()
         {
             WorkOrdersIsVisible = !WorkOrdersIsVisible;
+			if (WorkOrdersIsVisible) { WorkOrderListVM.Update(); }
         }
 
 

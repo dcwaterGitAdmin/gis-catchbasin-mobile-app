@@ -119,8 +119,8 @@
                                 <Image    Source="/CatchBasin;component/Resources/Images/add.png" />
                                 <Button.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Add Labor"></MenuItem>
-                                        <MenuItem Header="Add Tool"></MenuItem>
+                                        <MenuItem Command="{Binding LaborCommand}" Header="Add Labor"></MenuItem>
+                                        <MenuItem Command="{Binding ToolCommand}" Header="Add Tool"></MenuItem>
                                     </ContextMenu>
                                 </Button.ContextMenu>
                             </Button>
@@ -144,7 +144,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Content="Attachments" FontWeight="Bold"/>
-                            <Button  Height="24"  Grid.Column="1"  Background="Transparent" BorderThickness="0">
+                            <Button Command="{Binding AttachCommand}"  Height="24"  Grid.Column="1"  Background="Transparent" BorderThickness="0">
                                 <Image Source="/CatchBasin;component/Resources/Images/add.png" />
                             </Button>
                         </Grid>

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using CatchBasin.View;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CatchBasin.ViewModel.Command
@@ -20,10 +22,10 @@ namespace CatchBasin.ViewModel.Command
 				CommandManager.RequerySuggested -= value;
 			}
 		}
-		
-		public LaborCommand()
+		WorkOrderDetailVM WorkOrderDetailVM;
+		public LaborCommand(WorkOrderDetailVM workOrderDetailVM)
 		{
-			
+			WorkOrderDetailVM = workOrderDetailVM;
 		}
 
 		public bool CanExecute(object parameter)
@@ -33,7 +35,14 @@ namespace CatchBasin.ViewModel.Command
 
 		public void Execute(object parameter)
 		{
-			
+
+			Labor Labor = new Labor();
+			Labor.DataContext = new LaborVM(WorkOrderDetailVM);
+			Labor.ShowInTaskbar = false;
+			Labor.Owner = ((App)Application.Current).MainWindow;
+			Labor.ShowDialog();
+
+
 		}
 	}
 }

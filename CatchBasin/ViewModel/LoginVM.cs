@@ -40,7 +40,8 @@ namespace CatchBasin.ViewModel
         {
             LoginCommand = new LoginCommand(this);
 			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
-
+			UserName = "EDELIOGLU";
+			Password = "E2019atlas";
 		}
 
 

@@ -1,4 +1,4 @@
-﻿<Window x:Class="CatchBasin.View.Tool"
+﻿<Window xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"  x:Class="CatchBasin.View.Tool"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -20,23 +20,20 @@
 			<!--<ScrollViewer>-->
 				<StackPanel Margin="10">
 
-					<Label  Margin="0 0 0 3"  Content="Labor" FontWeight="Bold"/>
-					<ListBox  Margin="0 3 0 3" MinHeight="100" MaxHeight="100">
-						<ListBoxItem>Tool1</ListBoxItem>
-						<ListBoxItem>Tool2</ListBoxItem>
-						<ListBoxItem>Tool3</ListBoxItem>
-						<ListBoxItem>Tool4</ListBoxItem>
-						<ListBoxItem>Tool5</ListBoxItem>
+					<Label  Margin="0 0 0 3"  Content="Tool" FontWeight="Bold"/>
+				<ComboBox ItemsSource="{Binding ToolList}" DisplayMemberPath="itemnum" SelectedValuePath="itemnum" SelectedValue="{Binding Tool, Mode=TwoWay}"  Margin="0 3 0 3" MinHeight="100" MaxHeight="100">
 						
-					</ListBox>
+						
+					</ComboBox>
 
-					<Label  Margin="0 3 0 3"  Content="Start Date" FontWeight="Bold"/>
-					<TextBox  Margin="0 3 0 3" />
+					<Label  Margin="0 3 0 3"  Content="Quantity" FontWeight="Bold"/>
+					<TextBox Text="{Binding Quantity, Mode=TwoWay}"  Margin="0 3 0 3" />
 
 					<Label   Margin="0 3 0 3" Content="Duration" FontWeight="Bold"/>
-					<DatePicker  Margin="0 3 0 3"  SelectedDateFormat="Long"/>
 
-				</StackPanel>
+				<dxe:DateEdit Mask="HH:mm:ss"  Text="00:00:00" MaskUseAsDisplayFormat="True"  DateTime="{Binding Duration, Mode=TwoWay}"/>
+
+			</StackPanel>
 			<!--</ScrollViewer>-->
 		</DockPanel>
 	</Grid>

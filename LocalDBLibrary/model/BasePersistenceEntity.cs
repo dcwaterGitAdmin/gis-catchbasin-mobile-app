@@ -9,8 +9,6 @@ namespace LocalDBLibrary.model
         // it use by LiteDB.
         public int Id { get; set; }
 
-        // it use to find edited data by developers.
-        public bool editedFromApp { get; set; }
         
         public SyncronizationStatus? syncronizationStatus { get; set; }
         

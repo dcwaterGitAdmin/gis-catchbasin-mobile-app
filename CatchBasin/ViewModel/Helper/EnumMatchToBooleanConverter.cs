@@ -31,9 +31,9 @@ namespace CatchBasin.ViewModel.Helper
 		bool useValue = (bool)value;
 		string targetValue = parameter.ToString();
 		if (useValue)
-			return Enum.Parse(targetType, targetValue);
+			return parameter.ToString();
 
-		return null;
+			return null;
 	}
 }   
 }

@@ -1,10 +1,11 @@
-﻿<Window x:Class="CatchBasin.View.Labor"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CatchBasin.View"
 		xmlns:helper="clr-namespace:CatchBasin.ViewModel.Helper"
+        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" x:Class="CatchBasin.View.Labor"
         mc:Ignorable="d"
         Title="Labor" Height="400" Width="300">
 	<Window.Resources>
@@ -13,50 +14,48 @@
 	<Grid>
 		<DockPanel LastChildFill="True">
 			<Grid DockPanel.Dock="Bottom">
-	
+
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
-				<Button Command="{Binding CancelCommand}" Grid.Column="0">Cancel</Button>
-				<Button Command="{Binding SaveCommand}" Grid.Column="1">Save</Button>
+				<Button Command="{Binding CancelCommand}" Grid.Column="0" Content="Cancel"/>
+				<Button Command="{Binding SaveCommand}" Grid.Column="1" Content="Save"/>
 			</Grid>
 			<!--<ScrollViewer>-->
-				<StackPanel Margin="10">
+			<StackPanel Margin="10">
 
-					<Label  Margin="0 0 0 3"  Content="Labor" FontWeight="Bold"/>
-					<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+				<Label  Margin="0 0 0 3"  Content="Labor" FontWeight="Bold"/>
+				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
                             DisplayMemberPath="description"
                             SelectedValuePath="failurecode"
                              SelectedValue="{Binding Labor}"/>
 
-					<Label  Margin="0 3 0 3"  Content="Start Date" FontWeight="Bold"/>
-					<DatePicker  Margin="0 3 0 3"  SelectedDateFormat="Long"/>
+				<Label  Margin="0 3 0 3"  Content="Start Date" FontWeight="Bold"/>
 
-					<Label   Margin="0 3 0 3" Content="Duration" FontWeight="Bold"/>
-					<DatePicker  Margin="0 3 0 3"  SelectedDateFormat="Long"/>
+				<dxe:DateEdit x:Name="startDate"  Mask="G" DisplayFormatString="G" DateTime="{Binding StartDate, Mode=TwoWay}" >
+					<dxe:DateEdit.StyleSettings>
+						<dxe:DateEditNavigatorWithTimePickerStyleSettings />
+					</dxe:DateEdit.StyleSettings>
+				</dxe:DateEdit>
+				<Label   Margin="0 3 0 3" Content="Duration" FontWeight="Bold"/>
 
-					<Label  Margin="0 3 0 3"  Content="Type" FontWeight="Bold"/>
-					<StackPanel Orientation="Horizontal" >
-						<RadioButton  Margin="0 3 10 3"  GroupName="Type" IsChecked="{Binding Type, Mode=TwoWay, 
-                                 Converter={StaticResource enumConverter},
-                                 ConverterParameter=WORK}" >Work</RadioButton>
-						<RadioButton  Margin="0 3 0 3"  GroupName="Type" IsChecked="{Binding Type, Mode=TwoWay, 
-                                 Converter={StaticResource enumConverter},
-                                 ConverterParameter=TRAVEL}">Travel</RadioButton>
-					</StackPanel>
+				<dxe:DateEdit Mask="HH:mm:ss"  Text="00:00:00" MaskUseAsDisplayFormat="True"  DateTime="{Binding Duration, Mode=TwoWay}">
 					
-					<CheckBox IsChecked="{Binding BrokenTop, Mode=TwoWay}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" >
-						Driver?
-					</CheckBox>
-					<CheckBox IsChecked="{Binding BrokenTop, Mode=TwoWay}" Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" >
-						Lead Man?
-					</CheckBox>
-					<CheckBox IsChecked="{Binding BrokenTop, Mode=TwoWay}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" >
-						Second Man?
-					</CheckBox>
-
+				</dxe:DateEdit>
+				<Label  Margin="0 3 0 3"  Content="Type" FontWeight="Bold"/>
+				<StackPanel Orientation="Horizontal" >
+					<RadioButton  Margin="0 3 10 3"  GroupName="Type" IsChecked="{Binding Type, ConverterParameter=WORK, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Work" />
+					<RadioButton  Margin="0 3 0 3"  GroupName="Type" IsChecked="{Binding Type, ConverterParameter=TRAVEL, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Travel"/>
 				</StackPanel>
+
+				<CheckBox IsChecked="{Binding IsDriver, Mode=TwoWay}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Driver?" />
+				<CheckBox IsChecked="{Binding IsLeadMan, Mode=TwoWay}" Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Lead Man?" />
+				<CheckBox IsChecked="{Binding IsSecondMan, Mode=TwoWay}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Second Man?" />
+
+				
+
+			</StackPanel>
 			<!--</ScrollViewer>-->
 		</DockPanel>
 	</Grid>

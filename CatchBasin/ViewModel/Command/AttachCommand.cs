@@ -1,14 +1,15 @@
-﻿using System;
+﻿//using Microsoft.Win32;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using CatchBasin.View;
+
 namespace CatchBasin.ViewModel.Command
 {
-	class ToolCommand : ICommand
+	class AttachCommand : ICommand
 	{
 		public event EventHandler CanExecuteChanged
 		{
@@ -21,10 +22,10 @@ namespace CatchBasin.ViewModel.Command
 				CommandManager.RequerySuggested -= value;
 			}
 		}
-		WorkOrderDetailVM WorkOrderDetailVM;
-		public ToolCommand(WorkOrderDetailVM workOrderDetailVM)
+		
+		public AttachCommand()
 		{
-			WorkOrderDetailVM = workOrderDetailVM;
+			
 		}
 
 		public bool CanExecute(object parameter)
@@ -34,11 +35,17 @@ namespace CatchBasin.ViewModel.Command
 
 		public void Execute(object parameter)
 		{
-			Tool Tool = new Tool();
-			Tool.DataContext = new ToolVM(WorkOrderDetailVM);
-			Tool.ShowInTaskbar = false;
-			Tool.Owner = ((App)Application.Current).MainWindow;
-			Tool.ShowDialog();
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.Multiselect = true;
+			openFileDialog.Filter = "Images (*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*";
+			if (openFileDialog.ShowDialog() == true)
+			{
+				foreach (string filename in openFileDialog.FileNames)
+				{
+					//todo: create docs
+					
+				}
+			}
 		}
 	}
 }

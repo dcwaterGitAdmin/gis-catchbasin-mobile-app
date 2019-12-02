@@ -1,4 +1,5 @@
-﻿using MaximoServiceLibrary;
+﻿using CatchBasin.ViewModel.Helper;
+using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
 using System;
 using System.Collections.Generic;
@@ -410,7 +411,15 @@ namespace CatchBasin.ViewModel
             }
             else
             {
-                Asset.editedFromApp = true;
+				if(Asset.assetnum != null)
+				{
+					Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+				}
+				else
+				{
+					Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+				}
+               
                 MaximoServiceLibraryBeanConfiguration.assetRepository.insert(Asset);
             }
             isDirty = false;
@@ -440,14 +449,5 @@ namespace CatchBasin.ViewModel
         }
     }
 
-    class StaticDomain
-    {
-        public StaticDomain(string _code, string _desc)
-        {
-            code = _code;
-            description = _desc;
-        }
-        string code { get; set; }
-        string description { get; set; }
-    }
+
 }

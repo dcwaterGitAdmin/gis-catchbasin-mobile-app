@@ -1,4 +1,5 @@
-﻿using MaximoServiceLibrary;
+﻿using CatchBasin.ViewModel.Helper;
+using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
 using System;
 using System.Collections.Generic;
@@ -46,46 +47,24 @@ namespace CatchBasin.ViewModel
             MapVM = mapVM;
             MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
             WorkOrders = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findAll().ToList();
-            //List<MaximoWorkOrder> list = new List<MaximoWorkOrder>();
-            //var wo = new MaximoWorkOrder();
-            //wo.description = "Test";
-            //wo.worktype = "PM";
-            //wo.wonum = "test";
-            //list.Add(wo);
-            // wo = new MaximoWorkOrder();
-            //wo.worktype = "CM";
-            //list.Add(wo);
-            // wo = new MaximoWorkOrder();
-            //wo.worktype = "EMERG";
-            //list.Add(wo);
-            // wo = new MaximoWorkOrder();
-            //wo.worktype = "INV";
-            //list.Add(wo);
-
-            //WorkOrders = list;
+      
             PropertyChanged += SelectedIndexChanged;
         }
 
-        public void SelectedIndexChanged(object sender, PropertyChangedEventArgs e)
+	
+	
+
+		public void SelectedIndexChanged(object sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == "SelectedIndex")
             {
-				if (this.SelectedIndex > 0)
+				if (this.SelectedIndex > -1)
 				{
 					var wo = WorkOrders[this.SelectedIndex];
-					createWorkOrderList(wo);
 					showWorkOrder(wo);
 				}
                
             }
-        }
-
-        public void createWorkOrderList(MaximoWorkOrder wo)
-        { 
-            List<string> list = new List<string>();
-            list.Add("emre");
-            list.Add("atlas");
-            MapVM.generateCreateWorkOrderList(list);
         }
 
         public void showWorkOrder(MaximoWorkOrder wo)
@@ -93,7 +72,11 @@ namespace CatchBasin.ViewModel
 			WorkOrders = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findAll().ToList();
 			MapVM.ShowWorkOrderDetail(wo);
 			
-			// MapVM.ShowAssetDetail(wo);
+		}
+
+		public void Update()
+		{
+			WorkOrders = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findAll().ToList();
 		}
     }
 }
