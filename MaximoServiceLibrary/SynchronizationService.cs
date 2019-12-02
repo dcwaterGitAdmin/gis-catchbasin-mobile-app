@@ -104,12 +104,26 @@ namespace MaximoServiceLibrary
 				// sync the work orders fetched from Maximo to local db
 				foreach (var workOrderFromMaximo in maximoWorkOrdersFromMaximo)
 				{
+					foreach (var maximoWorkOrderSpec in workOrderFromMaximo.workorderspecList)
+					{
+						maximoWorkOrderSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
+					}
+					foreach (var maximoWorkOrderFailureReport in workOrderFromMaximo.failureReportList)
+					{
+						maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
+					}
+					
 					syncEntityFromMaximoToLocalDb<string, MaximoWorkOrder>(workOrderRepository, workOrderFromMaximo,
 						workOrderFromMaximo.wonum);
 
 					MaximoAsset maximoAsset = workOrderFromMaximo.asset;
 					if(maximoAsset != null)
 					{
+						foreach (var maximoAssetSpec in maximoAsset.assetspec)
+						{
+							maximoAssetSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
+						}
+
 						syncEntityFromMaximoToLocalDb<string, MaximoAsset>(assetRepository, maximoAsset,
 						maximoAsset.assetnum);
 					}
@@ -163,6 +177,12 @@ namespace MaximoServiceLibrary
 						MaximoAsset maximoAssetFreshCopyFromServer = maximoService.getAsset(assetToBeSyncedFromDb.assetnum);
 						maximoAssetFreshCopyFromServer.Id = assetToBeSyncedFromDb.Id;
 						maximoAssetFreshCopyFromServer.syncronizationStatus = SyncronizationStatus.SYNCED;
+						
+						foreach (var maximoAssetSpec in maximoAssetFreshCopyFromServer.assetspec)
+						{
+							maximoAssetSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
+						}
+						
 						assetRepository.upsert(maximoAssetFreshCopyFromServer);
 					}
 					else
