@@ -11,6 +11,8 @@ namespace MaximoServiceLibrary
 {
 	public class SynchronizationService
 	{
+		public bool isOffline { get; set; }
+		
 		private Timer synchronizationTimer;
 		
 		private MaximoService maximoService;
@@ -23,6 +25,10 @@ namespace MaximoServiceLibrary
 		private AttributeRepository attributeRepository;
 		private FailureListRepository failureListRepository;
 
+		public SynchronizationDelegateHandler synchronizationDelegate;
+		
+		public delegate void SynchronizationDelegateHandler(string status, string substatus);
+		
 		public SynchronizationService(MaximoService _maximoService,
 			UserRepository _userRepository,
 			WorkOrderRepository _workOrderRepository,
@@ -46,9 +52,16 @@ namespace MaximoServiceLibrary
 			synchronizationTimer = new Timer(10000);
 			synchronizationTimer.Elapsed += onSyncTimerElapsed;
 			synchronizationTimer.Enabled = false;
+			
+			synchronizationDelegate = new SynchronizationDelegateHandler(logSynchronizationStatus);
 
 		}
 
+		public void logSynchronizationStatus(string status, string substatus)
+		{
+			Console.WriteLine($"syncronization status:{status}, substatus:{substatus}");
+		}
+		
 		public void startSyncronizationTimer()
 		{
 			synchronizationTimer.Enabled = true;
@@ -56,6 +69,12 @@ namespace MaximoServiceLibrary
 		
 		public void onSyncTimerElapsed(Object source, ElapsedEventArgs e)
 		{
+			if (isOffline)
+			{
+				synchronizationDelegate("SYNC_OFFLINE", "The synchronization is set to be offline, returning");
+				return;
+			}
+			
 			Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}", e.SignalTime);
 			synchronizationTimer.Enabled = false;
 
@@ -64,7 +83,7 @@ namespace MaximoServiceLibrary
 		
 		public async void synchronizeInBackground()
 		{
-			Console.WriteLine("started synchronization in background");
+			synchronizationDelegate("SYNC_STARTED", "started synchronization in background");
 
 			try
 			{
@@ -73,11 +92,14 @@ namespace MaximoServiceLibrary
 
 				if (!isOnline)
 				{
-					Console.WriteLine("Maximo service is offline, sleeping...");
+					synchronizationDelegate("MAXIMO_OFFLINE", "Maximo service is offline, sleeping...");
 					return;
 				}
 
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching modified work orders from Maximo...");
+				
 				List<MaximoWorkOrder> maximoWorkOrdersFromMaximo = fetchChangedWorkOrdersFromMaximoSinceLastSyncTime();
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + maximoWorkOrdersFromMaximo.Count + " workorders from Maximo");
 				
 				// sync the work orders fetched from Maximo to local db
 				foreach (var workOrderFromMaximo in maximoWorkOrdersFromMaximo)
@@ -98,13 +120,20 @@ namespace MaximoServiceLibrary
 				foreach (var workOrderToBeSyncedFromDb in workOrdersToBeScyncedFromDb)
 				{
 					// TODO - find how to post child entities
-					Console.WriteLine("Updating work order to Maximo...");
+					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating work order " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
 					bool isSuccessfulWorkOrderOperation = maximoService.updateWorkOrder(workOrderToBeSyncedFromDb);
 
 					if (isSuccessfulWorkOrderOperation)
 					{
+						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
+
 						workOrderToBeSyncedFromDb.syncronizationStatus = SyncronizationStatus.SYNCED;
 						workOrderRepository.upsert(workOrderToBeSyncedFromDb);
+					}
+					else
+					{
+						synchronizationDelegate("SYNC_IN_PROGRESS", "Failed to update workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
+						
 					}
 
 				}
@@ -112,14 +141,23 @@ namespace MaximoServiceLibrary
 				IEnumerable<MaximoAsset> assetsToBeScyncedFromDb = assetRepository.findAllToBeScynced();
 				foreach (var assetToBeSyncedFromDb in assetsToBeScyncedFromDb)
 				{
+					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
+
 					bool isSuccessfulAssetOperation = maximoService.updateAsset(assetToBeSyncedFromDb);
 
 					if (isSuccessfulAssetOperation)
 					{
+						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
+
 						MaximoAsset maximoAssetFreshCopyFromServer = maximoService.getAsset(assetToBeSyncedFromDb.assetnum);
 						maximoAssetFreshCopyFromServer.Id = assetToBeSyncedFromDb.Id;
 						maximoAssetFreshCopyFromServer.syncronizationStatus = SyncronizationStatus.SYNCED;
 						assetRepository.upsert(maximoAssetFreshCopyFromServer);
+					}
+					else
+					{
+						synchronizationDelegate("SYNC_IN_PROGRESS", "Failed to update asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
+						
 					}
 				}
 
@@ -128,6 +166,8 @@ namespace MaximoServiceLibrary
 			}
 			finally
 			{
+				synchronizationDelegate("SYNC_FINISHED", null);
+				
 				synchronizationTimer.Enabled = true;
 			}
 		}
