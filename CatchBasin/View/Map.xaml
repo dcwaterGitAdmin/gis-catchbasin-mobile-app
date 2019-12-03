@@ -138,8 +138,11 @@
                     <RibbonGroup x:Name="AppRibbonGroup" Header="Application">
                         <RibbonButton Command="{Binding SettingsCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Settings.png" Label="Settings" />
                         <RibbonButton Command="{Binding LogoutCommand}" CommandParameter="{Binding ElementName=MapWindow}" LargeImageSource="/CatchBasin;component/Resources/Images/logout.png" Label="Logout" />
-						<RibbonCheckBox IsChecked="{Binding IsOffline}"></RibbonCheckBox>
-					
+						
+					</RibbonGroup>
+					<RibbonGroup Header="TEST">
+						<RibbonCheckBox IsChecked="{Binding IsOffline}" Label="IsOffline (just for testing)" />
+
 					</RibbonGroup>
                 </RibbonTab>
             </Ribbon>

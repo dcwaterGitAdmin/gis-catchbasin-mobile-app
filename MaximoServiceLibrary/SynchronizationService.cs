@@ -104,11 +104,11 @@ namespace MaximoServiceLibrary
 				// sync the work orders fetched from Maximo to local db
 				foreach (var workOrderFromMaximo in maximoWorkOrdersFromMaximo)
 				{
-					foreach (var maximoWorkOrderSpec in workOrderFromMaximo.workorderspecList)
+					foreach (var maximoWorkOrderSpec in workOrderFromMaximo.workorderspec)
 					{
 						maximoWorkOrderSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
 					}
-					foreach (var maximoWorkOrderFailureReport in workOrderFromMaximo.failureReportList)
+					foreach (var maximoWorkOrderFailureReport in workOrderFromMaximo.failurereport)
 					{
 						maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
 					}
@@ -143,12 +143,12 @@ namespace MaximoServiceLibrary
 
 						workOrderToBeSyncedFromDb.syncronizationStatus = SyncronizationStatus.SYNCED;
 						
-						foreach (var maximoWorkOrderSpec in workOrderToBeSyncedFromDb.workorderspecList)
+						foreach (var maximoWorkOrderSpec in workOrderToBeSyncedFromDb.workorderspec)
 						{
 							maximoWorkOrderSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
 						}
 						
-						foreach (var maximoWorkOrderFailureReport in workOrderToBeSyncedFromDb.failureReportList)
+						foreach (var maximoWorkOrderFailureReport in workOrderToBeSyncedFromDb.failurereport)
 						{
 							maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
 						}
@@ -268,9 +268,9 @@ namespace MaximoServiceLibrary
 
 				maximoWorkOrder.asset = maximoAsset;
 
-				maximoWorkOrder.workorderspecList = maximoService.getWorkOrderSpec(maximoWorkOrder.href);
+				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder.href);
 				maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				maximoWorkOrder.failureReportList = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
+				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
 			}
 
 			return maximoWorkOrders;
@@ -303,9 +303,9 @@ namespace MaximoServiceLibrary
 
 				maximoWorkOrder.asset = maximoAsset;
 
-				maximoWorkOrder.workorderspecList = maximoService.getWorkOrderSpec(maximoWorkOrder.href);
+				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder.href);
 				maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				maximoWorkOrder.failureReportList = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
+				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
 				// synchronize maximoWorkOrder in local db
 				MaximoWorkOrder maximoWorkOrderFromDb = workOrderRepository.findOne(maximoWorkOrder.wonum);
 				if (maximoWorkOrderFromDb != null)

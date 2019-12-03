@@ -213,13 +213,7 @@ namespace CatchBasin.ViewModel
             set { saveCommand = value; OnPropertyChanged("SaveCommand"); }
         }
 
-		private string syncStatus;
-
-		public string SyncStatus
-		{
-			get { return syncStatus; }
-			set { syncStatus = value; OnPropertyChanged("SyncStatus"); }
-		}
+	
 
 
 		private bool isDirty;
@@ -259,8 +253,7 @@ namespace CatchBasin.ViewModel
         public void Update(MaximoAsset asset)
         {
             Asset = asset;
-
-			SyncStatus = Asset.syncronizationStatus.ToString();
+			
 
 			AssetTag = Asset.assettag;
             LocationDetail = Asset.eq3;

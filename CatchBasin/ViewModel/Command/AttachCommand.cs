@@ -1,4 +1,5 @@
 ﻿//using Microsoft.Win32;
+using MaximoServiceLibrary.model;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -22,10 +23,10 @@ namespace CatchBasin.ViewModel.Command
 				CommandManager.RequerySuggested -= value;
 			}
 		}
-		
-		public AttachCommand()
+		WorkOrderDetailVM WorkOrderDetailVM { get; set; }
+		public AttachCommand(WorkOrderDetailVM workOrderDetailVM)
 		{
-			
+			WorkOrderDetailVM = workOrderDetailVM;
 		}
 
 		public bool CanExecute(object parameter)
@@ -42,8 +43,10 @@ namespace CatchBasin.ViewModel.Command
 			{
 				foreach (string filename in openFileDialog.FileNames)
 				{
-					//todo: create docs
-					
+					MaximoDocument maximoDocument = new MaximoDocument();
+					maximoDocument.description = filename;
+					maximoDocument.fileName = System.IO.Path.GetFileName(filename); 
+					WorkOrderDetailVM.Attachments.Add(maximoDocument);
 				}
 			}
 		}

@@ -34,7 +34,7 @@
 
 				<Label  Margin="0 3 0 3"  Content="Start Date" FontWeight="Bold"/>
 
-				<xctk:DateTimePicker x:Name="startDate"    Value="{Binding StartDate, Mode=TwoWay}" >
+				<xctk:DateTimePicker Value="{Binding StartDate, Mode=TwoWay}" >
 					
 				</xctk:DateTimePicker>
 				<Label   Margin="0 3 0 3" Content="Duration" FontWeight="Bold"/>

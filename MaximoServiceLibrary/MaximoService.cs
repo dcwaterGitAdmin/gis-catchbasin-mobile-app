@@ -470,7 +470,7 @@ namespace MaximoServiceLibrary
 			
 			// check if any of the workorderspecs has changed
 			bool workOrderSpecChanged = false;
-			foreach (var maximoWorkOrderSpec in maximoWorkOrder.workorderspecList)
+			foreach (var maximoWorkOrderSpec in maximoWorkOrder.workorderspec)
 			{
 				if (maximoWorkOrderSpec.syncronizationStatus.Value == SyncronizationStatus.CREATED ||
 				    maximoWorkOrderSpec.syncronizationStatus.Value == SyncronizationStatus.MODIFIED)
@@ -483,12 +483,12 @@ namespace MaximoServiceLibrary
 			// add all of the workorderspec's to the request body
 			if (workOrderSpecChanged)
 			{
-				workOrderToBePosted.workorderspecList = maximoWorkOrder.workorderspecList;
+				workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
 			}
 			
 			// check if any of the failure reports has changed
 			bool failureReportChanged = false;
-			foreach (var maximoWorkOrderFailureReport in maximoWorkOrder.failureReportList)
+			foreach (var maximoWorkOrderFailureReport in maximoWorkOrder.failurereport)
 			{
 				if (maximoWorkOrderFailureReport.syncronizationStatus.Value == SyncronizationStatus.CREATED ||
 				    maximoWorkOrderFailureReport.syncronizationStatus.Value == SyncronizationStatus.MODIFIED)
@@ -500,7 +500,7 @@ namespace MaximoServiceLibrary
 
 			if (failureReportChanged)
 			{
-				workOrderToBePosted.failureReportList = maximoWorkOrder.failureReportList;
+				workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
 			}
 
 			request.AddJsonBody(workOrderToBePosted);

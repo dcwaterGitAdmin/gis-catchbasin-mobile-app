@@ -69,6 +69,12 @@
     <Compile Include="ViewModel\AssetDetailVM.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
     <Compile Include="ViewModel\Command\AttachCommand.cs" />
+    <Compile Include="ViewModel\Command\DeleteLaborCommand.cs" />
+    <Compile Include="ViewModel\Command\DeleteAttachmentCommand.cs" />
+    <Compile Include="ViewModel\Command\DeleteToolCommand.cs" />
+    <Compile Include="ViewModel\Command\ShowLaborCommand.cs" />
+    <Compile Include="ViewModel\Command\ShowAttachmentCommand.cs" />
+    <Compile Include="ViewModel\Command\ShowToolCommand.cs" />
     <Compile Include="ViewModel\Command\ToolCommand.cs" />
     <Compile Include="ViewModel\Command\LaborCommand.cs" />
     <Compile Include="ViewModel\Command\SaveCommand.cs" />

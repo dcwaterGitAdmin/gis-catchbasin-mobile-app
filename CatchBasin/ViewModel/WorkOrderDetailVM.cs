@@ -2,10 +2,12 @@
 using MaximoServiceLibrary.model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace CatchBasin.ViewModel
 {
@@ -407,9 +409,9 @@ namespace CatchBasin.ViewModel
 		}
 
 		// todo: object to doclinks or docinfo
-		private List<object> attachments;
+		private ObservableCollection<MaximoDocument> attachments;
 
-		public List<object> Attachments
+		public ObservableCollection<MaximoDocument> Attachments
 		{
 			get { return attachments; }
 			set { attachments = value; OnPropertyChanged("Attachments"); }
@@ -425,12 +427,27 @@ namespace CatchBasin.ViewModel
 		}
 
 		// todo: object to doclinks or docinfo
-		private List<object> actuals;
+		private ObservableCollection<object> actuals;
 
-		public List<object> Actuals
+		public ObservableCollection<object> Actuals
 		{
 			get { return actuals; }
 			set { actuals = value; OnPropertyChanged("Actuals"); }
+		}
+
+		private ObservableCollection<MaximoLabTrans> labTrans;
+
+		public ObservableCollection<MaximoLabTrans> LabTrans
+		{
+			get { return labTrans; }
+			set { labTrans = value; }
+		}
+		private ObservableCollection<MaximoToolTrans> toolTrans;
+
+		public ObservableCollection<MaximoToolTrans> ToolTrans
+		{
+			get { return toolTrans; }
+			set { toolTrans = value; }
 		}
 
 		private Command.ShowAssetCommand showAssetCommand;
@@ -495,6 +512,58 @@ namespace CatchBasin.ViewModel
 			set { attachCommand = value; OnPropertyChanged("AttachCommand"); }
 		}
 
+		private Command.ShowToolCommand showToolCommand;
+
+		public Command.ShowToolCommand ShowToolCommand
+		{
+			get { return showToolCommand; }
+			set { showToolCommand = value; OnPropertyChanged("ShowToolCommand"); }
+		}
+
+
+		private Command.DeleteToolCommand deleteToolCommand;
+
+		public Command.DeleteToolCommand DeleteToolCommand
+		{
+			get { return deleteToolCommand; }
+			set { deleteToolCommand = value; OnPropertyChanged("DeleteToolCommand"); }
+		}
+
+
+		private Command.ShowLaborCommand showLaborCommand;
+
+		public Command.ShowLaborCommand ShowLaborCommand
+		{
+			get { return showLaborCommand; }
+			set { showLaborCommand = value; OnPropertyChanged("ShowLaborCommand"); }
+		}
+
+
+		private Command.DeleteLaborCommand deleteLaborCommand;
+
+		public Command.DeleteLaborCommand DeleteLaborCommand
+		{
+			get { return deleteLaborCommand; }
+			set { deleteLaborCommand = value; OnPropertyChanged("DeleteLaborCommand"); }
+		}
+
+
+		private Command.ShowAttachmentCommand showAttachmentCommand;
+
+		public Command.ShowAttachmentCommand ShowAttachmentCommand
+		{
+			get { return showAttachmentCommand; }
+			set { showAttachmentCommand = value; OnPropertyChanged("ShowAttachmentCommand"); }
+		}
+
+
+		private Command.DeleteAttachmentCommand deleteAttachmentCommand;
+
+		public Command.DeleteAttachmentCommand DeleteAttachmentCommand
+		{
+			get { return deleteAttachmentCommand; }
+			set { deleteAttachmentCommand = value; OnPropertyChanged("DeleteAttachmentCommand"); }
+		}
 
 
 		private List<FailureCode> problemList;
@@ -545,11 +614,47 @@ namespace CatchBasin.ViewModel
 			SaveCommand = new Command.SaveCommand<WorkOrderDetailVM>(this);
 			LaborCommand = new Command.LaborCommand(this);
 			ToolCommand = new Command.ToolCommand(this);
-			AttachCommand = new Command.AttachCommand();
-
-
+			AttachCommand = new Command.AttachCommand(this);
+			ShowToolCommand = new Command.ShowToolCommand(this);
+			DeleteToolCommand = new Command.DeleteToolCommand(this);
+			ShowLaborCommand = new Command.ShowLaborCommand(this);
+			DeleteLaborCommand = new Command.DeleteLaborCommand(this);
+			ShowAttachmentCommand = new Command.ShowAttachmentCommand(this);
+			DeleteAttachmentCommand = new Command.DeleteAttachmentCommand(this);
+			Actuals = new ObservableCollection<object>();
+			LabTrans = new ObservableCollection<MaximoLabTrans>();
+			ToolTrans = new ObservableCollection<MaximoToolTrans>();
+			Attachments = new ObservableCollection<MaximoDocument>();
+			LabTrans.CollectionChanged += LabTrans_CollectionChanged;
+			ToolTrans.CollectionChanged += ToolTrans_CollectionChanged;
 			ProblemList = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("type", "PROBLEM").Select(x => x.failurecode[0]).ToList<FailureCode>();
 			StatusList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("WOSTATUS").synonymdomain;
+		}
+
+		private void ToolTrans_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			Actuals.Clear();
+			foreach (var _labtrans in LabTrans.ToList())
+			{
+				Actuals.Add(_labtrans);
+			}
+			foreach (var _tooltrans in ToolTrans.ToList())
+			{
+				Actuals.Add(_tooltrans);
+			}
+		}
+
+		private void LabTrans_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			Actuals.Clear();
+			foreach (var _labtrans in LabTrans.ToList())
+			{
+				Actuals.Add(_labtrans);
+			}
+			foreach (var _tooltrans in ToolTrans.ToList())
+			{
+				Actuals.Add(_tooltrans);
+			}
 		}
 
 		private void WorkOrderDetailVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -566,8 +671,21 @@ namespace CatchBasin.ViewModel
 			}
 
 			MaximoWorkOrder = wo;
-			//todo : find actuals
-			//todo : find attachments
+
+			foreach (var _labtrans in wo.labtrans ?? new List<MaximoLabTrans>())
+			{
+				LabTrans.Add(_labtrans);
+			}
+			foreach (var _tooltrans in wo.tooltrans ?? new List<MaximoToolTrans>())
+			{
+				ToolTrans.Add(_tooltrans);
+			}
+			foreach (var _doc in wo.docs ?? new List<MaximoDocument>())
+			{
+				Attachments.Add(_doc);
+			}
+
+
 
 			WorkOrder = MaximoWorkOrder.wonum;
 			Description = MaximoWorkOrder.description;
@@ -581,20 +699,20 @@ namespace CatchBasin.ViewModel
 
 
 			Problem = MaximoWorkOrder.problemcode;
-			if (MaximoWorkOrder.failureReportList != null)
+			if (MaximoWorkOrder.failurereport != null)
 			{
-				if (MaximoWorkOrder.failureReportList.Count > 1)
+				if (MaximoWorkOrder.failurereport.Count > 1)
 				{
-					Cause = MaximoWorkOrder.failureReportList[1].failurecode;
+					Cause = MaximoWorkOrder.failurereport[1].failurecode;
 				}
-				if (MaximoWorkOrder.failureReportList.Count > 2)
+				if (MaximoWorkOrder.failurereport.Count > 2)
 				{
-					Remedy = MaximoWorkOrder.failureReportList[2].failurecode;
+					Remedy = MaximoWorkOrder.failurereport[2].failurecode;
 				}
 			}
 
 
-			foreach (var workOrderSpec in MaximoWorkOrder.workorderspecList ?? new List<MaximoWorkOrderSpec>())
+			foreach (var workOrderSpec in MaximoWorkOrder.workorderspec ?? new List<MaximoWorkOrderSpec>())
 			{
 				switch (workOrderSpec.assetattrid)
 				{
@@ -652,6 +770,16 @@ namespace CatchBasin.ViewModel
 			isDirty = false;
 		}
 
+		private void Attachments_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			OnPropertyChanged("Attachments");
+		}
+
+		private void Actuals_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			OnPropertyChanged("Actuals");
+		}
+
 		public void Save()
 		{
 
@@ -663,66 +791,70 @@ namespace CatchBasin.ViewModel
 			MaximoWorkOrder.wolo2 = Phone;
 			MaximoWorkOrder.status = Status;
 
-			if (MaximoWorkOrder.workorderspecList != null && MaximoWorkOrder.workorderspecList?.Count > 0)
+			MaximoWorkOrder.labtrans = LabTrans.ToList();
+			MaximoWorkOrder.tooltrans = ToolTrans.ToList();
+			MaximoWorkOrder.docs = Attachments.ToList();
+
+			if (MaximoWorkOrder.workorderspec != null && MaximoWorkOrder.workorderspec?.Count > 0)
 			{
 
-				for (int i = 0; i < MaximoWorkOrder.workorderspecList.Count; i++)
+				for (int i = 0; i < MaximoWorkOrder.workorderspec.Count; i++)
 				{
-					switch (MaximoWorkOrder.workorderspecList[i].assetattrid)
+					switch (MaximoWorkOrder.workorderspec[i].assetattrid)
 					{
 						case "CBDUMPEST":
-							MaximoWorkOrder.workorderspecList[i].numvalue = DumpEst;
+							MaximoWorkOrder.workorderspec[i].numvalue = DumpEst;
 							break;
 						case "CBFUBT":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = BrokenTop ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = BrokenTop ? "Y" : "N";
 
 							break;
 						case "CBFUCCTV":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = CCTV ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = CCTV ? "Y" : "N";
 
 							break;
 						case "CBFUFAG":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = FlushAlleyGrate ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = FlushAlleyGrate ? "Y" : "N";
 
 							break;
 						case "CBFUJB":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = JettingBlown ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = JettingBlown ? "Y" : "N";
 
 							break;
 						case "CBFUMC":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = ManualCleaning ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = ManualCleaning ? "Y" : "N";
 
 							break;
 						case "CBFUML":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = MissingLid ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = MissingLid ? "Y" : "N";
 
 							break;
 						case "CBFUNCB":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = NeedsCheckBlock ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = NeedsCheckBlock ? "Y" : "N";
 
 							break;
 						case "CBFUNM":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = NeedsMasonry ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = NeedsMasonry ? "Y" : "N";
 
 							break;
 						case "CBFUOSID":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = OilSpill ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = OilSpill ? "Y" : "N";
 
 							break;
 						case "CBFUTNR":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = TopNeedsReset ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = TopNeedsReset ? "Y" : "N";
 
 							break;
 						case "CBFUTR":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = TreeRoots ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = TreeRoots ? "Y" : "N";
 
 							break;
 						case "CBFUVAC":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = Vacuuming ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = Vacuuming ? "Y" : "N";
 
 							break;
 						case "CBFUWNR":
-							MaximoWorkOrder.workorderspecList[i].alnvalue = WallsNeedRepair ? "Y" : "N";
+							MaximoWorkOrder.workorderspec[i].alnvalue = WallsNeedRepair ? "Y" : "N";
 
 							break;
 
@@ -732,77 +864,77 @@ namespace CatchBasin.ViewModel
 			}
 			else
 			{
-				MaximoWorkOrder.workorderspecList = new List<MaximoWorkOrderSpec>();
+				MaximoWorkOrder.workorderspec = new List<MaximoWorkOrderSpec>();
 
 				var CBDUMPEST = new MaximoWorkOrderSpec();
 				CBDUMPEST.assetattrid = "CBDUMPEST";
 				CBDUMPEST.numvalue = DumpEst;
-				MaximoWorkOrder.workorderspecList.Add(CBDUMPEST);
+				MaximoWorkOrder.workorderspec.Add(CBDUMPEST);
 
 				var CBFUBT = new MaximoWorkOrderSpec();
 				CBFUBT.assetattrid = "CBFUBT";
 				CBFUBT.alnvalue = BrokenTop ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUBT);
+				MaximoWorkOrder.workorderspec.Add(CBFUBT);
 
 				var CBFUCCTV = new MaximoWorkOrderSpec();
 				CBFUCCTV.assetattrid = "CBFUCCTV";
 				CBFUCCTV.alnvalue = CCTV ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUCCTV);
+				MaximoWorkOrder.workorderspec.Add(CBFUCCTV);
 
 				var CBFUFAG = new MaximoWorkOrderSpec();
 				CBFUFAG.assetattrid = "CBFUFAG";
 				CBFUFAG.alnvalue = FlushAlleyGrate ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUFAG);
+				MaximoWorkOrder.workorderspec.Add(CBFUFAG);
 
 				var CBFUJB = new MaximoWorkOrderSpec();
 				CBFUJB.assetattrid = "CBFUJB";
 				CBFUJB.alnvalue = JettingBlown ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUJB);
+				MaximoWorkOrder.workorderspec.Add(CBFUJB);
 
 				var CBFUMC = new MaximoWorkOrderSpec();
 				CBFUMC.assetattrid = "CBFUMC";
 				CBFUMC.alnvalue = ManualCleaning ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUMC);
+				MaximoWorkOrder.workorderspec.Add(CBFUMC);
 
 				var CBFUML = new MaximoWorkOrderSpec();
 				CBFUML.assetattrid = "CBFUML";
 				CBFUML.alnvalue = MissingLid ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUML);
+				MaximoWorkOrder.workorderspec.Add(CBFUML);
 
 				var CBFUNCB = new MaximoWorkOrderSpec();
 				CBFUNCB.assetattrid = "CBFUNCB";
 				CBFUNCB.alnvalue = NeedsCheckBlock ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUNCB);
+				MaximoWorkOrder.workorderspec.Add(CBFUNCB);
 
 				var CBFUNM = new MaximoWorkOrderSpec();
 				CBFUNM.assetattrid = "CBFUNM";
 				CBFUNM.alnvalue = NeedsMasonry ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUNM);
+				MaximoWorkOrder.workorderspec.Add(CBFUNM);
 
 				var CBFUOSID = new MaximoWorkOrderSpec();
 				CBFUOSID.assetattrid = "CBFUOSID";
 				CBFUOSID.alnvalue = OilSpill ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUOSID);
+				MaximoWorkOrder.workorderspec.Add(CBFUOSID);
 
 				var CBFUTNR = new MaximoWorkOrderSpec();
 				CBFUTNR.assetattrid = "CBFUTNR";
 				CBFUTNR.alnvalue = TopNeedsReset ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUTNR);
+				MaximoWorkOrder.workorderspec.Add(CBFUTNR);
 
 				var CBFUTR = new MaximoWorkOrderSpec();
 				CBFUTR.assetattrid = "CBFUTR";
 				CBFUTR.alnvalue = TreeRoots ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUTR);
+				MaximoWorkOrder.workorderspec.Add(CBFUTR);
 
 				var CBFUVAC = new MaximoWorkOrderSpec();
 				CBFUVAC.assetattrid = "CBFUVAC";
 				CBFUVAC.alnvalue = Vacuuming ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUVAC);
+				MaximoWorkOrder.workorderspec.Add(CBFUVAC);
 
 				var CBFUWNR = new MaximoWorkOrderSpec();
 				CBFUWNR.assetattrid = "CBFUNM";
 				CBFUWNR.alnvalue = WallsNeedRepair ? "Y" : "N";
-				MaximoWorkOrder.workorderspecList.Add(CBFUWNR);
+				MaximoWorkOrder.workorderspec.Add(CBFUWNR);
 			}
 
 			if (MaximoWorkOrder.failureRemark != null)
@@ -825,17 +957,17 @@ namespace CatchBasin.ViewModel
 			}
 			MaximoWorkOrder.problemcode = Problem;
 
-			if (MaximoWorkOrder.failureReportList == null)
+			if (MaximoWorkOrder.failurereport == null)
 			{
-				MaximoWorkOrder.failureReportList = new List<MaximoWorkOrderFailureReport>();
+				MaximoWorkOrder.failurereport = new List<MaximoWorkOrderFailureReport>();
 			}
-			var count = MaximoWorkOrder.failureReportList.Count;
+			var count = MaximoWorkOrder.failurereport.Count;
 			if (count > 0)
 			{
-				if (MaximoWorkOrder.failureReportList[0].failurecode != Problem)
+				if (MaximoWorkOrder.failurereport[0].failurecode != Problem)
 				{
-					MaximoWorkOrder.failureReportList[0].failurecode = Problem;
-					MaximoWorkOrder.failureReportList[0].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+					MaximoWorkOrder.failurereport[0].failurecode = Problem;
+					MaximoWorkOrder.failurereport[0].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
 				}
 
 			}
@@ -846,15 +978,15 @@ namespace CatchBasin.ViewModel
 				failureProblemCode.wonum = MaximoWorkOrder.wonum;
 				failureProblemCode.type = "PROBLEMCODE";
 				failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-				MaximoWorkOrder.failureReportList.Add(failureProblemCode);
+				MaximoWorkOrder.failurereport.Add(failureProblemCode);
 			}
 
 			if (count > 1)
 			{
-				if (MaximoWorkOrder.failureReportList[1].failurecode != Cause)
+				if (MaximoWorkOrder.failurereport[1].failurecode != Cause)
 				{
-					MaximoWorkOrder.failureReportList[1].failurecode = Cause;
-					MaximoWorkOrder.failureReportList[1].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+					MaximoWorkOrder.failurereport[1].failurecode = Cause;
+					MaximoWorkOrder.failurereport[1].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
 				}
 			}
 			else
@@ -864,15 +996,15 @@ namespace CatchBasin.ViewModel
 				failureCause.wonum = MaximoWorkOrder.wonum;
 				failureCause.type = "CAUSE";
 				failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-				MaximoWorkOrder.failureReportList.Add(failureCause);
+				MaximoWorkOrder.failurereport.Add(failureCause);
 			}
 
 			if (count > 2)
 			{
-				if (MaximoWorkOrder.failureReportList[2].failurecode != Remedy)
+				if (MaximoWorkOrder.failurereport[2].failurecode != Remedy)
 				{
-					MaximoWorkOrder.failureReportList[2].failurecode = Remedy;
-					MaximoWorkOrder.failureReportList[2].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+					MaximoWorkOrder.failurereport[2].failurecode = Remedy;
+					MaximoWorkOrder.failurereport[2].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
 				}
 			}
 			else
@@ -882,7 +1014,7 @@ namespace CatchBasin.ViewModel
 				failureRemedy.type = "REMEDY";
 				failureRemedy.wonum = MaximoWorkOrder.wonum;
 				failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-				MaximoWorkOrder.failureReportList.Add(failureRemedy);
+				MaximoWorkOrder.failurereport.Add(failureRemedy);
 			}
 
 
@@ -926,8 +1058,10 @@ namespace CatchBasin.ViewModel
 		public void Clear()
 		{
 			MaximoWorkOrder = null;
-			Attachments = null;
-			Actuals = null;
+			Attachments.Clear();
+			LabTrans.Clear();
+			ToolTrans.Clear();
+			Actuals.Clear();
 			Hide();
 
 		}

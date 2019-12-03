@@ -8,12 +8,17 @@ namespace MaximoServiceLibrary.model
 	{
 		public MaximoAsset asset { get; set; }
 
-        public List<MaximoWorkOrderSpec> workorderspecList { get; set; }
+        public List<MaximoWorkOrderSpec> workorderspec { get; set; }
 
         public MaximoWorkOrderFailureRemark failureRemark { get; set; }
 
-        public List<MaximoWorkOrderFailureReport> failureReportList { get; set; }
+        public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
         
+		public List<MaximoDocument> docs { get; set; }
+
+		public List<MaximoLabTrans> labtrans { get; set; }
+
+		public List<MaximoToolTrans> tooltrans { get; set; }
 		// auto-generated fields
 
 		// Actual Hours of External Labor

@@ -203,19 +203,19 @@ namespace CatchBasin.ViewModel.Commands
 					wo.service = "DSS";
 					wo.siteid = "DWS_DSS";
 
-					wo.failureReportList = new List<MaximoWorkOrderFailureReport>();
+					wo.failurereport = new List<MaximoWorkOrderFailureReport>();
 					failureProblemCode = new MaximoWorkOrderFailureReport();
 					failureProblemCode.failurecode = "PM";
 					failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureProblemCode);
+					wo.failurereport.Add(failureProblemCode);
 					failureCause = new MaximoWorkOrderFailureReport();
 					failureCause.failurecode = "FULLTRUCK";
 					failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureCause);
+					wo.failurereport.Add(failureCause);
 					failureRemedy = new MaximoWorkOrderFailureReport();
 					failureRemedy.failurecode = "EMPTYTRUCK";
 					failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureRemedy);
+					wo.failurereport.Add(failureRemedy);
 
 					MapVM.ShowWorkOrderDetail(wo);
 					break;
@@ -236,19 +236,19 @@ namespace CatchBasin.ViewModel.Commands
 					wo.service = "DSS";
 					wo.siteid = "DWS_DSS";
 
-					wo.failureReportList = new List<MaximoWorkOrderFailureReport>();
+					wo.failurereport = new List<MaximoWorkOrderFailureReport>();
 					failureProblemCode = new MaximoWorkOrderFailureReport();
 					failureProblemCode.failurecode = "PM";
 					failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureProblemCode);
+					wo.failurereport.Add(failureProblemCode);
 					failureCause = new MaximoWorkOrderFailureReport();
 					failureCause.failurecode = "NEWASSET";
 					failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureCause);
+					wo.failurereport.Add(failureCause);
 					failureRemedy = new MaximoWorkOrderFailureReport();
 					failureRemedy.failurecode = "COMPFOLLUP";
 					failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureRemedy);
+					wo.failurereport.Add(failureRemedy);
 					
 
 					MapVM.ShowWorkOrderDetail(wo);
@@ -270,11 +270,11 @@ namespace CatchBasin.ViewModel.Commands
 					wo.service = "DSS";
 					wo.siteid = "DWS_DSS";
 				
-					wo.failureReportList = new List<MaximoWorkOrderFailureReport>();
+					wo.failurereport = new List<MaximoWorkOrderFailureReport>();
 					failureProblemCode = new MaximoWorkOrderFailureReport();
 					failureProblemCode.failurecode = "PM";
 					failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureProblemCode);
+					wo.failurereport.Add(failureProblemCode);
 
 					wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
 
@@ -300,19 +300,19 @@ namespace CatchBasin.ViewModel.Commands
 					wo.siteid = "DWS_DSS";
 					wo.parent = "";
 
-					wo.failureReportList = new List<MaximoWorkOrderFailureReport>();
+					wo.failurereport = new List<MaximoWorkOrderFailureReport>();
 					failureProblemCode = new MaximoWorkOrderFailureReport();
 					failureProblemCode.failurecode = "PM";
 					failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureProblemCode);
+					wo.failurereport.Add(failureProblemCode);
 					failureCause = new MaximoWorkOrderFailureReport();
 					failureCause.failurecode = "NEWASSET";
 					failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureCause);
+					wo.failurereport.Add(failureCause);
 					failureRemedy = new MaximoWorkOrderFailureReport();
 					failureRemedy.failurecode = "COMPFOLLUP";
 					failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					wo.failureReportList.Add(failureRemedy);
+					wo.failurereport.Add(failureRemedy);
 
 					wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
 

@@ -38,7 +38,7 @@ namespace CatchBasin.ViewModel
 		}
 
 
-		public void syncstatus(string status, string substatus) {
+		public void synchronizationStatus(string status, string substatus) {
 			SyncStatus = $"{status} | {substatus}";
 		}
 
@@ -80,7 +80,7 @@ namespace CatchBasin.ViewModel
             AssetDetailIsVisible = false;
             WorkOrderDetailIsVisible = false;
 
-			((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizationDelegate += syncstatus;
+			((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizationDelegate += synchronizationStatus;
           
         }
 
