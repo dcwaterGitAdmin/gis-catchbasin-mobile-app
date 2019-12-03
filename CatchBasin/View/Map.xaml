@@ -138,7 +138,9 @@
                     <RibbonGroup x:Name="AppRibbonGroup" Header="Application">
                         <RibbonButton Command="{Binding SettingsCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Settings.png" Label="Settings" />
                         <RibbonButton Command="{Binding LogoutCommand}" CommandParameter="{Binding ElementName=MapWindow}" LargeImageSource="/CatchBasin;component/Resources/Images/logout.png" Label="Logout" />
-                    </RibbonGroup>
+						<RibbonCheckBox IsChecked="{Binding IsOffline}"></RibbonCheckBox>
+					
+					</RibbonGroup>
                 </RibbonTab>
             </Ribbon>
 
@@ -159,7 +161,7 @@
                 </StatusBar.ItemsPanel>
 
                 <StatusBarItem Grid.Column="0">
-                    <TextBlock>Left</TextBlock>
+					<TextBlock Text="{Binding SyncStatus}"></TextBlock>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
                     <TextBlock>Middle</TextBlock>

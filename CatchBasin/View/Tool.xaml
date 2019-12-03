@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:CatchBasin.View"
         mc:Ignorable="d"
         Title="Tool" Height="350" Width="300">
@@ -31,7 +32,7 @@
 
 					<Label   Margin="0 3 0 3" Content="Duration" FontWeight="Bold"/>
 
-				<dxe:DateEdit Mask="HH:mm:ss"  Text="00:00:00" MaskUseAsDisplayFormat="True"  DateTime="{Binding Duration, Mode=TwoWay}"/>
+				<xctk:TimePicker FormatString="HH:mm:ss"  Text="00:00:00"  Value="{Binding Duration, Mode=TwoWay}" Format="Custom"/>
 
 			</StackPanel>
 			<!--</ScrollViewer>-->

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CatchBasin.View"
 		xmlns:helper="clr-namespace:CatchBasin.ViewModel.Helper"
-        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" x:Class="CatchBasin.View.Labor"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"    
+	x:Class="CatchBasin.View.Labor"
         mc:Ignorable="d"
         Title="Labor" Height="400" Width="300">
 	<Window.Resources>
@@ -33,16 +34,14 @@
 
 				<Label  Margin="0 3 0 3"  Content="Start Date" FontWeight="Bold"/>
 
-				<dxe:DateEdit x:Name="startDate"  Mask="G" DisplayFormatString="G" DateTime="{Binding StartDate, Mode=TwoWay}" >
-					<dxe:DateEdit.StyleSettings>
-						<dxe:DateEditNavigatorWithTimePickerStyleSettings />
-					</dxe:DateEdit.StyleSettings>
-				</dxe:DateEdit>
+				<xctk:DateTimePicker x:Name="startDate"    Value="{Binding StartDate, Mode=TwoWay}" >
+					
+				</xctk:DateTimePicker>
 				<Label   Margin="0 3 0 3" Content="Duration" FontWeight="Bold"/>
 
-				<dxe:DateEdit Mask="HH:mm:ss"  Text="00:00:00" MaskUseAsDisplayFormat="True"  DateTime="{Binding Duration, Mode=TwoWay}">
+				<xctk:TimePicker FormatString="HH:mm:ss"  Text="00:00:00"  Value="{Binding Duration, Mode=TwoWay}" Format="Custom">
 					
-				</dxe:DateEdit>
+				</xctk:TimePicker>
 				<Label  Margin="0 3 0 3"  Content="Type" FontWeight="Bold"/>
 				<StackPanel Orientation="Horizontal" >
 					<RadioButton  Margin="0 3 10 3"  GroupName="Type" IsChecked="{Binding Type, ConverterParameter=WORK, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Work" />

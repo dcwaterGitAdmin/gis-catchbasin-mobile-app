@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using LocalDBLibrary;
+using LocalDBLibrary.model;
 using Newtonsoft.Json;
 using RestSharp;
 using MaximoServiceLibrary.model;
@@ -454,10 +455,55 @@ namespace MaximoServiceLibrary
 
         public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
-			var request = createRequest(maximoWorkOrder.href, true, Method.POST);
+			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
+
+			// TODO edelioglu, add required request params
 			
-			request.AddJsonBody(maximoWorkOrder);
+			// create an empty workorder
+			MaximoWorkOrder workOrderToBePosted = new MaximoWorkOrder();
+
+			if (maximoWorkOrder.remarkdesc != null)
+			{
+				workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
+			}
+			
+			// check if any of the workorderspecs has changed
+			bool workOrderSpecChanged = false;
+			foreach (var maximoWorkOrderSpec in maximoWorkOrder.workorderspecList)
+			{
+				if (maximoWorkOrderSpec.syncronizationStatus.Value == SyncronizationStatus.CREATED ||
+				    maximoWorkOrderSpec.syncronizationStatus.Value == SyncronizationStatus.MODIFIED)
+				{
+					workOrderSpecChanged = true;
+					break;
+				}
+			}
+
+			// add all of the workorderspec's to the request body
+			if (workOrderSpecChanged)
+			{
+				workOrderToBePosted.workorderspecList = maximoWorkOrder.workorderspecList;
+			}
+			
+			// check if any of the failure reports has changed
+			bool failureReportChanged = false;
+			foreach (var maximoWorkOrderFailureReport in maximoWorkOrder.failureReportList)
+			{
+				if (maximoWorkOrderFailureReport.syncronizationStatus.Value == SyncronizationStatus.CREATED ||
+				    maximoWorkOrderFailureReport.syncronizationStatus.Value == SyncronizationStatus.MODIFIED)
+				{
+					failureReportChanged = true;
+					break;
+				}
+			}
+
+			if (failureReportChanged)
+			{
+				workOrderToBePosted.failureReportList = maximoWorkOrder.failureReportList;
+			}
+
+			request.AddJsonBody(workOrderToBePosted);
 			
 			var response = restClient.Execute(request);
 			Console.WriteLine($"/mxwo - update operation response : {response.Content}");

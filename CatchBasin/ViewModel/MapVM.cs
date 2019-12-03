@@ -29,9 +29,29 @@ namespace CatchBasin.ViewModel
     class MapVM : BaseVM
     {
 
-        
+		private string syncStatus;
 
-        public MapVM()
+		public string SyncStatus
+		{
+			get { return syncStatus; }
+			set { syncStatus = value;OnPropertyChanged("SyncStatus"); }
+		}
+
+
+		public void syncstatus(string status, string substatus) {
+			SyncStatus = $"{status} | {substatus}";
+		}
+
+		private bool isOffline;
+
+		public bool IsOffline
+		{
+			get { return isOffline; }
+			set { isOffline = value; ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.isOffline = isOffline; OnPropertyChanged("IsOffline"); }
+		}
+
+
+		public MapVM()
         {
             WorkOrderListVM = new WorkOrderListVM(this);
             WorkOrderDetailVM = new WorkOrderDetailVM(this);
@@ -59,6 +79,8 @@ namespace CatchBasin.ViewModel
 
             AssetDetailIsVisible = false;
             WorkOrderDetailIsVisible = false;
+
+			((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizationDelegate += syncstatus;
           
         }
 
