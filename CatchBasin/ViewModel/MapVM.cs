@@ -405,36 +405,57 @@ namespace CatchBasin.ViewModel
 		{
 			Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
 			ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+			List<LayerDescription> layerDescriptions = new List<LayerDescription>();
+			layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "CBCNLNOIDS.geodatabase", new string[] {"" }, new string[] { "Newly Discovered/CNL" }));
+			layerDescriptions.Add(new LayerDescription("Open Workorder", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, "CBWorkorders.geodatabase", new string[] {"" }, new string[] { "Catch Basin Workorder" }));
+			layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssets/FeatureServer", SyncDirection.Bidirectional, "CBAssets.geodatabase", new string[] {"","","","","" }, new string[] { "Catch Basin - Cleaned by DC Water", "Catch Basin - Cleaned by Others", "Catch Basin - Proposed", "Catch Basin - Cleaned by DC Water - Heavily Travelled", "Catch Basin - Cleaned by DC Water - Water Quality" }));
+			layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "CBSewer.geodatabase", new string[] {"","" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
 
-			
 
-			try
+			foreach (LayerDescription layerDescription in layerDescriptions)
 			{
-				
-				Geodatabase localGdb = await Geodatabase.OpenAsync("C:\\TEMP\\CB.geodatabase");
-				await SyncronizeEditsAsync("https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", "C:\\TEMP\\CB.geodatabase", SyncDirection.Download);
+				Geodatabase localGdb = null;
+				try
+				{
+					 localGdb = await Geodatabase.OpenAsync(layerDescription.geodatabaseFilePath);
+
+				}catch(Exception e)
+				{
+					//todo console write
+				}
+
+				if(localGdb == null)
+				{
+					GISLayerToOffline(layerDescription.url, layerDescription.layername, layerDescription.displayExpressions, layerDescription.sublayerNames, envelope, layerDescription.geodatabaseFilePath);
+				}
+				else
+				{
+					await SyncronizeEditsAsync(layerDescription.url,layerDescription.geodatabaseFilePath, layerDescription.syncDirection);
+					AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
+				}
 			}
-			catch(Exception e)
-			{
-				GISLayerToOffline("https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", "", envelope, "C:\\TEMP\\DC.geodatabase");
-			} 
-			
 
-	
-
-			//
 		}
 
-		public async void GISLayerToOffline(string url, string expression, Envelope envelope, string path)
+		public async void GISLayerToOffline(string url, string layername, string[] expression, string[] sublayers, Envelope envelope, string path)
 		{
 			Uri featureServiceUri = new Uri(url);
 			GeodatabaseSyncTask gdbSyncTask = await GeodatabaseSyncTask.CreateAsync(featureServiceUri);
 
 			GenerateGeodatabaseParameters generateGdbParams = await gdbSyncTask.CreateDefaultGenerateGeodatabaseParametersAsync(envelope);
+			generateGdbParams.LayerOptions.Clear();
+			for (int i = 0; i < expression.Count(); i++)
+			{
+				generateGdbParams.LayerOptions.Add(new GenerateLayerOption(i, expression[i]));
+			}
+
 
 			GenerateGeodatabaseJob generateGdbJob = gdbSyncTask.GenerateGeodatabase(generateGdbParams, path);
 
-			generateGdbJob.JobChanged += (sender, args) =>
+			
+			
+
+			generateGdbJob.JobChanged += async (sender, args) =>
 			{
 				
 				if (generateGdbJob.Error != null)
@@ -446,8 +467,8 @@ namespace CatchBasin.ViewModel
 				
 				if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
 				{
-					
-					AddLocalDataToMap(generateGdbJob);
+					Geodatabase localGdb = await generateGdbJob.GetResultAsync();
+					AddLocalDataToMap(localGdb, layername, sublayers);
 				}
 				else if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
 				{
@@ -464,16 +485,21 @@ namespace CatchBasin.ViewModel
 			generateGdbJob.Start();
 		}
 
-		private async void AddLocalDataToMap(GenerateGeodatabaseJob geodatabaseJob)
+		private void AddLocalDataToMap(Geodatabase localGdb, string layername, string[] sublayers)
 		{
-			Geodatabase localGdb = await geodatabaseJob.GetResultAsync();
+			
 
-		
-			foreach (FeatureTable featureTable in localGdb.GeodatabaseFeatureTables)
+			GroupLayer groupLayer = new GroupLayer();
+			for (int i = 0; i < localGdb.GeodatabaseFeatureTables.Count; i++)
 			{
-				FeatureLayer featureLayer = new FeatureLayer(featureTable);
-				Map.OperationalLayers.Add(featureLayer);
+				FeatureTable ft = localGdb.GeodatabaseFeatureTables[i];
+				ft.DisplayName = sublayers[i];
+
+				FeatureLayer featureLayer = new FeatureLayer(ft);
+				groupLayer.Layers.Add(featureLayer);
+
 			}
+			Map.OperationalLayers.Add(groupLayer);
 		}
 
 		public async Task SyncronizeEditsAsync(string serviceUrl, string geodatabasePath , SyncDirection syncDirection)
@@ -521,10 +547,11 @@ namespace CatchBasin.ViewModel
 
 	class LayerDescription
 	{
-		public LayerDescription(string _layername, string _url, string _geodatabaseFilePath, string[] _displayExpressions, string[] _sublayerNames)
+		public LayerDescription(string _layername, string _url,  SyncDirection _syncDirection, string _geodatabaseFilePath, string[] _displayExpressions, string[] _sublayerNames)
 		{
 			url = _url;
 			layername = _layername;
+			syncDirection = _syncDirection;
 			geodatabaseFilePath = _geodatabaseFilePath;
 			displayExpressions = _displayExpressions;
 			sublayerNames = _sublayerNames;
@@ -536,5 +563,6 @@ namespace CatchBasin.ViewModel
 		 public string[] displayExpressions { get; set; }
 		public string[] sublayerNames { get; set; }
 		public string layername { get; set; }
+		public SyncDirection syncDirection { get; set; }
 	}
 }
