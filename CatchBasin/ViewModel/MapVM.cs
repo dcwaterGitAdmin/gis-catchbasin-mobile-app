@@ -22,6 +22,8 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls.Ribbon;
 using MaximoServiceLibrary.model;
+using Esri.ArcGISRuntime.Tasks.Offline;
+using System.Net;
 
 namespace CatchBasin.ViewModel
 {
@@ -81,10 +83,12 @@ namespace CatchBasin.ViewModel
             WorkOrderDetailIsVisible = false;
 
 			((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizationDelegate += synchronizationStatus;
-          
+			InitializeMap();
         }
 
-        private Esri.ArcGISRuntime.Mapping.Map _map = new Esri.ArcGISRuntime.Mapping.Map(Basemap.CreateStreets());
+		
+
+		private Esri.ArcGISRuntime.Mapping.Map _map = new Esri.ArcGISRuntime.Mapping.Map(Basemap.CreateStreets());
 
         public Esri.ArcGISRuntime.Mapping.Map Map
         {
@@ -394,5 +398,143 @@ namespace CatchBasin.ViewModel
         }
 
 
-    }
+
+
+		// Map
+		private async void InitializeMap()
+		{
+			Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
+			ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+			
+
+			try
+			{
+				
+				Geodatabase localGdb = await Geodatabase.OpenAsync("C:\\TEMP\\CB.geodatabase");
+				await SyncronizeEditsAsync("https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", "C:\\TEMP\\CB.geodatabase", SyncDirection.Download);
+			}
+			catch(Exception e)
+			{
+				GISLayerToOffline("https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", "", envelope, "C:\\TEMP\\DC.geodatabase");
+			} 
+			
+
+	
+
+			//
+		}
+
+		public async void GISLayerToOffline(string url, string expression, Envelope envelope, string path)
+		{
+			Uri featureServiceUri = new Uri(url);
+			GeodatabaseSyncTask gdbSyncTask = await GeodatabaseSyncTask.CreateAsync(featureServiceUri);
+
+			GenerateGeodatabaseParameters generateGdbParams = await gdbSyncTask.CreateDefaultGenerateGeodatabaseParametersAsync(envelope);
+
+			GenerateGeodatabaseJob generateGdbJob = gdbSyncTask.GenerateGeodatabase(generateGdbParams, path);
+
+			generateGdbJob.JobChanged += (sender, args) =>
+			{
+				
+				if (generateGdbJob.Error != null)
+				{
+					Console.WriteLine("Error creating geodatabase: " + generateGdbJob.Error.Message);
+					return;
+				}
+
+				
+				if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
+				{
+					
+					AddLocalDataToMap(generateGdbJob);
+				}
+				else if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
+				{
+					
+					Console.WriteLine("Unable to create local geodatabase.");
+				}
+				else
+				{
+					
+					//Console.WriteLine(generateGdbJob.Messages[generateGdbJob.Messages.Count - 1].Message);
+				}
+			};
+
+			generateGdbJob.Start();
+		}
+
+		private async void AddLocalDataToMap(GenerateGeodatabaseJob geodatabaseJob)
+		{
+			Geodatabase localGdb = await geodatabaseJob.GetResultAsync();
+
+		
+			foreach (FeatureTable featureTable in localGdb.GeodatabaseFeatureTables)
+			{
+				FeatureLayer featureLayer = new FeatureLayer(featureTable);
+				Map.OperationalLayers.Add(featureLayer);
+			}
+		}
+
+		public async Task SyncronizeEditsAsync(string serviceUrl, string geodatabasePath , SyncDirection syncDirection)
+		{
+			// create sync parameters
+			var taskParameters = new SyncGeodatabaseParameters()
+			{
+				RollbackOnFailure = true,
+				GeodatabaseSyncDirection = syncDirection
+			};
+
+			// create a sync task with the URL of the feature service to sync
+			var syncTask = await GeodatabaseSyncTask.CreateAsync(new Uri(serviceUrl));
+
+			// open the local geodatabase
+			var gdb = await Esri.ArcGISRuntime.Data.Geodatabase.OpenAsync(geodatabasePath);
+
+			// create a synchronize geodatabase job, pass in the parameters and the geodatabase
+			SyncGeodatabaseJob job = syncTask.SyncGeodatabase(taskParameters, gdb);
+
+			// handle the JobChanged event for the job
+			job.JobChanged += (s, e) =>
+			{
+				// report changes in the job status
+				if (job.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
+				{
+					// report success ...
+					Console.WriteLine(  "Synchronization is complete!");
+				}
+				else if (job.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
+				{
+					// report failure ...
+					Console.WriteLine(  job.Error.Message);
+				}
+				else
+				{
+					Console.WriteLine( "Sync in progress ...");
+				}
+			};
+
+			// await the completion of the job
+			var result = await job.GetResultAsync();
+		}
+	}
+
+	class LayerDescription
+	{
+		public LayerDescription(string _layername, string _url, string _geodatabaseFilePath, string[] _displayExpressions, string[] _sublayerNames)
+		{
+			url = _url;
+			layername = _layername;
+			geodatabaseFilePath = _geodatabaseFilePath;
+			displayExpressions = _displayExpressions;
+			sublayerNames = _sublayerNames;
+
+		}
+
+		public string url { get; set; }
+		public string geodatabaseFilePath { get; set; }
+		 public string[] displayExpressions { get; set; }
+		public string[] sublayerNames { get; set; }
+		public string layername { get; set; }
+	}
 }

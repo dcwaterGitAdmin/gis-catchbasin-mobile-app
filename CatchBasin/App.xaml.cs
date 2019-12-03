@@ -30,7 +30,7 @@ namespace CatchBasin
 
 				//MaximoServiceLibraryBeanConfiguration.workOrderRepository.removeCollection();
 
-				//var mxuser =MaximoServiceLibraryBeanConfiguration.userRepository.findOneIgnoreCase("EDELIOGLU");
+				//var mxuser = MaximoServiceLibraryBeanConfiguration.userRepository.findOneIgnoreCase("EDELIOGLU");
 				//mxuser.userPreferences.lastSyncTime = DateTime.MinValue;
 				//MaximoServiceLibraryBeanConfiguration.userRepository.upsert(mxuser);
 			}
