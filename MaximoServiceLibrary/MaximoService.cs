@@ -461,11 +461,11 @@ namespace MaximoServiceLibrary
 			// TODO edelioglu, add required request params
 			
 			// create an empty workorder
-			Dictionary<string, object> workOrderToBePosted = new Dictionary<string, object>();
+			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
 			
 			if (maximoWorkOrder.remarkdesc != null)
 			{
-				workOrderToBePosted.Add("remarkdesc", maximoWorkOrder.remarkdesc);
+				workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			}
 			
 			// check if any of the workorderspecs has changed
@@ -483,23 +483,10 @@ namespace MaximoServiceLibrary
 			// add all of the workorderspec's to the request body
 			if (workOrderSpecChanged)
 			{
-				List<Dictionary<string, object>> workorderspecList = new List<Dictionary<string, object>>();
-				
-				foreach (var maximoWorkOrderSpec in maximoWorkOrder.workorderspec)
-				{
-					Dictionary<string, object> workorderspecDict = new Dictionary<string, object>();
-					workorderspecDict.Add("assetattrid", maximoWorkOrderSpec.assetattrid);
-					workorderspecDict.Add("alnvalue", maximoWorkOrderSpec.alnvalue);
-					workorderspecDict.Add("numvalue", maximoWorkOrderSpec.numvalue);
-					
-					workorderspecList.Add(workorderspecDict);
-				}
-				
-				workOrderToBePosted.Add("workorderspec", workorderspecList);
+				workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
 			}
 			
 			// check if any of the failure reports has changed
-			/*
 			bool failureReportChanged = false;
 			foreach (var maximoWorkOrderFailureReport in maximoWorkOrder.failurereport)
 			{
@@ -515,7 +502,6 @@ namespace MaximoServiceLibrary
 			{
 				workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
 			}
-			*/
 
 			request.AddJsonBody(workOrderToBePosted);
 			
