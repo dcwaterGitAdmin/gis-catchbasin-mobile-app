@@ -693,7 +693,7 @@ namespace CatchBasin.ViewModel
 			Contact = MaximoWorkOrder.wolo4;
 			Phone = MaximoWorkOrder.wolo2;
 			AssetTag = MaximoWorkOrder.asset?.assettag;
-			Remarks = MaximoWorkOrder.failureRemark?.description;
+			Remarks = MaximoWorkOrder.remarkdesc;
 
 			Status = MaximoWorkOrder.status;
 
@@ -803,57 +803,113 @@ namespace CatchBasin.ViewModel
 					switch (MaximoWorkOrder.workorderspec[i].assetattrid)
 					{
 						case "CBDUMPEST":
+							if(MaximoWorkOrder.workorderspec[i].numvalue != DumpEst)
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].numvalue = DumpEst;
 							break;
 						case "CBFUBT":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (BrokenTop ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = BrokenTop ? "Y" : "N";
 
 							break;
 						case "CBFUCCTV":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (CCTV ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = CCTV ? "Y" : "N";
 
 							break;
 						case "CBFUFAG":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (FlushAlleyGrate ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = FlushAlleyGrate ? "Y" : "N";
 
 							break;
 						case "CBFUJB":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (JettingBlown ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = JettingBlown ? "Y" : "N";
 
 							break;
 						case "CBFUMC":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (ManualCleaning ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = ManualCleaning ? "Y" : "N";
 
 							break;
 						case "CBFUML":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (MissingLid ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = MissingLid ? "Y" : "N";
 
 							break;
 						case "CBFUNCB":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (NeedsCheckBlock ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = NeedsCheckBlock ? "Y" : "N";
 
 							break;
 						case "CBFUNM":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (NeedsMasonry ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = NeedsMasonry ? "Y" : "N";
 
 							break;
 						case "CBFUOSID":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (OilSpill ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = OilSpill ? "Y" : "N";
 
 							break;
 						case "CBFUTNR":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (TopNeedsReset ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = TopNeedsReset ? "Y" : "N";
 
 							break;
 						case "CBFUTR":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (TreeRoots ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = TreeRoots ? "Y" : "N";
 
 							break;
 						case "CBFUVAC":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (Vacuuming ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = Vacuuming ? "Y" : "N";
 
 							break;
 						case "CBFUWNR":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != (WallsNeedRepair ? "Y" : "N"))
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
 							MaximoWorkOrder.workorderspec[i].alnvalue = WallsNeedRepair ? "Y" : "N";
 
 							break;
@@ -869,92 +925,91 @@ namespace CatchBasin.ViewModel
 				var CBDUMPEST = new MaximoWorkOrderSpec();
 				CBDUMPEST.assetattrid = "CBDUMPEST";
 				CBDUMPEST.numvalue = DumpEst;
+				CBDUMPEST.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBDUMPEST);
 
 				var CBFUBT = new MaximoWorkOrderSpec();
 				CBFUBT.assetattrid = "CBFUBT";
 				CBFUBT.alnvalue = BrokenTop ? "Y" : "N";
+				CBFUBT.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUBT);
 
 				var CBFUCCTV = new MaximoWorkOrderSpec();
 				CBFUCCTV.assetattrid = "CBFUCCTV";
 				CBFUCCTV.alnvalue = CCTV ? "Y" : "N";
+				CBFUCCTV.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUCCTV);
 
 				var CBFUFAG = new MaximoWorkOrderSpec();
 				CBFUFAG.assetattrid = "CBFUFAG";
 				CBFUFAG.alnvalue = FlushAlleyGrate ? "Y" : "N";
+				CBFUFAG.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUFAG);
 
 				var CBFUJB = new MaximoWorkOrderSpec();
 				CBFUJB.assetattrid = "CBFUJB";
 				CBFUJB.alnvalue = JettingBlown ? "Y" : "N";
+				CBFUJB.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUJB);
 
 				var CBFUMC = new MaximoWorkOrderSpec();
 				CBFUMC.assetattrid = "CBFUMC";
 				CBFUMC.alnvalue = ManualCleaning ? "Y" : "N";
+				CBFUMC.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUMC);
 
 				var CBFUML = new MaximoWorkOrderSpec();
 				CBFUML.assetattrid = "CBFUML";
 				CBFUML.alnvalue = MissingLid ? "Y" : "N";
+				CBFUML.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUML);
 
 				var CBFUNCB = new MaximoWorkOrderSpec();
 				CBFUNCB.assetattrid = "CBFUNCB";
 				CBFUNCB.alnvalue = NeedsCheckBlock ? "Y" : "N";
+				CBFUNCB.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUNCB);
 
 				var CBFUNM = new MaximoWorkOrderSpec();
 				CBFUNM.assetattrid = "CBFUNM";
 				CBFUNM.alnvalue = NeedsMasonry ? "Y" : "N";
+				CBFUNM.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUNM);
 
 				var CBFUOSID = new MaximoWorkOrderSpec();
 				CBFUOSID.assetattrid = "CBFUOSID";
 				CBFUOSID.alnvalue = OilSpill ? "Y" : "N";
+				CBFUOSID.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUOSID);
 
 				var CBFUTNR = new MaximoWorkOrderSpec();
 				CBFUTNR.assetattrid = "CBFUTNR";
 				CBFUTNR.alnvalue = TopNeedsReset ? "Y" : "N";
+				CBFUTNR.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUTNR);
 
 				var CBFUTR = new MaximoWorkOrderSpec();
 				CBFUTR.assetattrid = "CBFUTR";
 				CBFUTR.alnvalue = TreeRoots ? "Y" : "N";
+				CBFUTR.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUTR);
 
 				var CBFUVAC = new MaximoWorkOrderSpec();
 				CBFUVAC.assetattrid = "CBFUVAC";
 				CBFUVAC.alnvalue = Vacuuming ? "Y" : "N";
+				CBFUVAC.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUVAC);
 
 				var CBFUWNR = new MaximoWorkOrderSpec();
 				CBFUWNR.assetattrid = "CBFUNM";
 				CBFUWNR.alnvalue = WallsNeedRepair ? "Y" : "N";
+				CBFUWNR.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				MaximoWorkOrder.workorderspec.Add(CBFUWNR);
 			}
 
-			if (MaximoWorkOrder.failureRemark != null)
-			{
-				if (Remarks != MaximoWorkOrder.failureRemark.description)
-				{
-					MaximoWorkOrder.failureRemark.description = Remarks;
-					MaximoWorkOrder.failureRemark.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
-				}
-			}
-			else
-			{
-				if(Remarks != "") { 
-					MaximoWorkOrderFailureRemark remark = new MaximoWorkOrderFailureRemark();
-					remark.description = Remarks;
-					remark.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					remark.wonum = MaximoWorkOrder.wonum;
-					MaximoWorkOrder.failureRemark = remark;
-				}
-			}
+			MaximoWorkOrder.remarkdesc = Remarks;
+
+		
 			MaximoWorkOrder.problemcode = Problem;
 
 			if (MaximoWorkOrder.failurereport == null)
@@ -1020,6 +1075,7 @@ namespace CatchBasin.ViewModel
 
 			if (MaximoWorkOrder.Id > 0)
 			{
+
 				MaximoServiceLibraryBeanConfiguration.workOrderRepository.update(MaximoWorkOrder);
 			}
 			else

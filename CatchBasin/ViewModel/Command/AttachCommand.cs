@@ -45,7 +45,8 @@ namespace CatchBasin.ViewModel.Command
 				{
 					MaximoDocument maximoDocument = new MaximoDocument();
 					maximoDocument.description = filename;
-					maximoDocument.fileName = System.IO.Path.GetFileName(filename); 
+					maximoDocument.fileName = System.IO.Path.GetFileName(filename);
+					maximoDocument.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 					WorkOrderDetailVM.Attachments.Add(maximoDocument);
 				}
 			}

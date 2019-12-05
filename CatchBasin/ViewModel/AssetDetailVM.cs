@@ -347,49 +347,109 @@ namespace CatchBasin.ViewModel
                 switch (Asset.assetspec[i].assetattrid)
                 {
                     case "CB_SUBT":
-                        Asset.assetspec[i].alnvalue = Type;
+						if (Asset.assetspec[i].alnvalue != Type)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = Type;
                         break;
                     case "TOPMATRL":
-                        Asset.assetspec[i].alnvalue = TopMaterial;
+						if (Asset.assetspec[i].alnvalue != TopMaterial)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = TopMaterial;
                         break;
                     case "TOPTHICK":
-                        Asset.assetspec[i].numvalue = TopThickness;
+						if (Asset.assetspec[i].numvalue != TopThickness)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].numvalue = TopThickness;
                         break;
                     case "GRATETY":
-                        Asset.assetspec[i].alnvalue = GrateType;
+						if (Asset.assetspec[i].alnvalue != GrateType)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = GrateType;
                         break;
                     case "NUMCHAMB":
-                        Asset.assetspec[i].numvalue = NumberOfChambers;
+						if (Asset.assetspec[i].numvalue != NumberOfChambers)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].numvalue = NumberOfChambers;
                         break;
                     case "NUMTHROAT":
-                        Asset.assetspec[i].numvalue = NumberOfThroats;
+						if (Asset.assetspec[i].numvalue != NumberOfThroats)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].numvalue = NumberOfThroats;
                         break;
                     case "OWNER":
-                        Asset.assetspec[i].alnvalue = Owner;
+						if (Asset.assetspec[i].alnvalue != Owner)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = Owner;
                         break;
                     case "CLN_RESP":
-                        Asset.assetspec[i].alnvalue = CleaningResponsibility;
+						if (Asset.assetspec[i].alnvalue != CleaningResponsibility)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = CleaningResponsibility;
                         break;
                     case "WQ":
-                        Asset.assetspec[i].alnvalue = WaterQuality == true ? "Y" : "N";
+						if (Asset.assetspec[i].alnvalue != (WaterQuality == true ? "Y" : "N"))
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = WaterQuality == true ? "Y" : "N";
                         break;
                     case "INMS4":
-                        Asset.assetspec[i].alnvalue = InMS4 == true ? "Y" : "N";
+						if (Asset.assetspec[i].alnvalue != (InMS4 == true ? "Y" : "N"))
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = InMS4 == true ? "Y" : "N";
                         break;
                     case "ISCORNRCB":
-                        Asset.assetspec[i].alnvalue = CornerCB == true ? "Y" : "N";
+						if (Asset.assetspec[i].alnvalue != (CornerCB == true ? "Y" : "N"))
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = CornerCB == true ? "Y" : "N";
                         break;
                     case "BIOFLTR":
-                        Asset.assetspec[i].alnvalue = Biofilter == true ? "Y" : "N";
+						if (Asset.assetspec[i].alnvalue != (Biofilter == true ? "Y" : "N"))
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = Biofilter == true ? "Y" : "N";
                         break;
                     case "FLORESTY":
-                        Asset.assetspec[i].alnvalue = FlowRestrictorType;
+						if (Asset.assetspec[i].alnvalue != FlowRestrictorType)
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = FlowRestrictorType;
                         break;
                     case "HASSUMP":
-                        Asset.assetspec[i].alnvalue = Sump == true ? "Y" : "N";
+						if (Asset.assetspec[i].alnvalue != (Sump == true ? "Y" : "N"))
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = Sump == true ? "Y" : "N";
                         break;
                     case "HASWATERSEAL":
-                        Asset.assetspec[i].alnvalue = WaterSeal == true ? "Y" : "N";
+						if (Asset.assetspec[i].alnvalue != (WaterSeal == true ? "Y" : "N"))
+						{
+							Asset.assetspec[i].syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+						}
+						Asset.assetspec[i].alnvalue = WaterSeal == true ? "Y" : "N";
                         break;
 
                 }

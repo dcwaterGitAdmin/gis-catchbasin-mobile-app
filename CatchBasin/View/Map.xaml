@@ -167,7 +167,7 @@
 					<TextBlock Text="{Binding SyncStatus}"></TextBlock>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
-                    <TextBlock>Middle</TextBlock>
+					<TextBlock Text="{Binding GISSyncStatus}"></TextBlock>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="2" HorizontalAlignment="Right">
                     <TextBlock Text="{Binding GPSLocation}"></TextBlock>

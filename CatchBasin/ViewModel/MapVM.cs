@@ -39,6 +39,14 @@ namespace CatchBasin.ViewModel
 			set { syncStatus = value;OnPropertyChanged("SyncStatus"); }
 		}
 
+		private string gisSyncStatus;
+
+		public string GISSyncStatus
+		{
+			get { return gisSyncStatus; }
+			set { gisSyncStatus = value; OnPropertyChanged("GISSyncStatus"); }
+		}
+
 
 		public void synchronizationStatus(string status, string substatus) {
 			SyncStatus = $"{status} | {substatus}";
@@ -83,12 +91,13 @@ namespace CatchBasin.ViewModel
             WorkOrderDetailIsVisible = false;
 
 			((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizationDelegate += synchronizationStatus;
-			InitializeMap();
+			setBaseMap();
+			
         }
 
-		
 
-		private Esri.ArcGISRuntime.Mapping.Map _map = new Esri.ArcGISRuntime.Mapping.Map(Basemap.CreateStreets());
+
+		private Esri.ArcGISRuntime.Mapping.Map _map;
 
         public Esri.ArcGISRuntime.Mapping.Map Map
         {
@@ -401,15 +410,44 @@ namespace CatchBasin.ViewModel
 
 
 		// Map
+
+		public async void setBaseMap()
+		{
+			MobileMapPackage mobileMapPackage;
+
+			// Check whether the mobile map package supports direct read.
+			bool isDirectReadSupported = await MobileMapPackage.IsDirectReadSupportedAsync("C:\\TEMP\\Layers.mmpk");
+			if (isDirectReadSupported)
+			{
+				// If it does, create the mobile map package directly from the .mmpk file.
+				mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\TEMP\\Layers.mmpk");
+				var map = mobileMapPackage.Maps.First();
+				Map = map;
+				InitializeMap();
+			}
+			else
+			{
+				// Otherwise, unpack the mobile map package file into a directory.
+				await MobileMapPackage.UnpackAsync("C:\\TEMP\\Layers.mmpk", "C:\\TEMP\\Layers");
+
+				// Create the mobile map package from the unpack directory.
+				mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\TEMP\\Layers");
+				var map = mobileMapPackage.Maps.First();
+				Map = map;
+				InitializeMap();
+			}
+		}
 		private async void InitializeMap()
 		{
+
+			
 			Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
 			ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 			List<LayerDescription> layerDescriptions = new List<LayerDescription>();
-			layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "CBCNLNOIDS.geodatabase", new string[] {"" }, new string[] { "Newly Discovered/CNL" }));
-			layerDescriptions.Add(new LayerDescription("Open Workorder", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, "CBWorkorders.geodatabase", new string[] {"" }, new string[] { "Catch Basin Workorder" }));
-			layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssets/FeatureServer", SyncDirection.Bidirectional, "CBAssets.geodatabase", new string[] {"","","","","" }, new string[] { "Catch Basin - Cleaned by DC Water", "Catch Basin - Cleaned by Others", "Catch Basin - Proposed", "Catch Basin - Cleaned by DC Water - Heavily Travelled", "Catch Basin - Cleaned by DC Water - Water Quality" }));
-			layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "CBSewer.geodatabase", new string[] {"","" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
+			//layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\TEMP\\CBCNLNOIDS.geodatabase", new string[] {"" }, new string[] { "Newly Discovered/CNL" }));
+			layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders2/FeatureServer", SyncDirection.Download, "C:\\TEMP\\CBWorkorders2.geodatabase", new string[] { "" }, new string[] { "Catch Basin Workorder" }));
+			//layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssets/FeatureServer", SyncDirection.Bidirectional, "C:\\TEMP\\CBAssets2.geodatabase", new string[] {"","","","","","" }, new string[] { "Catch Basin - Cleaned by DC Water", "Catch Basin - Cleaned by Others", "Catch Basin - Proposed", "Catch Basin - Cleaned by DC Water - Heavily Travelled", "Catch Basin - Cleaned by DC Water - Water Quality","Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
+			//layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\TEMP\\CBSewer.geodatabase", new string[] {"","" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
 
 
 			foreach (LayerDescription layerDescription in layerDescriptions)
@@ -417,32 +455,38 @@ namespace CatchBasin.ViewModel
 				Geodatabase localGdb = null;
 				try
 				{
-					 localGdb = await Geodatabase.OpenAsync(layerDescription.geodatabaseFilePath);
+					localGdb = await Geodatabase.OpenAsync(layerDescription.geodatabaseFilePath);
 
-				}catch(Exception e)
+				}
+				catch (Exception e)
 				{
 					//todo console write
 				}
 
-				if(localGdb == null)
+				if (localGdb == null)
 				{
-					GISLayerToOffline(layerDescription.url, layerDescription.layername, layerDescription.displayExpressions, layerDescription.sublayerNames, envelope, layerDescription.geodatabaseFilePath);
+					await GISLayerToOffline(layerDescription.url, layerDescription.layername, layerDescription.displayExpressions, layerDescription.sublayerNames, envelope, layerDescription.geodatabaseFilePath);
 				}
 				else
 				{
-					await SyncronizeEditsAsync(layerDescription.url,layerDescription.geodatabaseFilePath, layerDescription.syncDirection);
-					AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
+					GroupLayer layer = AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
+					await SyncronizeEditsAsync(layerDescription.url,layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
+
 				}
 			}
 
 		}
 
-		public async void GISLayerToOffline(string url, string layername, string[] expression, string[] sublayers, Envelope envelope, string path)
+		public async Task GISLayerToOffline(string url, string layername, string[] expression, string[] sublayers, Envelope envelope, string path)
 		{
+
+			GISSyncStatus = $"Download First GIS Data Started : {layername}";
 			Uri featureServiceUri = new Uri(url);
 			GeodatabaseSyncTask gdbSyncTask = await GeodatabaseSyncTask.CreateAsync(featureServiceUri);
 
 			GenerateGeodatabaseParameters generateGdbParams = await gdbSyncTask.CreateDefaultGenerateGeodatabaseParametersAsync(envelope);
+			generateGdbParams.SyncModel = SyncModel.Geodatabase;
+			generateGdbParams.ReturnAttachments = false;
 			generateGdbParams.LayerOptions.Clear();
 			for (int i = 0; i < expression.Count(); i++)
 			{
@@ -460,49 +504,66 @@ namespace CatchBasin.ViewModel
 				
 				if (generateGdbJob.Error != null)
 				{
-					Console.WriteLine("Error creating geodatabase: " + generateGdbJob.Error.Message);
+					GISSyncStatus = $"Error creating geodatabase:  : {generateGdbJob.Error.Message}";
+					
 					return;
 				}
 
 				
 				if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
 				{
+					GISSyncStatus = $"Download Complete : {layername}";
 					Geodatabase localGdb = await generateGdbJob.GetResultAsync();
 					AddLocalDataToMap(localGdb, layername, sublayers);
 				}
 				else if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
 				{
+					GISSyncStatus = $"Unable to create local geodatabase.";
+
 					
-					Console.WriteLine("Unable to create local geodatabase.");
 				}
 				else
 				{
-					
-					//Console.WriteLine(generateGdbJob.Messages[generateGdbJob.Messages.Count - 1].Message);
+					GISSyncStatus = $"Download continue : {layername} {generateGdbJob.Messages.Count}";
+
+
 				}
 			};
 
 			generateGdbJob.Start();
 		}
 
-		private void AddLocalDataToMap(Geodatabase localGdb, string layername, string[] sublayers)
+		private GroupLayer AddLocalDataToMap(Geodatabase localGdb, string layername, string[] sublayers, GroupLayer layer =null)
 		{
 			
 
 			GroupLayer groupLayer = new GroupLayer();
+			groupLayer.Name = layername;
 			for (int i = 0; i < localGdb.GeodatabaseFeatureTables.Count; i++)
 			{
 				FeatureTable ft = localGdb.GeodatabaseFeatureTables[i];
-				ft.DisplayName = sublayers[i];
+				
 
 				FeatureLayer featureLayer = new FeatureLayer(ft);
+				featureLayer.Name = sublayers[i];
 				groupLayer.Layers.Add(featureLayer);
 
 			}
-			Map.OperationalLayers.Add(groupLayer);
+			if(layer == null)
+			{
+				Map.OperationalLayers.Add(groupLayer);
+
+			}
+			else
+			{
+				int index =Map.OperationalLayers.IndexOf(layer);
+				Map.OperationalLayers[index] = groupLayer;
+			}
+			
+			return groupLayer;
 		}
 
-		public async Task SyncronizeEditsAsync(string serviceUrl, string geodatabasePath , SyncDirection syncDirection)
+		public async Task SyncronizeEditsAsync(string serviceUrl, string geodatabasePath , SyncDirection syncDirection, string layername, string[] sublayers, GroupLayer layer)
 		{
 			// create sync parameters
 			var taskParameters = new SyncGeodatabaseParameters()
@@ -521,22 +582,36 @@ namespace CatchBasin.ViewModel
 			SyncGeodatabaseJob job = syncTask.SyncGeodatabase(taskParameters, gdb);
 
 			// handle the JobChanged event for the job
-			job.JobChanged += (s, e) =>
+			job.JobChanged += async (s, e) =>
 			{
 				// report changes in the job status
 				if (job.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
 				{
 					// report success ...
 					Console.WriteLine(  "Synchronization is complete!");
+					GISSyncStatus = $"Synchronization is complete! {layername}";
+					try
+					{
+						Geodatabase localGdb = await Geodatabase.OpenAsync(geodatabasePath);
+					
+						AddLocalDataToMap(localGdb, layername, sublayers, layer);
+					}
+					catch(Exception _e)
+					{
+
+					}
+					
 				}
 				else if (job.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
 				{
 					// report failure ...
-					Console.WriteLine(  job.Error.Message);
+					Console.WriteLine(  );
+					GISSyncStatus = $"Error: {job.Error.Message}";
 				}
 				else
 				{
-					Console.WriteLine( "Sync in progress ...");
+					GISSyncStatus = $"Sync in progress ... {layername}";
+					
 				}
 			};
 
