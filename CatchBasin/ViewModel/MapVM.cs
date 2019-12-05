@@ -445,7 +445,7 @@ namespace CatchBasin.ViewModel
 			ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 			List<LayerDescription> layerDescriptions = new List<LayerDescription>();
 			//layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\TEMP\\CBCNLNOIDS.geodatabase", new string[] {"" }, new string[] { "Newly Discovered/CNL" }));
-			layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders2/FeatureServer", SyncDirection.Download, "C:\\TEMP\\CBWorkorders2.geodatabase", new string[] { "" }, new string[] { "Catch Basin Workorder" }));
+			layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders2/FeatureServer", SyncDirection.Download, "C:\\TEMP\\CBWorkorders3.geodatabase", new string[] { "FAILURECODE = 'CATCHBASIN' AND SITEID = 'DWS_DSS' AND SERVICE = 'DSS' AND HISTORYFLAG = 0 and STATUS = 'DISPTCHD' and WORKTYPE IN ('INV','EMERG','PM')" }, new string[] { "Catch Basin Workorder" }));
 			//layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssets/FeatureServer", SyncDirection.Bidirectional, "C:\\TEMP\\CBAssets2.geodatabase", new string[] {"","","","","","" }, new string[] { "Catch Basin - Cleaned by DC Water", "Catch Basin - Cleaned by Others", "Catch Basin - Proposed", "Catch Basin - Cleaned by DC Water - Heavily Travelled", "Catch Basin - Cleaned by DC Water - Water Quality","Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
 			//layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\TEMP\\CBSewer.geodatabase", new string[] {"","" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
 
@@ -485,8 +485,8 @@ namespace CatchBasin.ViewModel
 			GeodatabaseSyncTask gdbSyncTask = await GeodatabaseSyncTask.CreateAsync(featureServiceUri);
 
 			GenerateGeodatabaseParameters generateGdbParams = await gdbSyncTask.CreateDefaultGenerateGeodatabaseParametersAsync(envelope);
-			generateGdbParams.SyncModel = SyncModel.Geodatabase;
-			generateGdbParams.ReturnAttachments = false;
+			//generateGdbParams.SyncModel = SyncModel.Geodatabase;
+			//generateGdbParams.ReturnAttachments = false;
 			generateGdbParams.LayerOptions.Clear();
 			for (int i = 0; i < expression.Count(); i++)
 			{
