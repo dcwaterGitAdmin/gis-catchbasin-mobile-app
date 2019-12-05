@@ -14,8 +14,8 @@ namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		//private static readonly string BASE_HOST = "http://localhost:8080";
-		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		private static readonly string BASE_HOST = "http://localhost:8080";
+		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -461,8 +461,8 @@ namespace MaximoServiceLibrary
 			// TODO edelioglu, add required request params
 			
 			// create an empty workorder
-			MaximoWorkOrder workOrderToBePosted = new MaximoWorkOrder();
-
+			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
+			
 			if (maximoWorkOrder.remarkdesc != null)
 			{
 				workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;

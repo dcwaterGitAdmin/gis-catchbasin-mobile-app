@@ -3,6 +3,16 @@ using System.Collections.Generic;
 
 namespace MaximoServiceLibrary.model
 {
+	public class MaximoWorkOrderForUpdate
+	{
+		public string remarkdesc { get; set; } 
+
+		public List<MaximoWorkOrderSpec> workorderspec { get; set; }
+		
+		public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
+		
+	}
+	
 	// MXWO
 	public class MaximoWorkOrder : MaximoBaseEntity
 	{
