@@ -35,8 +35,17 @@ namespace CatchBasin.ViewModel
             set { password = value; OnPropertyChanged("Password"); }
         }
 
+		private string applicationType = "PM";
 
-        public LoginVM()
+		public string ApplicationType
+		{
+			get { return applicationType; }
+			set { applicationType = value; OnPropertyChanged("ApplicationType"); }
+		}
+
+
+
+		public LoginVM()
         {
             LoginCommand = new LoginCommand(this);
 			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
@@ -56,6 +65,8 @@ namespace CatchBasin.ViewModel
             {
                 if (MaximoServiceLibraryBeanConfiguration.maximoService.login(UserName, Password))
                 {
+
+					((App)Application.Current).AppType = ApplicationType;
 					 //MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
 					// MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
 					MaximoServiceLibraryBeanConfiguration.synchronizationService.startSyncronizationTimer();

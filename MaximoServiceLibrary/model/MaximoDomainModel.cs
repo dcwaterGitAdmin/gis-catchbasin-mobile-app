@@ -27,6 +27,7 @@ namespace MaximoServiceLibrary.model
 
 		public DateTime lastSyncTime { get; set; }
 
+
 	}
 
 	public class MaximoUser : MaximoBaseEntity

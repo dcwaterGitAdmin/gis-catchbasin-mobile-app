@@ -16,6 +16,8 @@ namespace CatchBasin
     {
 
 		public MaximoServiceLibrary.MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+
+		public string AppType = null;
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             try

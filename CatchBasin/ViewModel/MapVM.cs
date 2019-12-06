@@ -63,6 +63,10 @@ namespace CatchBasin.ViewModel
 
 		public MapVM()
         {
+			if(((App)Application.Current).AppType == null)
+			{
+				new Exception("Application Type Is Not Valid!");
+			}
             WorkOrderListVM = new WorkOrderListVM(this);
             WorkOrderDetailVM = new WorkOrderDetailVM(this);
             AssetDetailVM = new AssetDetailVM(workOrderDetailVM);
@@ -91,7 +95,7 @@ namespace CatchBasin.ViewModel
             WorkOrderDetailIsVisible = false;
 
 			((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizationDelegate += synchronizationStatus;
-			setBaseMap();
+			//setBaseMap();
 			
         }
 

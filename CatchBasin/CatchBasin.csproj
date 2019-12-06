@@ -75,6 +75,8 @@
     <Compile Include="ViewModel\Command\ShowLaborCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAttachmentCommand.cs" />
     <Compile Include="ViewModel\Command\ShowToolCommand.cs" />
+    <Compile Include="ViewModel\Command\CompleteCommand.cs" />
+    <Compile Include="ViewModel\Command\StartStopTimerCommand.cs" />
     <Compile Include="ViewModel\Command\ToolCommand.cs" />
     <Compile Include="ViewModel\Command\LaborCommand.cs" />
     <Compile Include="ViewModel\Command\SaveCommand.cs" />
@@ -84,6 +86,7 @@
     <Compile Include="ViewModel\Command\CreateAssetOnMapCommand.cs" />
     <Compile Include="ViewModel\Command\CancelCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAssetCommand.cs" />
+    <Compile Include="ViewModel\CompleWorkOrderVM.cs" />
     <Compile Include="ViewModel\Helper\EnumMatchToBooleanConverter.cs" />
     <Compile Include="ViewModel\Helper\Model.cs" />
     <Compile Include="ViewModel\Helper\PasswordHelper.cs" />
@@ -93,6 +96,9 @@
     <Compile Include="ViewModel\ToolVM.cs" />
     <Compile Include="ViewModel\WorkOrderDetailVM.cs" />
     <Compile Include="ViewModel\WorkOrderListVM.cs" />
+    <Compile Include="View\CompleteWorkOrder.xaml.cs">
+      <DependentUpon>CompleteWorkOrder.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Labor.xaml.cs">
       <DependentUpon>Labor.xaml</DependentUpon>
     </Compile>
@@ -111,6 +117,10 @@
     <Compile Include="View\UserControl\WorkOrderList.xaml.cs">
       <DependentUpon>WorkOrderList.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\CompleteWorkOrder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Labor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

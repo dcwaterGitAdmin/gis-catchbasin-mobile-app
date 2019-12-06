@@ -129,7 +129,8 @@
 							<RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.TRUCKDUMPING}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Truck Dumping"/>
 							<RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.NEWLYDISCOVERED}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Newly Discovered"/> 
 							<RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.EXISTING}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Child - Existing"/>
-							<RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.NOTININVENTORY}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Child - Not In Inventory"/>
+                            <RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.NOTININVENTORY}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Child - Not In Inventory"/>
+                            <RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.INSPECTNEWLYDISCOVERED}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="Inspect - Newly Discovered"/>
 						</RibbonMenuButton>
 
 

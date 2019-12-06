@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Windows.Media.Imaging;
 
 namespace MaximoServiceLibrary.model
 {
@@ -29,6 +30,22 @@ namespace MaximoServiceLibrary.model
 		public List<MaximoLabTrans> labtrans { get; set; }
 
 		public List<MaximoToolTrans> tooltrans { get; set; }
+
+		public List<MaximoWorkOrder> followups { get; set; }
+
+		[Newtonsoft.Json.JsonIgnore]
+		public DateTime? startTimerDate { get; set; }
+
+		[Newtonsoft.Json.JsonIgnore]
+		public string timerImageUri { get; set; }
+
+		[Newtonsoft.Json.JsonIgnore]
+		[LiteDB.BsonIgnore]
+		public BitmapImage timerImage { get
+			{
+				return new BitmapImage(new Uri(timerImageUri ?? "pack://application:,,,/CatchBasin;component/Resources/Images/stopWatch.png"));
+			} }
+
 		// auto-generated fields
 
 		// Actual Hours of External Labor

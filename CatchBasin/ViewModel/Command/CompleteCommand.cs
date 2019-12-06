@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using CatchBasin.View;
+using MaximoServiceLibrary;
+using MaximoServiceLibrary.model;
+
+namespace CatchBasin.ViewModel.Command
+{
+	class CompleteCommand : ICommand
+	{
+		public event EventHandler CanExecuteChanged
+		{
+			add
+			{
+				CommandManager.RequerySuggested += value;
+			}
+			remove
+			{
+				CommandManager.RequerySuggested -= value;
+			}
+		}
+
+		MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+		WorkOrderDetailVM WorkOrderDetailVM;
+		public CompleteCommand(WorkOrderDetailVM workOrderDetailVM)
+		{
+			WorkOrderDetailVM = workOrderDetailVM;
+			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
+		}
+
+		public bool CanExecute(object parameter)
+		{
+			return true;
+			// if user didnt changed any value in workorder, can user will complete workorder?
+		}
+
+		public void Execute(object parameter)
+		{
+			CompleteWorkOrder CompleteWorkOrder = new CompleteWorkOrder();
+			CompleteWorkOrder.DataContext = new CompleteWorkorderVM(WorkOrderDetailVM);
+			CompleteWorkOrder.ShowInTaskbar = false;
+			CompleteWorkOrder.Owner = ((App)Application.Current).MainWindow;
+			CompleteWorkOrder.ShowDialog();
+
+		}
+	}
+}

@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:CatchBasin.View.UserControl"
               xmlns:vm="clr-namespace:CatchBasin.ViewModel"
              mc:Ignorable="d" 
+			 x:Name="woList"
              d:DesignHeight="450" d:DesignWidth="450">
 
     <Grid >
@@ -52,8 +53,8 @@
 
                             <TextBlock Margin="3"  Text="{Binding status}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
                             <TextBlock Margin="3"  Text="{Binding locationdetails}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>
-                            <Button  Margin="3"  Grid.RowSpan="4" Grid.Row="0" Grid.Column="4" Background="Transparent" BorderThickness="0">
-                                <Image Source="/CatchBasin;component/Resources/Images/stopWatch.png" VerticalAlignment="Center" />
+							<Button Command="{Binding ElementName=woList, Path=DataContext.StartStopTimerCommand}" CommandParameter="{Binding}"  Margin="3"  Grid.RowSpan="4" Grid.Row="0" Grid.Column="4" Background="Transparent" BorderThickness="0">
+                                <Image Source="{Binding timerImage}" VerticalAlignment="Center" />
                             </Button>
 
                         </Grid>

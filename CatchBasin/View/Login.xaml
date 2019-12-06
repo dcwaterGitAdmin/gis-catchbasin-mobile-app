@@ -6,11 +6,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CatchBasin.View"
         xmlns:vm="clr-namespace:CatchBasin.ViewModel"
-        xmlns:ff="clr-namespace:CatchBasin.ViewModel.Helper"
+        xmlns:helper="clr-namespace:CatchBasin.ViewModel.Helper"
         mc:Ignorable="d"
         Title="DC Water Mobile Catch Basin Application Login Page" Height="600" Width="400">
     <Window.Resources>
         <vm:LoginVM x:Key="vm"/>
+		<helper:EnumMatchToBooleanConverter x:Key="enumConverter" />
     </Window.Resources>
     <Grid DataContext="{StaticResource vm}">
         <StackPanel Margin="30">
@@ -18,9 +19,18 @@
             <Label Margin="0,10,0,0" FontSize="24">Username :</Label>
             <TextBox  FontSize="24" Text="{Binding UserName}"></TextBox>
             <Label  FontSize="24">Password :</Label>
-            <PasswordBox ff:PasswordHelper.Attach="True" ff:PasswordHelper.Password="{Binding Text, ElementName=plainPassword, Mode=TwoWay}" FontSize="24" ></PasswordBox>
+			<PasswordBox helper:PasswordHelper.Attach="True" helper:PasswordHelper.Password="{Binding Text, ElementName=plainPassword, Mode=TwoWay}" FontSize="24" ></PasswordBox>
             <TextBlock x:Name="plainPassword" Text="{Binding Password, Mode=TwoWay}" Visibility="Collapsed"/>
-            <Button Margin="0,10,0,0" FontSize="24" Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=LoginWindow}">Login</Button>
+			<StackPanel  Orientation="Horizontal">
+				<Viewbox Height="50">
+					<RadioButton  Margin="0 3 10 3" FontWeight="Bold"  GroupName="Type" IsChecked="{Binding ApplicationType, ConverterParameter=PM, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="PM" />
+				</Viewbox>
+				<Viewbox Height="50">
+					<RadioButton  Margin="0 3 0 3" FontWeight="Bold"  GroupName="Type" IsChecked="{Binding ApplicationType, ConverterParameter=INSP, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="INSP"/>
+				</Viewbox>
+			</StackPanel>
+
+			<Button Margin="0,10,0,0" FontSize="24" Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=LoginWindow}">Login</Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -167,14 +167,29 @@ namespace CatchBasin.ViewModel.Commands
 
 		public override bool CanExecute(object parameter)
 		{
-			if ((LocalWorkOrderType)parameter == LocalWorkOrderType.NOTININVENTORY || (LocalWorkOrderType)parameter == LocalWorkOrderType.EXISTING)
+
+			LocalWorkOrderType param = (LocalWorkOrderType) parameter;
+			if (((App) Application.Current).AppType == "PM")
 			{
-				return MapVM.WorkOrderDetailVM.MaximoWorkOrder?.worktype == "EMERG" || MapVM.WorkOrderDetailVM?.MaximoWorkOrder?.worktype == "INV";
+				if (param == LocalWorkOrderType.INSPECTNEWLYDISCOVERED)
+				{
+					return false;
+				}else if ((LocalWorkOrderType)parameter == LocalWorkOrderType.NOTININVENTORY || (LocalWorkOrderType)parameter == LocalWorkOrderType.EXISTING)
+				{
+					return MapVM.WorkOrderDetailVM.MaximoWorkOrder?.worktype == "EMERG" || MapVM.WorkOrderDetailVM?.MaximoWorkOrder?.worktype == "INV";
+				}
+				else
+				{
+					return true;
+				}
+				
 			}
 			else
 			{
-				return true;
+				return param == LocalWorkOrderType.INSPECTNEWLYDISCOVERED;
 			}
+			
+			
 		}
 
 		public override void Execute(object parameter)
@@ -317,6 +332,45 @@ namespace CatchBasin.ViewModel.Commands
 					wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
 
 					MapVM.ShowWorkOrderDetail(wo);
+					break;
+				case LocalWorkOrderType.INSPECTNEWLYDISCOVERED :
+					
+					
+					wo.status = "DISPTCHD";
+					wo.description = "Newly Discovered Asset Inspected by DSS";
+					wo.problemcode = "PM";
+					wo.worktype = "INSP";
+					wo.failurecode = "CATCHBASIN";
+					wo.newchildclass = "WORKORDER";
+					wo.orgid = "DC_WASA";
+					wo.woclass = "WORKORDER";
+					wo.wo1 = "CBPMNOID";
+					wo.receivedvia = "F";
+					wo.origproblemtype = "SY";
+					wo.persongroup = crew;
+					wo.classstructureid = "1356";
+					wo.service = "DSS";
+					wo.siteid = "DWS_DSS";
+					wo.parent = "";
+
+					wo.failurereport = new List<MaximoWorkOrderFailureReport>();
+					failureProblemCode = new MaximoWorkOrderFailureReport();
+					failureProblemCode.failurecode = "PM";
+					failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+					wo.failurereport.Add(failureProblemCode);
+					failureCause = new MaximoWorkOrderFailureReport();
+					failureCause.failurecode = "NEWASSET";
+					failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+					wo.failurereport.Add(failureCause);
+					failureRemedy = new MaximoWorkOrderFailureReport();
+					failureRemedy.failurecode = "COMPFOLLUP";
+					failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+					wo.failurereport.Add(failureRemedy);
+
+					wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
+
+					MapVM.ShowWorkOrderDetail(wo);
+					
 					break;
 			}
 		}

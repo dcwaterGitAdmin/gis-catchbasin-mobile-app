@@ -32,9 +32,16 @@ namespace CatchBasin.ViewModel
             set { selectedIndex = value; OnPropertyChanged("SelectedIndex"); }
         }
 
-        private MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+		private Command.StartStopTimerCommand startStopTimerCommand;
 
-        private MapVM mapVM;
+		public Command.StartStopTimerCommand StartStopTimerCommand
+		{
+			get { return startStopTimerCommand; }
+			set { startStopTimerCommand = value; OnPropertyChanged("StartStopTimerCommand"); }
+		}
+
+
+		private MapVM mapVM;
 
         public MapVM MapVM
         {
@@ -42,13 +49,16 @@ namespace CatchBasin.ViewModel
             set { mapVM = value; }
         }
 
-        public WorkOrderListVM(MapVM mapVM )
+
+		private MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+		public WorkOrderListVM(MapVM mapVM )
         {
             MapVM = mapVM;
-            MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
-            WorkOrders = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findAll().ToList();
-      
-            PropertyChanged += SelectedIndexChanged;
+			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
+			StartStopTimerCommand = new Command.StartStopTimerCommand(this);
+
+			Update();
+			PropertyChanged += SelectedIndexChanged;
         }
 
 	
@@ -69,7 +79,7 @@ namespace CatchBasin.ViewModel
 
         public void showWorkOrder(MaximoWorkOrder wo)
         {
-			WorkOrders = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findAll().ToList();
+			Update();
 			MapVM.ShowWorkOrderDetail(wo);
 			
 		}

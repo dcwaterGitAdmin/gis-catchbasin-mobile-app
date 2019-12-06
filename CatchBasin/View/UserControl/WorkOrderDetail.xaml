@@ -14,16 +14,15 @@
     <Grid Width="300">
         <DockPanel LastChildFill="True">
             <Grid DockPanel.Dock="Bottom">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1231*"/>
-                    <RowDefinition Height="69*"/>
-                </Grid.RowDefinitions>
+               
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
                 <Button Command="{Binding CancelCommand}" Grid.Column="0">Cancel</Button>
-                <Button Command="{Binding SaveCommand}" Grid.Column="1">Save</Button>
+				<Button Command="{Binding CompleteCommand}" Grid.Column="1">Complete</Button>
+				<Button Command="{Binding SaveCommand}" Grid.Column="2">Save</Button>
             </Grid>
             <ScrollViewer DockPanel.Dock="Left">
                 <StackPanel Margin="6.5 5 6.5 5">
@@ -101,6 +100,18 @@
                             DisplayMemberPath="description"
                             SelectedValuePath="failurecode"
                              SelectedValue="{Binding Remedy}"/>
+                    </StackPanel>
+                    
+                    <CheckBox IsChecked="{Binding PlacedSticker, Mode=TwoWay}" Visibility="{Binding PlacedStickerIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" >
+                        Placed Sticker
+                    </CheckBox>
+                    
+                    <StackPanel Visibility="{Binding DebrisConditionIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
+                        <Label Content="Debris Condition" FontWeight="Bold"/>
+                        <ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
+                                  DisplayMemberPath="description"
+                                  SelectedValuePath="code"
+                                  SelectedValue="{Binding DebrisCondition}"/>
                     </StackPanel>
                     <StackPanel Visibility="{Binding StatusIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Label Content="Status" FontWeight="Bold"/>
