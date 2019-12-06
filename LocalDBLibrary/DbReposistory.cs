@@ -102,5 +102,11 @@ namespace LocalDBLibrary
 
 			return t;
 		}
+
+		public IEnumerable<T> findNot(string field, object value)
+		{
+			var collection = dbConnection.db.GetCollection<T>(tableName());
+			return collection.Find(Query.Not(field, new BsonValue(value)));
+		}
 	}
 }
