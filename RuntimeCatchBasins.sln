@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatchBasin", "CatchBasin\Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xceed.Wpf.Toolkit", "..\wpftoolkit\ExtendedWPFToolkitSolution\Src\Xceed.Wpf.Toolkit\Xceed.Wpf.Toolkit.csproj", "{72E591D6-8F83-4D8C-8F67-9C325E623234}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Helpers\Utilities.csproj", "{CDB0A225-EF09-40C9-A8F5-1785184E0FDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaximoService", "MaximoService\MaximoService.csproj", "{48F92A97-E232-4A84-A6A5-E2BBAAB2E730}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalData", "LocalData\LocalData.csproj", "{0B003347-0E6D-4354-8FA8-F8F80E3A97D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +51,18 @@ Global
 		{72E591D6-8F83-4D8C-8F67-9C325E623234}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72E591D6-8F83-4D8C-8F67-9C325E623234}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72E591D6-8F83-4D8C-8F67-9C325E623234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDB0A225-EF09-40C9-A8F5-1785184E0FDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDB0A225-EF09-40C9-A8F5-1785184E0FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDB0A225-EF09-40C9-A8F5-1785184E0FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDB0A225-EF09-40C9-A8F5-1785184E0FDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48F92A97-E232-4A84-A6A5-E2BBAAB2E730}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{48F92A97-E232-4A84-A6A5-E2BBAAB2E730}.Debug|Any CPU.Build.0 = Debug|x86
+		{48F92A97-E232-4A84-A6A5-E2BBAAB2E730}.Release|Any CPU.ActiveCfg = Release|x86
+		{48F92A97-E232-4A84-A6A5-E2BBAAB2E730}.Release|Any CPU.Build.0 = Release|x86
+		{0B003347-0E6D-4354-8FA8-F8F80E3A97D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B003347-0E6D-4354-8FA8-F8F80E3A97D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B003347-0E6D-4354-8FA8-F8F80E3A97D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B003347-0E6D-4354-8FA8-F8F80E3A97D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

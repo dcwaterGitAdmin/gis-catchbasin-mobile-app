@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<SynchronizeState lastShownStatusTime="0">
+  <LastMaximoUpload time="635519930667618088">
+    <Errors />
+  </LastMaximoUpload>
+  <LastMaximoDownload time="0">
+    <Errors />
+  </LastMaximoDownload>
+  <LastMaximoReferenceDownload  time="0">
+    <Errors />
+  </LastMaximoReferenceDownload>
+  <LastMaximoFailureListUpdate time="0" />
+  <LastGISUpload time="0">
+    <Errors />
+  </LastGISUpload>
+  <LastGISDownload time="0">
+    <Errors />
+  </LastGISDownload>
+  <LastGISBackgroundDynamicDownload time="0">
+    <Errors />
+  </LastGISBackgroundDynamicDownload>
+  <MaximumMaximoReferenceAge timeSpan="30.00:00:00"/>
+  <MaximumMaximoFailureListAge timeSpan="45.00:00:00"/>
+  <MaximumGISBackgroundPackageAge timeSpan="30.00:00:00"/>
+  <MaximumGISBackgroundDynamicAge timeSpan="7.00:00:00"/>
+</SynchronizeState>

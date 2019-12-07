@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{48F92A97-E232-4A84-A6A5-E2BBAAB2E730}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DCWaterMobile.MaximoService</RootNamespace>
+    <AssemblyName>MaximoService</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssetSpecType.cs" />
+    <Compile Include="CompositeAsset.cs" />
+    <Compile Include="CompositeWorkorder.cs" />
+    <Compile Include="IMaximoService.cs" />
+    <Compile Include="MaximoCreds.cs" />
+    <Compile Include="MaximoService.cs" />
+    <Compile Include="MaxRest\ALNDOMAINMboSet.cs" />
+    <Compile Include="MaxRest\ASSETMbo.cs" />
+    <Compile Include="MaxRest\ASSETMboSet.cs" />
+    <Compile Include="MaxRest\ASSETSPECMboSet.cs" />
+    <Compile Include="MaxRest\CreateDCW_CBWOResponse.cs" />
+    <Compile Include="MaxRest\CreateDCW_CBASSETResponse.cs" />
+    <Compile Include="MaxRest\DCW_ASSETSet.cs" />
+    <Compile Include="MaxRest\DCW_CBWOSet.cs" />
+    <Compile Include="MaxRest\DOCINFOMboSet.cs" />
+    <Compile Include="MaxRest\DOCLINKSMboSet.cs" />
+    <Compile Include="MaxRest\DOCTYPESMboSet.cs" />
+    <Compile Include="MaxRest\FAILURECODEMboSet.cs" />
+    <Compile Include="MaxRest\FAILURELISTMboSet.cs" />
+    <Compile Include="MaxRest\FAILUREREMARKMboSet.cs" />
+    <Compile Include="MaxRest\FAILUREREPORTMboSet.cs" />
+    <Compile Include="MaxRest\INVENTORY.cs" />
+    <Compile Include="MaxRest\LABORCRAFTRATEMboSet.cs" />
+    <Compile Include="MaxRest\LABTRANSMboSet.cs" />
+    <Compile Include="MaxRest\LOCATIONSMboSet.cs" />
+    <Compile Include="MaxRest\MAXDOMAINMboSet.cs" />
+    <Compile Include="MaxRest\MAXUSERMboSet.cs" />
+    <Compile Include="MaxRest\PERSONGROUPMboSet.cs" />
+    <Compile Include="MaxRest\PERSONGROUPTEAMMboSet.cs" />
+    <Compile Include="MaxRest\PERSONMboSet.cs" />
+    <Compile Include="MaxRest\QueryParameter.cs" />
+    <Compile Include="MaxRest\SyncDCW_CBASSETResponse.cs" />
+    <Compile Include="MaxRest\SyncDCW_CBWOResponse.cs" />
+    <Compile Include="MaxRest\SYNONYMDOMAINMboSet.cs" />
+    <Compile Include="MaxRest\TOOLTRANSMboSet.cs" />
+    <Compile Include="MaxRest\WORKORDERMbo.cs" />
+    <Compile Include="MaxRest\WORKORDERMboSet.cs" />
+    <Compile Include="MaxRest\WORKORDERSPECMboSet.cs" />
+    <Compile Include="MaxRest\WORKTYPEMboSet.cs" />
+    <Compile Include="MaxRest\WOSTATUSMboSet.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net40\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Helpers\Utilities.csproj">
+      <Project>{CDB0A225-EF09-40C9-A8F5-1785184E0FDC}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

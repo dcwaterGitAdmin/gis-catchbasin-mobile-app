@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0B003347-0E6D-4354-8FA8-F8F80E3A97D1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DCWaterMobile.LocalData</RootNamespace>
+    <AssemblyName>LocalDataModel</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net40\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ESRI.ArcGIS.Mobile">
+      <HintPath>E:\DC Water Hydrant Service\ESRI.ArcGIS.Mobile.dll</HintPath>
+    </Reference>
+    <Reference Include="ESRI.ArcGIS.Runtime.Geometry, Version=10.1.0.3018, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\DC Water Hydrant Service\ESRI.ArcGIS.Runtime.Geometry.dll</HintPath>
+    </Reference>
+    <Reference Include="ESRI.ArcGIS.Runtime.PE, Version=10.1.0.580, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\DC Water Hydrant Service\ESRI.ArcGIS.Runtime.PE.dll</HintPath>
+    </Reference>
+    <Reference Include="ESRI.ArcGIS.Runtime.SG, Version=0.0.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\DC Water Hydrant Service\ESRI.ArcGIS.Runtime.SG.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.1.1.35051, Culture=neutral, PublicKeyToken=0e453835af4ee6ce, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net40\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.1.1.35049, Culture=neutral, PublicKeyToken=f46ff315b1088208, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net40\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139">
+      <HintPath>..\packages\System.Data.SQLite.x64.1.0.112.0\lib\net40\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.112.0\lib\net40\System.Data.SQLite.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.112.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Dynamic.cs" />
+    <Compile Include="MaximoReferenceDataUpdater.cs" />
+    <Compile Include="Models\MobileTypeAttributeMap.cs" />
+    <Compile Include="ReverseMapper.cs" />
+    <Compile Include="SynchronizeState.cs" />
+    <Compile Include="Comparer.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="ILocalDataService.cs" />
+    <Compile Include="LocalDataService.cs" />
+    <Compile Include="Mapper.cs" />
+    <Compile Include="Models\ALNDOMAIN.cs" />
+    <Compile Include="Models\ASSET.cs" />
+    <Compile Include="Models\ASSETATTRIBUTE.cs" />
+    <Compile Include="Models\ASSETSPEC.cs" />
+    <Compile Include="Models\BaseContext.cs" />
+    <Compile Include="Models\CLASSSPEC.cs" />
+    <Compile Include="Models\CREWINFO.cs" />
+    <Compile Include="Models\CROSSOVERDOMAIN.cs" />
+    <Compile Include="Models\DOCINFO.cs" />
+    <Compile Include="Models\DOCLINK.cs" />
+    <Compile Include="Models\DOCTYPE.cs" />
+    <Compile Include="Models\FAILURECODE.cs" />
+    <Compile Include="Models\FAILURELIST.cs" />
+    <Compile Include="Models\FAILUREREMARK.cs" />
+    <Compile Include="Models\FAILUREREPORT.cs" />
+    <Compile Include="Models\INVENTORY.cs" />
+    <Compile Include="Models\LABORCRAFTRATE.cs" />
+    <Compile Include="Models\LABTRAN.cs" />
+    <Compile Include="Models\LOCATION.cs" />
+    <Compile Include="Models\Mapping\ASSETATTRIBUTEMap.cs" />
+    <Compile Include="Models\Mapping\CLASSSPECMap.cs" />
+    <Compile Include="Models\Mapping\CREWINFOMap.cs" />
+    <Compile Include="Models\Mapping\INVENTORYMap.cs" />
+    <Compile Include="Models\Mapping\PERSONGROUPTEAMMap.cs" />
+    <Compile Include="Models\Mapping\PERSONMap.cs" />
+    <Compile Include="Models\Mapping\WOSTATUSMap.cs" />
+    <Compile Include="Models\MxLocalCacheContext.cs" />
+    <Compile Include="Models\Mapping\ALNDOMAINMap.cs" />
+    <Compile Include="Models\Mapping\ASSETMap.cs" />
+    <Compile Include="Models\Mapping\ASSETSPECMap.cs" />
+    <Compile Include="Models\Mapping\CROSSOVERDOMAINMap.cs" />
+    <Compile Include="Models\Mapping\DOCINFOMap.cs" />
+    <Compile Include="Models\Mapping\DOCLINKMap.cs" />
+    <Compile Include="Models\Mapping\DOCTYPEMap.cs" />
+    <Compile Include="Models\Mapping\FAILURECODEMap.cs" />
+    <Compile Include="Models\Mapping\FAILURELISTMap.cs" />
+    <Compile Include="Models\Mapping\FAILUREREMARKMap.cs" />
+    <Compile Include="Models\Mapping\FAILUREREPORTMap.cs" />
+    <Compile Include="Models\Mapping\LABORCRAFTRATEMap.cs" />
+    <Compile Include="Models\Mapping\LABTRANMap.cs" />
+    <Compile Include="Models\Mapping\LOCATIONMap.cs" />
+    <Compile Include="Models\Mapping\MAXDOMAINMap.cs" />
+    <Compile Include="Models\Mapping\MAXROWSTAMPMap.cs" />
+    <Compile Include="Models\Mapping\MAXTABLEDOMAINMap.cs" />
+    <Compile Include="Models\Mapping\PERSONGROUPMap.cs" />
+    <Compile Include="Models\Mapping\SYNONYMDOMAINMap.cs" />
+    <Compile Include="Models\Mapping\TOOLTRANMap.cs" />
+    <Compile Include="Models\Mapping\WORKLOGMap.cs" />
+    <Compile Include="Models\Mapping\WORKORDERMap.cs" />
+    <Compile Include="Models\Mapping\WORKORDERSPECMap.cs" />
+    <Compile Include="Models\Mapping\WORKTYPEMap.cs" />
+    <Compile Include="Models\MAXDOMAIN.cs" />
+    <Compile Include="Models\MAXROWSTAMP.cs" />
+    <Compile Include="Models\MAXTABLEDOMAIN.cs" />
+    <Compile Include="Models\PERSON.cs" />
+    <Compile Include="Models\PERSONGROUP.cs" />
+    <Compile Include="Models\PERSONGROUPTEAM.cs" />
+    <Compile Include="Models\MxLocalReferenceDataContext.cs" />
+    <Compile Include="Models\SYNONYMDOMAIN.cs" />
+    <Compile Include="Models\TOOLTRAN.cs" />
+    <Compile Include="Models\WORKLOG.cs" />
+    <Compile Include="Models\WORKORDER.cs" />
+    <Compile Include="Models\WORKORDERSPEC.cs" />
+    <Compile Include="Models\WORKTYPE.cs" />
+    <Compile Include="Models\WOSTATUS.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Helpers\Utilities.csproj">
+      <Project>{CDB0A225-EF09-40C9-A8F5-1785184E0FDC}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MaximoService\MaximoService.csproj">
+      <Project>{48F92A97-E232-4A84-A6A5-E2BBAAB2E730}</Project>
+      <Name>MaximoService</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net40\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.112.0\build\net40\System.Data.SQLite.Core.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.112.0\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net40\System.Data.SQLite.Core.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
