@@ -6,6 +6,8 @@ namespace MaximoServiceLibrary.model
 // MXASSET
 	public class MaximoAsset : MaximoBaseEntity
 	{
+
+		public string href { get; set; }
 		// meta fields
 		public string assetusercust_collectionref { get; set; }
 		public string assetspec_collectionref { get; set; }

@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace LocalDBLibrary.model
 {
     /*
@@ -7,10 +9,11 @@ namespace LocalDBLibrary.model
     public class BasePersistenceEntity
     {
         // it use by LiteDB.
+		[JsonIgnore]
         public int Id { get; set; }
 
-        
-        public SyncronizationStatus? syncronizationStatus { get; set; }
+		[JsonIgnore]
+		public SyncronizationStatus? syncronizationStatus { get; set; }
         
     }
 

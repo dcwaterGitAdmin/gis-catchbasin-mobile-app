@@ -1506,7 +1506,7 @@ namespace CatchBasin.ViewModel
             {
                 var failureProblemCode = new MaximoWorkOrderFailureReport();
                 failureProblemCode.failurecode = Problem;
-                failureProblemCode.wonum = MaximoWorkOrder.wonum;
+               // failureProblemCode.wonum = MaximoWorkOrder.wonum;
                 failureProblemCode.type = "PROBLEMCODE";
                 failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 MaximoWorkOrder.failurereport.Add(failureProblemCode);
@@ -1525,7 +1525,7 @@ namespace CatchBasin.ViewModel
             {
                 var failureCause = new MaximoWorkOrderFailureReport();
                 failureCause.failurecode = Cause;
-                failureCause.wonum = MaximoWorkOrder.wonum;
+               // failureCause.wonum = MaximoWorkOrder.wonum;
                 failureCause.type = "CAUSE";
                 failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 MaximoWorkOrder.failurereport.Add(failureCause);
@@ -1545,7 +1545,7 @@ namespace CatchBasin.ViewModel
                 var failureRemedy = new MaximoWorkOrderFailureReport();
                 failureRemedy.failurecode = Remedy;
                 failureRemedy.type = "REMEDY";
-                failureRemedy.wonum = MaximoWorkOrder.wonum;
+              //  failureRemedy.wonum = MaximoWorkOrder.wonum;
                 failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 MaximoWorkOrder.failurereport.Add(failureRemedy);
             }

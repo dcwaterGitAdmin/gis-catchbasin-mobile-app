@@ -268,9 +268,9 @@ namespace MaximoServiceLibrary
 
 				maximoWorkOrder.asset = maximoAsset;
 
-				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder.href);
+				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder);
 				maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
+				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder);
 			}
 
 			return maximoWorkOrders;
@@ -303,9 +303,9 @@ namespace MaximoServiceLibrary
 
 				maximoWorkOrder.asset = maximoAsset;
 
-				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder.href);
+				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder);
 				maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder.href);
+				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder);
 				// synchronize maximoWorkOrder in local db
 				MaximoWorkOrder maximoWorkOrderFromDb = workOrderRepository.findOne(maximoWorkOrder.wonum);
 				if (maximoWorkOrderFromDb != null)

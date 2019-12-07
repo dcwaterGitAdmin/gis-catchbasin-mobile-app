@@ -11,12 +11,15 @@ namespace MaximoServiceLibrary.model
 		public List<MaximoWorkOrderSpec> workorderspec { get; set; }
 		
 		public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
-		
+
+
 	}
 	
 	// MXWO
 	public class MaximoWorkOrder : MaximoBaseEntity
 	{
+		public string href { get; set; }
+
 		public MaximoAsset asset { get; set; }
 
         public List<MaximoWorkOrderSpec> workorderspec { get; set; }
@@ -1074,21 +1077,14 @@ namespace MaximoServiceLibrary.model
 	// todo : control
 	public class MaximoWorkOrderSpec : MaximoBaseEntity
 	{
-		public DateTime changedate { get; set; }
-		public int refobjectid { get; set; }
+		public string _rowstamp { get; set; }
 		public string assetattrid { get; set; }
 		public string orgid { get; set; }
 		public string classstructureid { get; set; }
-		public string changeby { get; set; }
-		public bool mandatory { get; set; }
 		public int workorderspecid { get; set; }
-		public string siteid { get; set; }
-		public string refobjectname { get; set; }
-		public int classspecid { get; set; }
-		public string wonum { get; set; }
-		public int displaysequence { get; set; }
 		public string alnvalue { get; set; }
 		public double? numvalue { get; set; }
+		public string href { get; set; }
 	}
 
 	public class MaximoWorkOrderFailureRemark : MaximoBaseEntity
@@ -1106,13 +1102,10 @@ namespace MaximoServiceLibrary.model
 	public class MaximoWorkOrderFailureReport : MaximoBaseEntity
 	{
 		public int failurereportid { get; set; }
-		public string assetnum { get; set; }
-		public string orgid { get; set; }
-		public string siteid { get; set; }
+		public string _rowstamp { get; set; }
 		public string failurecode { get; set; }
 		public string type { get; set; }
-		public int linenum { get; set; }
-		public string wonum { get; set; }
+		public string href { get; set; }
 	}
 	
 }

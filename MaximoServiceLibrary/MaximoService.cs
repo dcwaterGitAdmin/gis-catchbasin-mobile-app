@@ -9,13 +9,15 @@ using Newtonsoft.Json;
 using RestSharp;
 using MaximoServiceLibrary.model;
 using MaximoServiceLibrary.repository;
+using RestSharp.Serializers;
+using System.IO;
 
 namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		private static readonly string BASE_HOST = "http://localhost:8080";
-		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		//private static readonly string BASE_HOST = "http://localhost:8080";
+		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -333,9 +335,9 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrderList;
 		}
 
-        public List<MaximoWorkOrderSpec> getWorkOrderSpec(string workOrderHref)
+        public List<MaximoWorkOrderSpec> getWorkOrderSpec(MaximoWorkOrder wo)
         {
-            var request = createRequest(workOrderHref+"/workorderspec", true);
+            var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
             request.AddQueryParameter("oslc.select", "*");
             var response = restClient.Execute(request);
 
@@ -345,32 +347,18 @@ namespace MaximoServiceLibrary
                 return new List<MaximoWorkOrderSpec>();
             }
 
-            List<MaximoWorkOrderSpec> maximoWorkOrderSpecList = new List<MaximoWorkOrderSpec>();
-
-            MaximoWorkOrderSpecPageableRestResponse mxwospecPageableRestResponse =
-                JsonConvert.DeserializeObject<MaximoWorkOrderSpecPageableRestResponse>(response.Content);
-            maximoWorkOrderSpecList.AddRange(mxwospecPageableRestResponse.member);
-
-            // get next pages if there is any
-            while (mxwospecPageableRestResponse.responseInfo.nextPage != null)
-            {
-                request = createRequest(mxwospecPageableRestResponse.responseInfo.nextPage.href, true);
-
-                response = restClient.Execute(request);
-
-                if (!response.IsSuccessful)
-                {
-                    Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                    // todo - throw exception here?
-                    return maximoWorkOrderSpecList;
-                }
-
-                mxwospecPageableRestResponse =
-                    JsonConvert.DeserializeObject<MaximoWorkOrderSpecPageableRestResponse>(response.Content);
-                maximoWorkOrderSpecList.AddRange(mxwospecPageableRestResponse.member);
-            }
-
-            return maximoWorkOrderSpecList;
+   
+            MaximoWorkOrder mxwo =
+                JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
+            
+			if(mxwo.workorderspec == null)
+			{
+				return new List<MaximoWorkOrderSpec>();
+			}
+			else
+			{
+				return mxwo.workorderspec;
+			}
 
         }
 
@@ -393,22 +381,31 @@ namespace MaximoServiceLibrary
             return mxwospecPageableRestResponse.member.Count > 0 ? mxwospecPageableRestResponse.member[0] : new MaximoWorkOrderFailureRemark();
         }
 
-        public List<MaximoWorkOrderFailureReport> getWorkOrderFailureReport(string workOrderHref)
+        public List<MaximoWorkOrderFailureReport> getWorkOrderFailureReport(MaximoWorkOrder wo)
         {
-            var request = createRequest(workOrderHref + "/failurereport", true);
-            request.AddQueryParameter("oslc.select", "*");
-            var response = restClient.Execute(request);
+			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
+			request.AddQueryParameter("oslc.select", "*");
+			var response = restClient.Execute(request);
 
-            if (!response.IsSuccessful)
-            {
-                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                return new List<MaximoWorkOrderFailureReport>();
-            }
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoWorkOrderFailureReport>();
+			}
 
-            FailureReportPageableRestResponse frPageableRestResponse =
-                JsonConvert.DeserializeObject<FailureReportPageableRestResponse>(response.Content);
-            return frPageableRestResponse.member ?? new List<MaximoWorkOrderFailureReport>();
-        }
+
+			MaximoWorkOrder mxwo =
+				JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
+
+			if (mxwo.workorderspec == null)
+			{
+				return new List<MaximoWorkOrderFailureReport>();
+			}
+			else
+			{
+				return mxwo.failurereport;
+			}
+		}
 
         public List<FailureList> getFailureList(string parentIds)
         {
@@ -463,45 +460,15 @@ namespace MaximoServiceLibrary
 			// create an empty workorder
 			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
 			
-			if (maximoWorkOrder.remarkdesc != null)
-			{
-				workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
-			}
-			
-			// check if any of the workorderspecs has changed
-			bool workOrderSpecChanged = false;
-			foreach (var maximoWorkOrderSpec in maximoWorkOrder.workorderspec)
-			{
-				if (maximoWorkOrderSpec.syncronizationStatus.Value == SyncronizationStatus.CREATED ||
-				    maximoWorkOrderSpec.syncronizationStatus.Value == SyncronizationStatus.MODIFIED)
-				{
-					workOrderSpecChanged = true;
-					break;
-				}
-			}
 
-			// add all of the workorderspec's to the request body
-			if (workOrderSpecChanged)
-			{
-				workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
-			}
-			
-			// check if any of the failure reports has changed
-			bool failureReportChanged = false;
-			foreach (var maximoWorkOrderFailureReport in maximoWorkOrder.failurereport)
-			{
-				if (maximoWorkOrderFailureReport.syncronizationStatus.Value == SyncronizationStatus.CREATED ||
-				    maximoWorkOrderFailureReport.syncronizationStatus.Value == SyncronizationStatus.MODIFIED)
-				{
-					failureReportChanged = true;
-					break;
-				}
-			}
+			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc; workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
+			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
+			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
 
-			if (failureReportChanged)
-			{
-				workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
-			}
+
+			request.JsonSerializer = new RestSharpJsonNetSerializer();
+
+			var q = new RestSharpJsonNetSerializer().Serialize(workOrderToBePosted);
 
 			request.AddJsonBody(workOrderToBePosted);
 			
@@ -513,15 +480,16 @@ namespace MaximoServiceLibrary
 
 		public bool updateAssetSpec(MaximoAssetSpec maximoAssetSpec)
 		{
-			var request = createRequest(maximoAssetSpec.localref, true, Method.POST);
-			request.AddHeader("x-method-override", "PATCH");
+			//var request = createRequest(maximoAssetSpec.localref, true, Method.POST);
+			//request.AddHeader("x-method-override", "PATCH");
 
-			request.AddJsonBody(maximoAssetSpec);
-			
-			var response = restClient.Execute(request);
-			Console.WriteLine($"/mxasset/refid/assetspec - update operation response : {response.Content}");
-			
-			return response.IsSuccessful;
+			//request.AddJsonBody(maximoAssetSpec);
+
+			//var response = restClient.Execute(request);
+			//Console.WriteLine($"/mxasset/refid/assetspec - update operation response : {response.Content}");
+
+			//return response.IsSuccessful;
+			return false;
 		}
 
         public bool updateAsset(MaximoAsset maximoAsset)
@@ -685,5 +653,72 @@ namespace MaximoServiceLibrary
 				return null;
 			}
 		}
+	}
+
+	public class RestSharpJsonNetSerializer : ISerializer
+	{
+		private readonly Newtonsoft.Json.JsonSerializer _serializer;
+
+		/// <summary>
+		/// Default serializer
+		/// </summary>
+		public RestSharpJsonNetSerializer()
+		{
+			ContentType = "application/json";
+			_serializer = new Newtonsoft.Json.JsonSerializer
+			{
+				MissingMemberHandling = MissingMemberHandling.Ignore,
+				NullValueHandling = NullValueHandling.Ignore,
+				DefaultValueHandling = DefaultValueHandling.Include
+			};
+		}
+
+		/// <summary>
+		/// Default serializer with overload for allowing custom Json.NET settings
+		/// </summary>
+		public RestSharpJsonNetSerializer(Newtonsoft.Json.JsonSerializer serializer)
+		{
+			ContentType = "application/json";
+			_serializer = serializer;
+		}
+
+		/// <summary>
+		/// Serialize the object as JSON
+		/// </summary>
+		/// <param name="obj">Object to serialize
+		/// <returns>JSON as String</returns>
+		public string Serialize(object obj)
+		{
+			using (var stringWriter = new StringWriter())
+			{
+				using (var jsonTextWriter = new JsonTextWriter(stringWriter))
+				{
+					jsonTextWriter.Formatting = Formatting.Indented;
+					jsonTextWriter.QuoteChar = '"';
+
+					_serializer.Serialize(jsonTextWriter, obj);
+
+					var result = stringWriter.ToString();
+					return result;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Unused for JSON Serialization
+		/// </summary>
+		public string DateFormat { get; set; }
+		/// <summary>
+		/// Unused for JSON Serialization
+		/// </summary>
+		public string RootElement { get; set; }
+		/// <summary>
+		/// Unused for JSON Serialization
+		/// </summary>
+		public string Namespace { get; set; }
+		/// <summary>
+		/// Content type for serialized content
+		/// </summary>
+		public string ContentType { get; set; }
 	}
 }

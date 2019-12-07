@@ -28,13 +28,13 @@ namespace CatchBasin
                 // Initialize the ArcGIS Runtime before any components are created.
                 ArcGISRuntimeEnvironment.Initialize();
 				MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibrary.MaximoServiceLibraryBeanConfiguration();
-				//MaximoServiceLibraryBeanConfiguration.assetRepository.removeCollection();
+				MaximoServiceLibraryBeanConfiguration.assetRepository.removeCollection();
 
-				//MaximoServiceLibraryBeanConfiguration.workOrderRepository.removeCollection();
+				MaximoServiceLibraryBeanConfiguration.workOrderRepository.removeCollection();
 
-				//var mxuser = MaximoServiceLibraryBeanConfiguration.userRepository.findOneIgnoreCase("EDELIOGLU");
-				//mxuser.userPreferences.lastSyncTime = DateTime.MinValue;
-				//MaximoServiceLibraryBeanConfiguration.userRepository.upsert(mxuser);
+				var mxuser = MaximoServiceLibraryBeanConfiguration.userRepository.findOneIgnoreCase("EDELIOGLU");
+				mxuser.userPreferences.lastSyncTime = DateTime.MinValue;
+				MaximoServiceLibraryBeanConfiguration.userRepository.upsert(mxuser);
 			}
             catch (Exception ex)
             {
