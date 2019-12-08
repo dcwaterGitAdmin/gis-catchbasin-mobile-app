@@ -24,7 +24,8 @@ namespace MaximoServiceLibrary
 		private DomainRepository domainRepository;
 		private AttributeRepository attributeRepository;
 		private FailureListRepository failureListRepository;
-
+		private LaborRepository laborRepository;
+		private InventoryRepository inventoryRepository;
 		public SynchronizationDelegateHandler synchronizationDelegate;
 		
 		public delegate void SynchronizationDelegateHandler(string status, string substatus);
@@ -36,7 +37,9 @@ namespace MaximoServiceLibrary
 			AssetSpecRepository _assetSpecRepository,
 			DomainRepository _domainRepository,
 			AttributeRepository _attributeRepository,
-			FailureListRepository _failureListRepository)
+			FailureListRepository _failureListRepository,
+			LaborRepository _laborRepository,
+			InventoryRepository _inventoryRepository)
 		{
 			this.maximoService = _maximoService;
 
@@ -47,7 +50,9 @@ namespace MaximoServiceLibrary
 			domainRepository = _domainRepository;
 			attributeRepository = _attributeRepository;
 			failureListRepository = _failureListRepository;
-			
+			laborRepository = _laborRepository;
+			inventoryRepository = _inventoryRepository;
+
 			// every 10 seconds / minutes
 			synchronizationTimer = new Timer(10000);
 			synchronizationTimer.Elapsed += onSyncTimerElapsed;
@@ -365,20 +370,15 @@ namespace MaximoServiceLibrary
 		public void synchronizeHelperFromMaximoToLocalDb()
 		{
 			clearHelperFromLocalDb();
-			List<MaximoDomain> domains = maximoService.getDomains();
 
-			foreach (var domain in domains)
-			{
-				domainRepository.insert(domain);
-			}
+			// get domains
+			domainRepository.upsertList(maximoService.getDomains());
+			
 
-
-			List<MaximoAttribute> attributes = maximoService.getAttributes();
-			foreach (var attribute in attributes)
-			{
-				attributeRepository.insert(attribute);
-			}
-
+			// get attributes
+		
+			attributeRepository.upsertList(maximoService.getAttributes());
+			// get failurelist
 			// 1283 CatchBasin failurelist id
 			List<FailureList> failureLists = new List<FailureList>();
 			List<FailureList> tempFailureLists = maximoService.getFailureList("1283");
@@ -390,11 +390,24 @@ namespace MaximoServiceLibrary
 			var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
 			tempFailureLists = maximoService.getFailureList(causeCodes);
 			failureLists.AddRange(tempFailureLists);
+			failureListRepository.upsertList(failureLists);
+		
+			
 
-			foreach (var failureList in failureLists)
+			// get labors
+			string[] crafts = new string[] { "SSWR", "SSLR", "SSWL", "SCRW", "CNRW" };
+			
+			foreach (string craft in crafts)
 			{
-				failureListRepository.insert(failureList);
+				laborRepository.upsertList(maximoService.getLabors(craft));
 			}
+
+		
+
+			// get inventories
+			inventoryRepository.upsertList(maximoService.getInventory());
+
+
 		}
 
 		public void clearHelperFromLocalDb()
@@ -402,6 +415,8 @@ namespace MaximoServiceLibrary
 			domainRepository.removeCollection();
 			assetRepository.removeCollection();
 			failureListRepository.removeCollection();
+			laborRepository.removeCollection();
+			inventoryRepository.removeCollection();
 		}
 	}
 }
