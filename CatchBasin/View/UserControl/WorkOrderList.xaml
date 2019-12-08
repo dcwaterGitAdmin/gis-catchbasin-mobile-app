@@ -10,21 +10,34 @@
              d:DesignHeight="450" d:DesignWidth="450">
 
     <Grid >
+        
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top">
+                <ComboBox ItemsSource="{Binding FilterList}"
+                          DisplayMemberPath="Label"
+                          SelectedValuePath="FilterType"
+                          SelectedValue="{Binding Filter}"></ComboBox>
+                <ComboBox ItemsSource="{Binding OrderList}"
+                          DisplayMemberPath="Label"
+                          SelectedValuePath="OrderType"
+                          SelectedValue="{Binding Order}"></ComboBox>
+            </StackPanel>
+            
+      
+        
+        
         <ListView ItemsSource="{Binding WorkOrders}" SelectedIndex="{Binding SelectedIndex}">
+				
             <ListView.Resources>
-                <Style TargetType="ListViewItem">
-                    <Style.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsSelected" Value="true" />
-                                <Condition Property="Selector.IsSelectionActive" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="Pink" />
-                           
-                        </MultiTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ListView.Resources>
+					<Style TargetType="{x:Type ListViewItem}">
+						<Style.Triggers>
+							<Trigger Property="IsSelected" Value="true" >
+								
+								<Setter Property="Background" Value="Green" />
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</ListView.Resources>
             <ListView.ItemTemplate>
                 
                 <DataTemplate>
@@ -63,5 +76,7 @@
             </ListView.ItemTemplate>
 
         </ListView>
+        </DockPanel>
+            
     </Grid>
 </UserControl>

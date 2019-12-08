@@ -117,8 +117,10 @@ namespace CatchBasin.ViewModel.Command
 
 				wo.startTimerDate = null;
 				wo.timerImageUri = "pack://application:,,,/CatchBasin;component/Resources/Images/stopWatch.png";
-				MaximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
+				wo =MaximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
 				WorkOrderListVM.Update();
+
+				WorkOrderListVM.showWorkOrder(wo);
 			}
 			
 		}

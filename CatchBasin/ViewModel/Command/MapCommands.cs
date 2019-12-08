@@ -367,7 +367,7 @@ namespace CatchBasin.ViewModel.Commands
 					failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 					wo.failurereport.Add(failureRemedy);
 
-					wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
+					
 
 					MapVM.ShowWorkOrderDetail(wo);
 					

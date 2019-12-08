@@ -35,7 +35,16 @@ namespace CatchBasin.ViewModel.Command
 
 		public bool CanExecute(object parameter)
 		{
-			return true;
+
+			if(WorkOrderDetailVM.ToolTrans.Count>0 && WorkOrderDetailVM.LabTrans.Count > 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+			
 			// if user didnt changed any value in workorder, can user will complete workorder?
 		}
 

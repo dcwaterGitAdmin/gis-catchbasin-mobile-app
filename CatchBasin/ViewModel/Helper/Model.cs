@@ -17,6 +17,47 @@ namespace CatchBasin.ViewModel.Helper
 		public string description { get; set; }
 	}
 
+
+	class FilterDomain
+	{
+		public FilterDomain(string _label, FilterType _filterType)
+		{
+			FilterType = _filterType;
+			Label = _label;
+		}
+		public FilterType FilterType { get; set; }
+		public string Label { get; set; }
+	}
+
+	class OrderDomain
+	
+	{
+
+		public OrderDomain(string _label, OrderType _orderType)
+		{
+			OrderType = _orderType;
+			Label = _label;
+		}
+		public OrderType OrderType { get; set; }
+		public string Label { get; set; }
+	}
+
+	enum FilterType{
+		ALLDISPTCHD,
+		PMDISPTCHD,
+		EMERGDISPTCHD,
+		NOPMDISPTCHD,
+		NODISPTCHD
+
+	}
+	
+	enum OrderType
+	{
+		SCHEDSTART,
+		STATUS,
+		WORKTYPE
+	}
+
 	enum LocalWorkOrderType
 	{
 		TRUCKDUMPING,
