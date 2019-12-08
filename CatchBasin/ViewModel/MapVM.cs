@@ -57,7 +57,7 @@ namespace CatchBasin.ViewModel
 		public bool IsOffline
 		{
 			get { return isOffline; }
-			set { isOffline = value; ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.isOffline = isOffline; OnPropertyChanged("IsOffline"); }
+			set { isOffline = value; MaximoServiceLibrary.AppContext.synchronizationService.isOffline = isOffline; OnPropertyChanged("IsOffline"); }
 		}
 
 
@@ -94,7 +94,7 @@ namespace CatchBasin.ViewModel
             AssetDetailIsVisible = false;
             WorkOrderDetailIsVisible = false;
 
-			((App)Application.Current).MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizationDelegate += synchronizationStatus;
+			MaximoServiceLibrary.AppContext.synchronizationService.synchronizationDelegate += synchronizationStatus;
 			//setBaseMap();
 			
         }

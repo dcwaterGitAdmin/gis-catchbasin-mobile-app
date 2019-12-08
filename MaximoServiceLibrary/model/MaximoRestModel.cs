@@ -71,5 +71,9 @@ namespace MaximoServiceLibrary.model
 	{
 	}
 
+	public class MaximoPersonGroupPageableRestResponse : MaximoBasePageableRestResponse<MaximoPersonGroup>
+	{
+	}
+
 
 }

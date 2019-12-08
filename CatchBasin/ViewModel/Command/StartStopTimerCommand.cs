@@ -25,18 +25,18 @@ namespace CatchBasin.ViewModel.Command
 			}
 		}
 
-		MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+		
 		WorkOrderListVM WorkOrderListVM;
 		public StartStopTimerCommand(WorkOrderListVM workOrderListVM)
 		{
 			WorkOrderListVM = workOrderListVM;
-			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
+			
 		}
 
 		public bool CanExecute(object parameter)
 		{
 			if (parameter == null) return false;
-			var values = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findNot("startTimerDate", null).ToList();
+			var values = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("startTimerDate", null).ToList();
 			if(values.Count > 0)
 			{
 				if(values[0].Id == ((MaximoWorkOrder)parameter).Id)
@@ -63,7 +63,7 @@ namespace CatchBasin.ViewModel.Command
 			{
 				wo.startTimerDate = DateTime.Now;
 				wo.timerImageUri = "pack://application:,,,/CatchBasin;component/Resources/Images/startWatch.png";
-				MaximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
+				MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
 				WorkOrderListVM.Update();
 			}
 			else
@@ -92,7 +92,7 @@ namespace CatchBasin.ViewModel.Command
 				labTrans.dcw_trucknum = "";// todo getvehicle
 				labTrans.enterdate = DateTime.Now;
 				labTrans.laborcode = "";//todo
-				labTrans.enterby = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser.personId;
+				labTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 				labTrans.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				
 
@@ -117,7 +117,7 @@ namespace CatchBasin.ViewModel.Command
 
 				wo.startTimerDate = null;
 				wo.timerImageUri = "pack://application:,,,/CatchBasin;component/Resources/Images/stopWatch.png";
-				wo =MaximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
+				wo = MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
 				WorkOrderListVM.Update();
 
 				WorkOrderListVM.showWorkOrder(wo);

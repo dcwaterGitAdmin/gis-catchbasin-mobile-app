@@ -25,43 +25,21 @@ namespace MaximoServiceLibrary
 		private static readonly string _ltpatoken2_Cookie_Name = "LtpaToken2";
 		private static readonly string _jsessionid_Cookie_Name = "JSESSIONID";
 
-		// private 
-		private DbConnection dbConnection;
-		private UserRepository userRepository;
-		
+
+
 		private RestClient restClient;
 		private string token;
 		private string sessionId;
 
-		private string username;
-		private string password;
-
-		// public
-		public MaximoUser mxuser;
-		public LoginDelegateHandler loginDelegate;
-		public LogoutDelegateHandler logoutDelegate;
-		public bool isUserLoggedIn = false;
-		public bool isOnline; 
-
-
-		// delegate
-		public delegate void LoginDelegateHandler();
-
-		public delegate void LogoutDelegateHandler();
+		public bool isOnline;
 
 		// cons
-		public MaximoService(DbConnection _dbConnection,
-			UserRepository _userRepository)
+		public MaximoService()
 		{
-			this.dbConnection = _dbConnection;
-			this.userRepository = _userRepository;
-			
+
 			// todo : put app config
-			
+
 			restClient = new RestClient();
-			loginDelegate = new LoginDelegateHandler(whoami);
-			//  loginDelegate += getWorkOrders;
-			logoutDelegate = new LogoutDelegateHandler(clearUserData);
 		}
 
 		// helpers
@@ -73,8 +51,8 @@ namespace MaximoServiceLibrary
 		public RestRequest createRequest(string _url, bool isFullHrefUrl)
 		{
 			return createRequest(_url, isFullHrefUrl, Method.GET);
-		}	
-		
+		}
+
 		public RestRequest createRequest(string _url, bool isFullHrefUrl, Method method)
 		{
 			string finalUrl = _url;
@@ -104,10 +82,10 @@ namespace MaximoServiceLibrary
 			return request;
 		}
 
-		public bool checkIsOnline()
+		public bool checkIsOnline(string username, string password)
 		{
 			bool previousIsOnline = isOnline;
-			
+
 			var request = createRequest("/whoami");
 
 			var response = restClient.Execute(request);
@@ -118,17 +96,13 @@ namespace MaximoServiceLibrary
 			{
 				this.login(username, password);
 			}
-			
+
 			return this.isOnline;
 		}
 
 		public bool login(string username, string password)
 		{
-			this.username = username;
-			this.password = password;
-			
-			isUserLoggedIn = false;
-			
+
 			string maxauth = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(username + ":" + password));
 			var request = new RestRequest(BASE_URL + "/login");
 
@@ -141,14 +115,11 @@ namespace MaximoServiceLibrary
 			if (response.ResponseStatus != ResponseStatus.Completed)
 			{
 				isOnline = false;
+				return false;
 			}
 			else
 			{
 				isOnline = true;
-			}
-
-			if (isOnline)
-			{
 				foreach (RestResponseCookie cookie in response.Cookies.ToArray())
 				{
 					if (cookie.Name.ToUpper() == _ltpatoken2_Cookie_Name.ToUpper())
@@ -161,29 +132,8 @@ namespace MaximoServiceLibrary
 						sessionId = cookie.Value;
 					}
 				}
-
-
 				if (response.StatusCode == System.Net.HttpStatusCode.OK && sessionId != null && token != null)
 				{
-					isUserLoggedIn = true;
-					loginDelegate();
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else 
-			{
-               
-				MaximoUser maximoUser = userRepository.findOneIgnoreCase(username);
-				if (maximoUser.password.Equals(password))
-				{
-					mxuser = maximoUser;
-					
-					isUserLoggedIn = true;
-					loginDelegate();
 					return true;
 				}
 				else
@@ -193,100 +143,116 @@ namespace MaximoServiceLibrary
 			}
 		}
 
-		public void logout()
-		{
-			loginDelegate();
-		}
 
-		public void whoami()
+		public MaximoUser whoami()
 		{
-			if (isOnline)
+
+			var request = createRequest("/whoami");
+
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
 			{
-				var request = createRequest("/whoami");
-
-				var response = restClient.Execute(request);
-
-				MaximoUser mxuserFromMaximo = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
-
-				mxuser = userRepository.findOneIgnoreCase(this.username);
-				if (mxuser == null)
-				{
-					mxuser = mxuserFromMaximo;
-				}
-				else
-				{
-					// merge user data returned from Maximo server to local db entity
-					mxuser.mergeFrom(mxuserFromMaximo);
-				}
-
-				if (mxuser.userPreferences == null)
-				{
-					mxuser.userPreferences = new UserPreferences();
-				}
-
-				mxuser.personGroupList = getPersonGroupList();
-				
-				mxuser.password = this.password;
-
-				userRepository.upsert(mxuser);
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return null;
 			}
+
+			MaximoUser mxuserFromMaximo = JsonConvert.DeserializeObject<MaximoUser>(response.Content);
+
+
+
+			return mxuserFromMaximo;
+			
+
 		}
 
 		public void clearUserData()
 		{
-			isUserLoggedIn = false;
-			mxuser = null;
 			token = null;
 			sessionId = null;
 		}
 
-		public List<MaximoPersonGroup> getPersonGroupList()
+		public MaximoPersonGroup getPersonGroup(string personId)
 		{
 			var request = createRequest("/os/mxl_pergrp");
 			request.AddQueryParameter("oslc.select", "*");
-			request.AddQueryParameter("oslc.where", "allpersongroupteam.resppartygroup=\"" + mxuser.personId + "\"");
+			request.AddQueryParameter("oslc.where", "persongroup=\"CB%\" and allpersongroupteam.resppartygroup=\"" + personId + "\"");
 
 
 			var response = restClient.Execute(request);
 			MaximoPersonGroupRestResponse maximoPersonGroupRestResponse = JsonConvert.DeserializeObject<MaximoPersonGroupRestResponse>(response.Content);
+			if(maximoPersonGroupRestResponse.member != null && maximoPersonGroupRestResponse.member.Count > 0)
+			{
+				return maximoPersonGroupRestResponse.member[0];
+			}
+			else
+			{
+				return null;
+			}
+			
+		}
 
-			return maximoPersonGroupRestResponse.member;
+		public List<MaximoPersonGroup> getPersonGroups()
+		{
+			var request = createRequest("/os/mxl_pergrp");
+			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.where", "persongroup=\"CB%\"");
+
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoPersonGroup>();
+			}
+			List<MaximoPersonGroup> personGroups = new List<MaximoPersonGroup>();
+
+			MaximoPersonGroupPageableRestResponse mxPersonGroupPageableRestResponse =
+				JsonConvert.DeserializeObject<MaximoPersonGroupPageableRestResponse>(response.Content);
+			personGroups.AddRange(mxPersonGroupPageableRestResponse.member);
+
+			// get next pages if there is any
+			while (mxPersonGroupPageableRestResponse.responseInfo.nextPage != null)
+			{
+				request = createRequest(mxPersonGroupPageableRestResponse.responseInfo.nextPage.href, true);
+
+				response = restClient.Execute(request);
+
+				if (!response.IsSuccessful)
+				{
+					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					// todo - throw exception here?
+					return personGroups;
+				}
+
+				mxPersonGroupPageableRestResponse =
+					JsonConvert.DeserializeObject<MaximoPersonGroupPageableRestResponse>(response.Content);
+				personGroups.AddRange(mxPersonGroupPageableRestResponse.member);
+			}
+
+			return personGroups;
+
+
 		}
 
 		// methods
 
-		public List<MaximoWorkOrder> getWorkOrders()
+		public List<MaximoWorkOrder> getWorkOrders(string persongroup)
 		{
-			return getWorkOrders(null);
+			return getWorkOrders(persongroup, null);
 		}
-		
-		public List<MaximoWorkOrder> getWorkOrders(DateTime? lastSyncTime)
+
+		public List<MaximoWorkOrder> getWorkOrders(string persongroup, DateTime? lastSyncTime)
 		{
-			var persongroupParam = "\"CB00\"";
-
-			if (mxuser.userPreferences != null && mxuser.userPreferences.selectedPersonGroup != null)
-			{
-				persongroupParam += "," + persongroupParam;
-			}
-			else
-			{
-				if (mxuser.personGroupList != null)
-				{
-					foreach (var maximoPersonGroup in mxuser.personGroupList)
-					{
-						persongroupParam += "," +"\""+ maximoPersonGroup.persongroup+ "\"" ;
-					}
-				}
-			}
-
+			
 			string where = "failurecode=\"CATCHBASIN\"" +
-			               " and siteid=\"DWS_DSS\"" +
-			               " and service=\"DSS\"" +
-			               " and historyflag=0" +
-			               " and status=\"DISPTCHD\"" +
-			               " and worktype in [\"INV\",\"EMERG\",\"PM\"]" +
-			               " and persongroup in [" + persongroupParam + "]" +
-			               " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
+						   " and siteid=\"DWS_DSS\"" +
+						   " and service=\"DSS\"" +
+						   " and historyflag=0" +
+						   " and status=\"DISPTCHD\"" +
+						   " and worktype in [\"INV\",\"EMERG\",\"PM\",\"INSP\"]" +
+						   $" and persongroup in [\"{persongroup}\",\"CB00\"]" +
+						   " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
 
 			if (lastSyncTime != null && lastSyncTime.HasValue)
 			{
@@ -331,27 +297,27 @@ namespace MaximoServiceLibrary
 					JsonConvert.DeserializeObject<MaximoWorkOrderPageableRestResponse>(response.Content);
 				maximoWorkOrderList.AddRange(mxwoPageableRestResponse.member);
 			}
-			
+
 			return maximoWorkOrderList;
 		}
 
-        public List<MaximoWorkOrderSpec> getWorkOrderSpec(MaximoWorkOrder wo)
-        {
-            var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
-            request.AddQueryParameter("oslc.select", "*");
-            var response = restClient.Execute(request);
+		public List<MaximoWorkOrderSpec> getWorkOrderSpec(MaximoWorkOrder wo)
+		{
+			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
+			request.AddQueryParameter("oslc.select", "*");
+			var response = restClient.Execute(request);
 
-            if (!response.IsSuccessful)
-            {
-                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                return new List<MaximoWorkOrderSpec>();
-            }
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoWorkOrderSpec>();
+			}
 
-   
-            MaximoWorkOrder mxwo =
-                JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
-            
-			if(mxwo.workorderspec == null)
+
+			MaximoWorkOrder mxwo =
+				JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
+
+			if (mxwo.workorderspec == null)
 			{
 				return new List<MaximoWorkOrderSpec>();
 			}
@@ -360,29 +326,29 @@ namespace MaximoServiceLibrary
 				return mxwo.workorderspec;
 			}
 
-        }
+		}
 
-        public MaximoWorkOrderFailureRemark getWorkOrderFailureRemark(string workOrderHref)
-        {
-            var request = createRequest(workOrderHref + "/failureremark", true);
-            request.AddQueryParameter("oslc.select", "*");
-            var response = restClient.Execute(request);
+		public MaximoWorkOrderFailureRemark getWorkOrderFailureRemark(string workOrderHref)
+		{
+			var request = createRequest(workOrderHref + "/failureremark", true);
+			request.AddQueryParameter("oslc.select", "*");
+			var response = restClient.Execute(request);
 
-            if (!response.IsSuccessful)
-            {
-                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                return new MaximoWorkOrderFailureRemark();
-            }
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new MaximoWorkOrderFailureRemark();
+			}
 
-            
-            FailureRemarkPageableRestResponse mxwospecPageableRestResponse =
-                JsonConvert.DeserializeObject<FailureRemarkPageableRestResponse>(response.Content);
 
-            return mxwospecPageableRestResponse.member.Count > 0 ? mxwospecPageableRestResponse.member[0] : new MaximoWorkOrderFailureRemark();
-        }
+			FailureRemarkPageableRestResponse mxwospecPageableRestResponse =
+				JsonConvert.DeserializeObject<FailureRemarkPageableRestResponse>(response.Content);
 
-        public List<MaximoWorkOrderFailureReport> getWorkOrderFailureReport(MaximoWorkOrder wo)
-        {
+			return mxwospecPageableRestResponse.member.Count > 0 ? mxwospecPageableRestResponse.member[0] : new MaximoWorkOrderFailureRemark();
+		}
+
+		public List<MaximoWorkOrderFailureReport> getWorkOrderFailureReport(MaximoWorkOrder wo)
+		{
 			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
 			request.AddQueryParameter("oslc.select", "*");
 			var response = restClient.Execute(request);
@@ -407,59 +373,59 @@ namespace MaximoServiceLibrary
 			}
 		}
 
-        public List<FailureList> getFailureList(string parentIds)
-        {
-            var request = createRequest("/os/dcw_kona_failurelist");
-            request.AddQueryParameter("oslc.select", "*");
-            request.AddQueryParameter("oslc.pageSize", "10");
-            request.AddQueryParameter("oslc.where", $"parent in [{parentIds}]");
-            var response = restClient.Execute(request);
+		public List<FailureList> getFailureList(string parentIds)
+		{
+			var request = createRequest("/os/dcw_kona_failurelist");
+			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.pageSize", "10");
+			request.AddQueryParameter("oslc.where", $"parent in [{parentIds}]");
+			var response = restClient.Execute(request);
 
-            if (!response.IsSuccessful)
-            {
-                Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                return new List<FailureList>();
-            }
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<FailureList>();
+			}
 
-            List<FailureList> FailureLists = new List<FailureList>();
+			List<FailureList> FailureLists = new List<FailureList>();
 
-            FailureListPageableRestResponse flPageableRestResponse =
-                JsonConvert.DeserializeObject<FailureListPageableRestResponse>(response.Content);
-            FailureLists.AddRange(flPageableRestResponse.member);
+			FailureListPageableRestResponse flPageableRestResponse =
+				JsonConvert.DeserializeObject<FailureListPageableRestResponse>(response.Content);
+			FailureLists.AddRange(flPageableRestResponse.member);
 
-            // get next pages if there is any
-            while (flPageableRestResponse.responseInfo.nextPage != null)
-            {
-                request = createRequest(flPageableRestResponse.responseInfo.nextPage.href, true);
+			// get next pages if there is any
+			while (flPageableRestResponse.responseInfo.nextPage != null)
+			{
+				request = createRequest(flPageableRestResponse.responseInfo.nextPage.href, true);
 
-                response = restClient.Execute(request);
+				response = restClient.Execute(request);
 
-                if (!response.IsSuccessful)
-                {
-                    Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-                    // todo - throw exception here?
-                    return FailureLists;
-                }
+				if (!response.IsSuccessful)
+				{
+					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					// todo - throw exception here?
+					return FailureLists;
+				}
 
-                flPageableRestResponse =
-                    JsonConvert.DeserializeObject<FailureListPageableRestResponse>(response.Content);
-                FailureLists.AddRange(flPageableRestResponse.member);
-            }
+				flPageableRestResponse =
+					JsonConvert.DeserializeObject<FailureListPageableRestResponse>(response.Content);
+				FailureLists.AddRange(flPageableRestResponse.member);
+			}
 
-            return FailureLists;
+			return FailureLists;
 
-        }
+		}
 
-        public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
+		public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
 
 			// TODO edelioglu, add required request params
-			
+
 			// create an empty workorder
 			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
-			
+
 
 			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc; workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
@@ -471,12 +437,12 @@ namespace MaximoServiceLibrary
 			var q = new RestSharpJsonNetSerializer().Serialize(workOrderToBePosted);
 
 			request.AddJsonBody(workOrderToBePosted);
-			
+
 			var response = restClient.Execute(request);
 			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
-			
+
 			return response.IsSuccessful;
-		} 
+		}
 
 		public bool updateAssetSpec(MaximoAssetSpec maximoAssetSpec)
 		{
@@ -492,21 +458,21 @@ namespace MaximoServiceLibrary
 			return false;
 		}
 
-        public bool updateAsset(MaximoAsset maximoAsset)
-        {
-            var request = createRequest(maximoAsset.href, true, Method.POST);
-            request.AddHeader("x-method-override", "PATCH");
-           
+		public bool updateAsset(MaximoAsset maximoAsset)
+		{
+			var request = createRequest(maximoAsset.href, true, Method.POST);
+			request.AddHeader("x-method-override", "PATCH");
 
-            request.AddJsonBody(maximoAsset);
 
-            var response = restClient.Execute(request);
-            Console.WriteLine($"/mxasset - update operation response : {response.Content}");
+			request.AddJsonBody(maximoAsset);
 
-            return response.IsSuccessful;
-        }
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/mxasset - update operation response : {response.Content}");
 
-        public List<MaximoAttribute> getAttributes()
+			return response.IsSuccessful;
+		}
+
+		public List<MaximoAttribute> getAttributes()
 		{
 			var request = createRequest("/os/mxl_assetattribute");
 			request.AddQueryParameter("oslc.select", "*");
@@ -519,11 +485,11 @@ namespace MaximoServiceLibrary
 				return new List<MaximoAttribute>();
 			}
 			List<MaximoAttribute> maximoAttributes = new List<MaximoAttribute>();
-			
+
 			MaximoAttributePageableRestResponse mxl_assetattributePageableRestResponse =
 				JsonConvert.DeserializeObject<MaximoAttributePageableRestResponse>(response.Content);
 			maximoAttributes.AddRange(mxl_assetattributePageableRestResponse.member);
-			
+
 			// get next pages if there is any
 			while (mxl_assetattributePageableRestResponse.responseInfo.nextPage != null)
 			{
@@ -542,11 +508,11 @@ namespace MaximoServiceLibrary
 					JsonConvert.DeserializeObject<MaximoAttributePageableRestResponse>(response.Content);
 				maximoAttributes.AddRange(mxl_assetattributePageableRestResponse.member);
 			}
-			
+
 			return maximoAttributes;
-			
+
 		}
-		
+
 		public List<MaximoInventory> getInventory()
 		{
 			var request = createRequest("/os/mxinventory");
@@ -588,27 +554,27 @@ namespace MaximoServiceLibrary
 
 			return tools;
 		}
-		
+
 		public List<MaximoDomain> getDomains()
 		{
 			var request = createRequest("/os/mxdomain");
 			request.AddQueryParameter("oslc.select", "*");
 			request.AddQueryParameter("oslc.pageSize", "10");
 			request.AddQueryParameter("pageno", "1");
-			
+
 			var response = restClient.Execute(request);
-			
+
 			if (!response.IsSuccessful)
 			{
 				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<MaximoDomain>();
 			}
 			List<MaximoDomain> maximoDomains = new List<MaximoDomain>();
-			
+
 			MaximoDomainPageableRestResponse mxdomainPageableRestResponse =
 				JsonConvert.DeserializeObject<MaximoDomainPageableRestResponse>(response.Content);
 			maximoDomains.AddRange(mxdomainPageableRestResponse.member);
-			
+
 			// get next pages if there is any
 			while (mxdomainPageableRestResponse.responseInfo.nextPage != null)
 			{
@@ -627,11 +593,11 @@ namespace MaximoServiceLibrary
 					JsonConvert.DeserializeObject<MaximoDomainPageableRestResponse>(response.Content);
 				maximoDomains.AddRange(mxdomainPageableRestResponse.member);
 			}
-			
+
 			return maximoDomains;
-			
+
 		}
-		
+
 		public MaximoAsset getAsset(string assetnum)
 		{
 			if (assetnum == null) return null;

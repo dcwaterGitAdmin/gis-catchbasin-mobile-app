@@ -198,7 +198,7 @@ namespace CatchBasin.ViewModel.Commands
 			MaximoWorkOrderFailureReport failureProblemCode;
 			MaximoWorkOrderFailureReport failureCause;
 			MaximoWorkOrderFailureReport failureRemedy;
-			string crew =((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser?.userPreferences?.selectedPersonGroup;
+			string crew = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser?.userPreferences?.selectedPersonGroup;
 			switch ((LocalWorkOrderType)parameter)
 			{
 				case LocalWorkOrderType.TRUCKDUMPING:

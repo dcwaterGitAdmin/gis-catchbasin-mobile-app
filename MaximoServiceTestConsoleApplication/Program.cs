@@ -12,7 +12,7 @@ namespace MaximoServiceTestConsoleApplication
 	{
 		public static void Main(string[] args)
 		{
-			MaximoServiceLibraryBeanConfiguration maximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
+			MaximoServiceLibrary.AppContext maximoServiceLibraryBeanConfiguration = new MaximoServiceLibrary.AppContext();
 			var assets = maximoServiceLibraryBeanConfiguration.assetRepository.findAllToBeScynced();
 			foreach (var asset in assets)
 			{

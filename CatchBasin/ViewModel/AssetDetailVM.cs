@@ -218,22 +218,19 @@ namespace CatchBasin.ViewModel
 
 		private bool isDirty;
         MaximoAsset Asset;
-        public MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
 
         public AssetDetailVM(WorkOrderDetailVM _workOrderDetailVM)
         {
             PropertyChanged += AssetDetailVM_PropertyChanged;
             WorkOrderDetailVM = _workOrderDetailVM;
-            
-            MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
 
             
-            TypeList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("CB_SUBT").alndomain;
-            TopMaterialList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("CBTOPMATRL").alndomain;
-            TopThicknessList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("CBTOPTHICK").numericdomain;
-            GrateTypeList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("CBGRATETYPE").alndomain;
-            OwnerList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("OWNER").alndomain;
-            CleaningResponsibilityList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("CLNRESP").alndomain;
+            TypeList = MaximoServiceLibrary.AppContext.domainRepository.findOne("CB_SUBT").alndomain;
+            TopMaterialList = MaximoServiceLibrary.AppContext.domainRepository.findOne("CBTOPMATRL").alndomain;
+            TopThicknessList = MaximoServiceLibrary.AppContext.domainRepository.findOne("CBTOPTHICK").numericdomain;
+            GrateTypeList = MaximoServiceLibrary.AppContext.domainRepository.findOne("CBGRATETYPE").alndomain;
+            OwnerList = MaximoServiceLibrary.AppContext.domainRepository.findOne("OWNER").alndomain;
+            CleaningResponsibilityList = MaximoServiceLibrary.AppContext.domainRepository.findOne("CLNRESP").alndomain;
 
             FlowRestrictorTypeList = new List<StaticDomain>();
             FlowRestrictorTypeList.Add(new StaticDomain("ORIFICE", "Orifice"));
@@ -456,10 +453,10 @@ namespace CatchBasin.ViewModel
             }
 
 			Asset.changedate = DateTime.Now;
-			Asset.changeby = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser.personId;
+			Asset.changeby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 			// asset maybe choosed or created on map!
             if (Asset.Id > 0){
-                var asset =MaximoServiceLibraryBeanConfiguration.assetRepository.update(Asset);
+                var asset = MaximoServiceLibrary.AppContext.assetRepository.update(Asset);
                 Asset = asset;
             }
             else
@@ -472,8 +469,8 @@ namespace CatchBasin.ViewModel
 				{
 					Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				}
-               
-                MaximoServiceLibraryBeanConfiguration.assetRepository.insert(Asset);
+
+				MaximoServiceLibrary.AppContext.assetRepository.insert(Asset);
             }
             isDirty = false;
             WorkOrderDetailVM.HideAssetDetail();

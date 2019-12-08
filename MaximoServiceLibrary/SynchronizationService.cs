@@ -15,43 +15,16 @@ namespace MaximoServiceLibrary
 		
 		private Timer synchronizationTimer;
 		
-		private MaximoService maximoService;
-
-		private UserRepository userRepository;
-		private WorkOrderRepository workOrderRepository;
-		private AssetRepository assetRepository;
-		private AssetSpecRepository assetSpecRepository;
-		private DomainRepository domainRepository;
-		private AttributeRepository attributeRepository;
-		private FailureListRepository failureListRepository;
-		private LaborRepository laborRepository;
-		private InventoryRepository inventoryRepository;
+	
 		public SynchronizationDelegateHandler synchronizationDelegate;
+
+		public MaximoUser mxuser;
 		
 		public delegate void SynchronizationDelegateHandler(string status, string substatus);
 		
-		public SynchronizationService(MaximoService _maximoService,
-			UserRepository _userRepository,
-			WorkOrderRepository _workOrderRepository,
-			AssetRepository _assetRepository,
-			AssetSpecRepository _assetSpecRepository,
-			DomainRepository _domainRepository,
-			AttributeRepository _attributeRepository,
-			FailureListRepository _failureListRepository,
-			LaborRepository _laborRepository,
-			InventoryRepository _inventoryRepository)
+		public SynchronizationService()
 		{
-			this.maximoService = _maximoService;
 
-			this.userRepository = _userRepository;
-			workOrderRepository = _workOrderRepository;
-			assetRepository = _assetRepository;
-			assetSpecRepository = _assetSpecRepository;
-			domainRepository = _domainRepository;
-			attributeRepository = _attributeRepository;
-			failureListRepository = _failureListRepository;
-			laborRepository = _laborRepository;
-			inventoryRepository = _inventoryRepository;
 
 			// every 10 seconds / minutes
 			synchronizationTimer = new Timer(10000);
@@ -92,7 +65,7 @@ namespace MaximoServiceLibrary
 
 			try
 			{
-				bool isOnline = maximoService.checkIsOnline();
+				bool isOnline = AppContext.maximoService.checkIsOnline(mxuser.userName, mxuser.password);
 				var lastSyncTime = DateTime.Now;
 
 				if (!isOnline)
@@ -118,7 +91,7 @@ namespace MaximoServiceLibrary
 						maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
 					}
 					
-					syncEntityFromMaximoToLocalDb<string, MaximoWorkOrder>(workOrderRepository, workOrderFromMaximo,
+					syncEntityFromMaximoToLocalDb<string, MaximoWorkOrder>(AppContext.workOrderRepository, workOrderFromMaximo,
 						workOrderFromMaximo.wonum);
 
 					MaximoAsset maximoAsset = workOrderFromMaximo.asset;
@@ -129,18 +102,18 @@ namespace MaximoServiceLibrary
 							maximoAssetSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
 						}
 
-						syncEntityFromMaximoToLocalDb<string, MaximoAsset>(assetRepository, maximoAsset,
+						syncEntityFromMaximoToLocalDb<string, MaximoAsset>(AppContext.assetRepository, maximoAsset,
 						maximoAsset.assetnum);
 					}
 					
 				}
 
-				IEnumerable<MaximoWorkOrder> workOrdersToBeScyncedFromDb = workOrderRepository.findAllToBeScynced();
+				IEnumerable<MaximoWorkOrder> workOrdersToBeScyncedFromDb = AppContext.workOrderRepository.findAllToBeScynced();
 				foreach (var workOrderToBeSyncedFromDb in workOrdersToBeScyncedFromDb)
 				{
 					// TODO - find how to post child entities
 					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating work order " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-					bool isSuccessfulWorkOrderOperation = maximoService.updateWorkOrder(workOrderToBeSyncedFromDb);
+					bool isSuccessfulWorkOrderOperation = AppContext.maximoService.updateWorkOrder(workOrderToBeSyncedFromDb);
 
 					if (isSuccessfulWorkOrderOperation)
 					{
@@ -157,8 +130,8 @@ namespace MaximoServiceLibrary
 						{
 							maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
 						}
-						
-						workOrderRepository.upsert(workOrderToBeSyncedFromDb);
+
+						AppContext.workOrderRepository.upsert(workOrderToBeSyncedFromDb);
 					}
 					else
 					{
@@ -168,18 +141,18 @@ namespace MaximoServiceLibrary
 
 				}
 
-				IEnumerable<MaximoAsset> assetsToBeScyncedFromDb = assetRepository.findAllToBeScynced();
+				IEnumerable<MaximoAsset> assetsToBeScyncedFromDb = AppContext.assetRepository.findAllToBeScynced();
 				foreach (var assetToBeSyncedFromDb in assetsToBeScyncedFromDb)
 				{
 					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
 
-					bool isSuccessfulAssetOperation = maximoService.updateAsset(assetToBeSyncedFromDb);
+					bool isSuccessfulAssetOperation = AppContext.maximoService.updateAsset(assetToBeSyncedFromDb);
 
 					if (isSuccessfulAssetOperation)
 					{
 						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
 
-						MaximoAsset maximoAssetFreshCopyFromServer = maximoService.getAsset(assetToBeSyncedFromDb.assetnum);
+						MaximoAsset maximoAssetFreshCopyFromServer = AppContext.maximoService.getAsset(assetToBeSyncedFromDb.assetnum);
 						maximoAssetFreshCopyFromServer.Id = assetToBeSyncedFromDb.Id;
 						maximoAssetFreshCopyFromServer.syncronizationStatus = SyncronizationStatus.SYNCED;
 						
@@ -187,8 +160,8 @@ namespace MaximoServiceLibrary
 						{
 							maximoAssetSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
 						}
-						
-						assetRepository.upsert(maximoAssetFreshCopyFromServer);
+
+						AppContext.assetRepository.upsert(maximoAssetFreshCopyFromServer);
 					}
 					else
 					{
@@ -197,8 +170,8 @@ namespace MaximoServiceLibrary
 					}
 				}
 
-				maximoService.mxuser.userPreferences.lastSyncTime = lastSyncTime;
-				userRepository.upsert(maximoService.mxuser);
+				mxuser.userPreferences.lastSyncTime = lastSyncTime;
+				AppContext.userRepository.upsert(mxuser);
 			}
 			finally
 			{
@@ -245,9 +218,9 @@ namespace MaximoServiceLibrary
 
 		private List<MaximoWorkOrder> fetchChangedWorkOrdersFromMaximoSinceLastSyncTime()
 		{
-			DateTime lastSyncTime = maximoService.mxuser.userPreferences.lastSyncTime;
+			DateTime lastSyncTime = mxuser.userPreferences.lastSyncTime;
 
-			List<MaximoWorkOrder> maximoWorkOrders = maximoService.getWorkOrders(lastSyncTime);
+			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(mxuser.userPreferences.selectedPersonGroup, lastSyncTime);
 			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
 
 			/*
@@ -255,7 +228,7 @@ namespace MaximoServiceLibrary
 			 */
 			foreach (var maximoWorkOrder in maximoWorkOrders)
 			{
-				MaximoAsset maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
+				MaximoAsset maximoAsset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
 				if (maximoAsset != null)
 				{
 					if (maximoAsset.assetspec != null)
@@ -273,9 +246,9 @@ namespace MaximoServiceLibrary
 
 				maximoWorkOrder.asset = maximoAsset;
 
-				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder);
-				maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder);
+				maximoWorkOrder.workorderspec = AppContext.maximoService.getWorkOrderSpec(maximoWorkOrder);
+				maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
+				maximoWorkOrder.failurereport = AppContext.maximoService.getWorkOrderFailureReport(maximoWorkOrder);
 			}
 
 			return maximoWorkOrders;
@@ -285,7 +258,7 @@ namespace MaximoServiceLibrary
 		{
 			clearWorkOrderCompositeFromLocalDb();
 
-			List<MaximoWorkOrder> maximoWorkOrders = maximoService.getWorkOrders();
+			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(mxuser.userPreferences.selectedPersonGroup);
 			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
 
 			/*
@@ -294,31 +267,31 @@ namespace MaximoServiceLibrary
 			foreach (var maximoWorkOrder in maximoWorkOrders)
 			{
 				// check if the asset is already in DB
-				MaximoAsset maximoAsset = assetRepository.findOne(maximoWorkOrder.assetnum);
+				MaximoAsset maximoAsset = AppContext.assetRepository.findOne(maximoWorkOrder.assetnum);
 				if (maximoAsset == null)
 				{
-					maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
+					maximoAsset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
 
 
 					if (maximoAsset != null)
 					{
-						maximoAsset = assetRepository.upsert(maximoAsset);
+						maximoAsset = AppContext.assetRepository.upsert(maximoAsset);
 					}
 				}
 
 				maximoWorkOrder.asset = maximoAsset;
 
-				maximoWorkOrder.workorderspec = maximoService.getWorkOrderSpec(maximoWorkOrder);
-				maximoWorkOrder.failureRemark = maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				maximoWorkOrder.failurereport = maximoService.getWorkOrderFailureReport(maximoWorkOrder);
+				maximoWorkOrder.workorderspec = AppContext.maximoService.getWorkOrderSpec(maximoWorkOrder);
+				maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
+				maximoWorkOrder.failurereport = AppContext.maximoService.getWorkOrderFailureReport(maximoWorkOrder);
 				// synchronize maximoWorkOrder in local db
-				MaximoWorkOrder maximoWorkOrderFromDb = workOrderRepository.findOne(maximoWorkOrder.wonum);
+				MaximoWorkOrder maximoWorkOrderFromDb = AppContext.workOrderRepository.findOne(maximoWorkOrder.wonum);
 				if (maximoWorkOrderFromDb != null)
 				{
 					maximoWorkOrder.Id = maximoWorkOrderFromDb.Id;
 				}
 
-				workOrderRepository.upsert(maximoWorkOrder);
+				AppContext.workOrderRepository.upsert(maximoWorkOrder);
 			}
 		}
 
@@ -339,15 +312,15 @@ namespace MaximoServiceLibrary
 //				}
 //			}
 
-			IEnumerable<MaximoAssetSpec> maximoAssetSpecs = assetSpecRepository.findAllUpdated();
+			IEnumerable<MaximoAssetSpec> maximoAssetSpecs = AppContext.assetSpecRepository.findAllUpdated();
 
 			foreach (var assetnum in maximoAssetSpecs.Select(x => x.assetnum).Distinct())
 			{
-				var asset = assetRepository.findOne(assetnum);
-				asset.assetspec = assetSpecRepository.Find("assetnum", assetnum).ToList();
+				var asset = AppContext.assetRepository.findOne(assetnum);
+				asset.assetspec = AppContext.assetSpecRepository.Find("assetnum", assetnum).ToList();
 				;
 
-				bool isSuccessful = maximoService.updateAsset(asset);
+				bool isSuccessful = AppContext.maximoService.updateAsset(asset);
 
 				if (isSuccessful)
 				{
@@ -361,9 +334,9 @@ namespace MaximoServiceLibrary
 
 		public void clearWorkOrderCompositeFromLocalDb()
 		{
-			workOrderRepository.removeCollection();
-			assetRepository.removeCollection();
-			assetSpecRepository.removeCollection();
+			AppContext.workOrderRepository.removeCollection();
+			AppContext.assetRepository.removeCollection();
+			AppContext.assetSpecRepository.removeCollection();
 		}
 
 		// todo: change function name
@@ -372,25 +345,25 @@ namespace MaximoServiceLibrary
 			clearHelperFromLocalDb();
 
 			// get domains
-			domainRepository.upsertList(maximoService.getDomains());
-			
+			AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
+
 
 			// get attributes
-		
-			attributeRepository.upsertList(maximoService.getAttributes());
+
+			AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
 			// get failurelist
 			// 1283 CatchBasin failurelist id
 			List<FailureList> failureLists = new List<FailureList>();
-			List<FailureList> tempFailureLists = maximoService.getFailureList("1283");
+			List<FailureList> tempFailureLists = AppContext.maximoService.getFailureList("1283");
 			failureLists.AddRange(tempFailureLists);
 			var problemCodes =
 				string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
-			tempFailureLists = maximoService.getFailureList(problemCodes);
+			tempFailureLists = AppContext.maximoService.getFailureList(problemCodes);
 			failureLists.AddRange(tempFailureLists);
 			var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
-			tempFailureLists = maximoService.getFailureList(causeCodes);
+			tempFailureLists = AppContext.maximoService.getFailureList(causeCodes);
 			failureLists.AddRange(tempFailureLists);
-			failureListRepository.upsertList(failureLists);
+			AppContext.failureListRepository.upsertList(failureLists);
 		
 			
 
@@ -399,24 +372,93 @@ namespace MaximoServiceLibrary
 			
 			foreach (string craft in crafts)
 			{
-				laborRepository.upsertList(maximoService.getLabors(craft));
+				AppContext.laborRepository.upsertList(AppContext.maximoService.getLabors(craft));
 			}
 
-		
+
 
 			// get inventories
-			inventoryRepository.upsertList(maximoService.getInventory());
+			AppContext.inventoryRepository.upsertList(AppContext.maximoService.getInventory());
 
 
 		}
 
 		public void clearHelperFromLocalDb()
 		{
-			domainRepository.removeCollection();
-			assetRepository.removeCollection();
-			failureListRepository.removeCollection();
-			laborRepository.removeCollection();
-			inventoryRepository.removeCollection();
+			AppContext.domainRepository.removeCollection();
+			AppContext.assetRepository.removeCollection();
+			AppContext.failureListRepository.removeCollection();
+			AppContext.laborRepository.removeCollection();
+			AppContext.inventoryRepository.removeCollection();
 		}
+
+		// todo : move to userservice
+		public bool login(string username, string password)
+		{
+
+
+			// first login to maximo online
+			if (AppContext.maximoService.login(username, password))
+			{
+
+				MaximoUser mxuserFromMaximo = AppContext.maximoService.whoami();
+				mxuser = AppContext.userRepository.findOneIgnoreCase(username);
+				if (mxuser == null)
+				{
+					mxuser = mxuserFromMaximo;
+				}
+				else
+				{
+					// merge user data returned from Maximo server to local db entity
+					mxuser.mergeFrom(mxuserFromMaximo);
+				}
+
+				if (mxuser.userPreferences == null)
+				{
+					mxuser.userPreferences = new UserPreferences();
+				}
+
+				//mxuser.personGroupList = AppContext.maximoService.getPersonGroup(mxuser.personId);
+
+				mxuser.password = password;
+
+				AppContext.userRepository.upsert(mxuser);
+
+				// whoami
+
+				// download all crew information
+				// write local db crew information
+
+				// condition ??
+
+				//  set setting
+				//  user crew 
+				//  lead man
+				//  second man
+				//  vehicle
+				//  driver
+
+				// write local db setting and user information
+				return true;
+			}
+			else
+			{
+				MaximoUser maximoUser = AppContext.userRepository.findOneIgnoreCase(username);
+				if (maximoUser.password.Equals(password))
+				{
+					mxuser = maximoUser;
+					mxuser.userPreferences.selectedPersonGroup = mxuser.personGroupList[0].persongroup;
+
+					AppContext.userRepository.upsert(mxuser);
+
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
 	}
 }

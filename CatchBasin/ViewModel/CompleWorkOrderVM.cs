@@ -54,11 +54,10 @@ namespace CatchBasin.ViewModel
 
 
 		WorkOrderDetailVM WorkOrderDetailVM;
-		MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+		
 		public CompleteWorkorderVM(WorkOrderDetailVM workOrderDetailVM)
 		{
 			WorkOrderDetailVM = workOrderDetailVM;
-			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
 			SaveCommand = new Command.SaveCommand<CompleteWorkorderVM>(this);
 			CancelCommand = new Command.CancelCommand<CompleteWorkorderVM>(this);
 
@@ -79,7 +78,7 @@ namespace CatchBasin.ViewModel
 			wo.followups = generateFollowUps(wo);
 
 
-			MaximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
+			MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
 
 			Close();
 			WorkOrderDetailVM.MapVM.WorkOrderListVM.Update();

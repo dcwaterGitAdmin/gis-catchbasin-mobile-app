@@ -11,7 +11,7 @@ namespace MaximoServiceLibrary.model
 		public string _rowstamp { get; set; }
 
 		// _rowstamp
-		
+		//public string href;
 
         //localref
         //public string localref { get; set; }
@@ -24,7 +24,6 @@ namespace MaximoServiceLibrary.model
 	{
 
 		public string selectedPersonGroup { get; set; }
-
 
 		public DateTime lastSyncTime { get; set; }
 
@@ -66,7 +65,7 @@ namespace MaximoServiceLibrary.model
 
 	public class MaximoPersonGroup : MaximoBaseEntity
 	{
-		public int persongroupid { get; set; }
+		public double persongroupid { get; set; }
 		public string _rowstamp { get; set; }
 		public string persongroup { get; set; }
 		public string description { get; set; }

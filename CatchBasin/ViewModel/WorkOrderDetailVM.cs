@@ -999,13 +999,11 @@ namespace CatchBasin.ViewModel
         public MaximoWorkOrder MaximoWorkOrder;
 
         public bool isDirty;
-        public MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
-
+       
         public WorkOrderDetailVM(MapVM _mapVM)
         {
             PropertyChanged += WorkOrderDetailVM_PropertyChanged;
-            MaximoServiceLibraryBeanConfiguration = new MaximoServiceLibraryBeanConfiguration();
-            MapVM = _mapVM;
+			MapVM = _mapVM;
             ShowAssetCommand = new Command.ShowAssetCommand(this);
             SelectAssetOnMapCommand = new Command.SelectAssetOnMapCommand(this);
             CreateAssetOnMapCommand = new Command.CreateAssetOnMapCommand(this);
@@ -1027,9 +1025,9 @@ namespace CatchBasin.ViewModel
             Attachments = new ObservableCollection<MaximoDocument>();
             LabTrans.CollectionChanged += LabTrans_CollectionChanged;
             ToolTrans.CollectionChanged += ToolTrans_CollectionChanged;
-            ProblemList = MaximoServiceLibraryBeanConfiguration.failureListRepository.Find("type", "PROBLEM")
+            ProblemList = MaximoServiceLibrary.AppContext.failureListRepository.Find("type", "PROBLEM")
                 .Select(x => x.failurecode[0]).ToList<FailureCode>();
-            StatusList = MaximoServiceLibraryBeanConfiguration.domainRepository.findOne("WOSTATUS").synonymdomain;
+            StatusList = MaximoServiceLibrary.AppContext.domainRepository.findOne("WOSTATUS").synonymdomain;
             DebrisConditionTypeList = new List<StaticDomain>();
             DebrisConditionTypeList.Add(new StaticDomain("100", "100% Full"));
             DebrisConditionTypeList.Add(new StaticDomain("75", "75%"));
@@ -1553,12 +1551,12 @@ namespace CatchBasin.ViewModel
 
             if (MaximoWorkOrder.Id > 0)
             {
-                MaximoWorkOrder = MaximoServiceLibraryBeanConfiguration.workOrderRepository.update(MaximoWorkOrder);
+                MaximoWorkOrder = MaximoServiceLibrary.AppContext.workOrderRepository.update(MaximoWorkOrder);
             }
             else
             {
                 MaximoWorkOrder.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-                MaximoWorkOrder = MaximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(MaximoWorkOrder);
+                MaximoWorkOrder = MaximoServiceLibrary.AppContext.workOrderRepository.upsert(MaximoWorkOrder);
             }
 
 
@@ -1721,7 +1719,7 @@ namespace CatchBasin.ViewModel
             if (MaximoWorkOrder != null && MaximoWorkOrder.asset != null)
             {
                 MaximoAsset asset =
-                    MaximoServiceLibraryBeanConfiguration.assetRepository.findOne(MaximoWorkOrder.asset.assetnum);
+					MaximoServiceLibrary.AppContext.assetRepository.findOne(MaximoWorkOrder.asset.assetnum);
                 MapVM.ShowAssetDetail(asset);
             }
             else
@@ -1740,10 +1738,10 @@ namespace CatchBasin.ViewModel
             if (Problem != null)
             {
                 RemedyList = null;
-                var selectedProblem = MaximoServiceLibraryBeanConfiguration.failureListRepository
+                var selectedProblem = MaximoServiceLibrary.AppContext.failureListRepository
                     .Find("failurecode[0].failurecode", Problem).ToArray()[0];
 
-                CauseList = MaximoServiceLibraryBeanConfiguration.failureListRepository
+                CauseList = MaximoServiceLibrary.AppContext.failureListRepository
                     .Find("parent", selectedProblem?.failurelist).Select(x => x.failurecode[0]).ToList<FailureCode>();
             }
         }
@@ -1752,10 +1750,10 @@ namespace CatchBasin.ViewModel
         {
             if (Cause != null)
             {
-                var selectedCause = MaximoServiceLibraryBeanConfiguration.failureListRepository
+                var selectedCause = MaximoServiceLibrary.AppContext.failureListRepository
                     .Find("failurecode[0].failurecode", Cause).ToArray()[0];
 
-                RemedyList = MaximoServiceLibraryBeanConfiguration.failureListRepository
+                RemedyList = MaximoServiceLibrary.AppContext.failureListRepository
                     .Find("parent", selectedCause?.failurelist).Select(x => x.failurecode[0]).ToList<FailureCode>();
             }
         }

@@ -97,11 +97,10 @@ namespace CatchBasin.ViewModel
         }
 
 
-		private MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+		
 		public WorkOrderListVM(MapVM mapVM )
         {
             MapVM = mapVM;
-			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
 			StartStopTimerCommand = new Command.StartStopTimerCommand(this);
 
 			FilterList = new List<FilterDomain>();
@@ -158,11 +157,11 @@ namespace CatchBasin.ViewModel
 			IEnumerable<MaximoWorkOrder> wos;
 			if (Filter == FilterType.NODISPTCHD)
 			{
-				wos = MaximoServiceLibraryBeanConfiguration.workOrderRepository.findNot("status", "DISPTCHD");
+				wos = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("status", "DISPTCHD");
 			}
 			else
 			{
-				wos = MaximoServiceLibraryBeanConfiguration.workOrderRepository.Find("status", "DISPTCHD");
+				wos = MaximoServiceLibrary.AppContext.workOrderRepository.Find("status", "DISPTCHD");
 			}
 			
 
@@ -171,8 +170,8 @@ namespace CatchBasin.ViewModel
 			{
 				wos = wos.Where(wo => wo.worktype == "EMERG" || wo.worktype == "INV" || wo.worktype == "PM" || wo.worktype == "CM");
 				var t = wos.ToList();
-				var mxuser = MaximoServiceLibraryBeanConfiguration.userRepository.findOneIgnoreCase(MaximoServiceLibraryBeanConfiguration
-					.maximoService.mxuser.userName);
+				var mxuser = MaximoServiceLibrary.AppContext.userRepository.findOneIgnoreCase(MaximoServiceLibrary.AppContext
+					.synchronizationService?.mxuser.userName);
 				wos = wos.Where(wo => wo.persongroup == (mxuser.userPreferences.selectedPersonGroup ?? mxuser.personGroupList?[0].persongroup) || wo.persongroup == "CB00");
 
 				switch (Filter)

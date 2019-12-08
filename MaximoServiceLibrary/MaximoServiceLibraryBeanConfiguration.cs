@@ -6,46 +6,24 @@ namespace MaximoServiceLibrary
     /**
      * dependency injection configuration class
      */
-    public class MaximoServiceLibraryBeanConfiguration
+    public static class AppContext
     {
-        public DbConnection dbConnection { get; }
-        
-        public UserRepository userRepository { get; }
-        public WorkOrderRepository workOrderRepository { get; }
-        public AssetRepository assetRepository { get; }
-        public AssetSpecRepository assetSpecRepository { get; }
-        public AttributeRepository attributeRepository { get; }
-        public DomainRepository domainRepository { get; }
-        public FailureListRepository failureListRepository { get; }
-		public LaborRepository laborRepository { get; }
-		public InventoryRepository inventoryRepository { get; }
+        public static DbConnection dbConnection = new DbConnection();
 
-        public MaximoService maximoService { get; }
-        
-        public SynchronizationService synchronizationService { get; }
+		public static UserRepository userRepository = new UserRepository(dbConnection);
+		public static WorkOrderRepository workOrderRepository = new WorkOrderRepository(dbConnection);
+		public static AssetRepository assetRepository = new AssetRepository(dbConnection);
+		public static AssetSpecRepository assetSpecRepository = new AssetSpecRepository(dbConnection);
+		public static AttributeRepository attributeRepository = new AttributeRepository(dbConnection);
+		public static DomainRepository domainRepository = new DomainRepository(dbConnection);
+		public static FailureListRepository failureListRepository = new FailureListRepository(dbConnection);
+		public static LaborRepository laborRepository = new LaborRepository(dbConnection);
+		public static InventoryRepository inventoryRepository = new InventoryRepository(dbConnection);
 
-        public MaximoServiceLibraryBeanConfiguration()
-        {
-            dbConnection = new DbConnection();
+		public static MaximoService maximoService = new MaximoService();
 
-            userRepository = new UserRepository(dbConnection);
-            workOrderRepository = new WorkOrderRepository(dbConnection);
-            assetRepository = new AssetRepository(dbConnection);
-            assetSpecRepository = new AssetSpecRepository(dbConnection);
-            attributeRepository = new AttributeRepository(dbConnection);
-            domainRepository = new DomainRepository(dbConnection);
-            failureListRepository = new FailureListRepository(dbConnection);
-			laborRepository = new LaborRepository(dbConnection);
-			inventoryRepository = new InventoryRepository(dbConnection);
-            maximoService = new MaximoService(dbConnection, userRepository);
+		public static SynchronizationService synchronizationService = new SynchronizationService();
 
-            synchronizationService = new SynchronizationService(maximoService,
-                userRepository,
-                workOrderRepository,
-                assetRepository,
-                assetSpecRepository,
-                domainRepository,
-                attributeRepository, failureListRepository, laborRepository, inventoryRepository);
-        }
+		
     }
 }

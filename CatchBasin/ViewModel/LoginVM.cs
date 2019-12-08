@@ -17,8 +17,7 @@ namespace CatchBasin.ViewModel
 
         public LoginCommand LoginCommand { get; set; } 
 
-        public MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
-
+      
         private string username;
 
         public string UserName
@@ -48,7 +47,7 @@ namespace CatchBasin.ViewModel
 		public LoginVM()
         {
             LoginCommand = new LoginCommand(this);
-			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
+			
 			UserName = "EDELIOGLU";
 			Password = "E2019atlas";
 		}
@@ -63,13 +62,13 @@ namespace CatchBasin.ViewModel
            
             try
             {
-                if (MaximoServiceLibraryBeanConfiguration.maximoService.login(UserName, Password))
+                if (MaximoServiceLibrary.AppContext.synchronizationService.login(UserName, Password))
                 {
 
 					((App)Application.Current).AppType = ApplicationType;
-					 //MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+					//MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
 					// MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
-					MaximoServiceLibraryBeanConfiguration.synchronizationService.startSyncronizationTimer();
+					MaximoServiceLibrary.AppContext.synchronizationService.startSyncronizationTimer();
 					
 					new Map().Show();
                     window.Close();

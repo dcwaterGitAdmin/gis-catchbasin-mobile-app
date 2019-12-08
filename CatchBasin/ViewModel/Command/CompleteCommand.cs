@@ -25,12 +25,12 @@ namespace CatchBasin.ViewModel.Command
 			}
 		}
 
-		MaximoServiceLibraryBeanConfiguration MaximoServiceLibraryBeanConfiguration;
+		
 		WorkOrderDetailVM WorkOrderDetailVM;
 		public CompleteCommand(WorkOrderDetailVM workOrderDetailVM)
 		{
 			WorkOrderDetailVM = workOrderDetailVM;
-			MaximoServiceLibraryBeanConfiguration = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration;
+			
 		}
 
 		public bool CanExecute(object parameter)

@@ -138,7 +138,7 @@ namespace CatchBasin.ViewModel
 				labTrans.dcw_trucknum = "";// todo getvehicle
 				labTrans.enterdate = DateTime.Now;
 				labTrans.laborcode = Labor;
-				labTrans.enterby = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser.personId;
+				labTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 				labTrans.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				WorkOrderDetailVM.LabTrans.Add(labTrans);
 			}
@@ -159,7 +159,7 @@ namespace CatchBasin.ViewModel
 				LabTrans.finishtimeentered = new DateTime(1900, 1, 1) + (StartDate + Duration.TimeOfDay).TimeOfDay;
 				LabTrans.enterdate = DateTime.Now;
 				LabTrans.laborcode = Labor;
-				LabTrans.enterby = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser.personId;
+				LabTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 
 				if(LabTrans.syncronizationStatus != LocalDBLibrary.model.SyncronizationStatus.CREATED)
 				{

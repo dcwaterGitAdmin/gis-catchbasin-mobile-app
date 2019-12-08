@@ -83,7 +83,7 @@ namespace CatchBasin.ViewModel
 
 				tool.itemsetid = "IDC_WASA";
 				tool.enterdate = DateTime.Now;
-				tool.enterby = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser.personId;
+				tool.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 				tool.langcode = "EN";
 				tool.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				WorkOrderDetailVM.ToolTrans.Add(tool);
@@ -97,7 +97,7 @@ namespace CatchBasin.ViewModel
 				ToolTrans.itemnum = Tool;
 
 				ToolTrans.enterdate = DateTime.Now;
-				ToolTrans.enterby = ((App)Application.Current).MaximoServiceLibraryBeanConfiguration.maximoService.mxuser.personId;
+				ToolTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 
 				if(ToolTrans.syncronizationStatus != LocalDBLibrary.model.SyncronizationStatus.CREATED) {
 					ToolTrans.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
