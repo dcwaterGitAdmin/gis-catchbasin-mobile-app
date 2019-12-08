@@ -83,6 +83,16 @@ namespace LocalDBLibrary
 
 			return t;
 		}
+
+		public List<T> upsertList(List<T> ts)
+		{
+			List<T> list = new List<T>();
+			foreach (T t in ts)
+			{
+				list.Add(upsert(t));
+			}
+			return list;
+		}
 		
 		public T insert(T t)
 		{

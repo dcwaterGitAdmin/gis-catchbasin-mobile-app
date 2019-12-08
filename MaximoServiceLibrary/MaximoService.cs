@@ -547,7 +547,7 @@ namespace MaximoServiceLibrary
 			
 		}
 		
-		public List<MaximoInventory> getTools()
+		public List<MaximoInventory> getInventory()
 		{
 			var request = createRequest("/os/mxinventory");
 			request.AddQueryParameter("oslc.select", "*");
@@ -653,6 +653,50 @@ namespace MaximoServiceLibrary
 				return null;
 			}
 		}
+
+		public List<MaximoLabor> getLabors(string laborcraft)
+		{
+			var request = createRequest("/os/mxlabor");
+			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.pageSize", "10");
+			request.AddQueryParameter("pageno", "1");
+
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoLabor>();
+			}
+			List<MaximoLabor> maximoLabors = new List<MaximoLabor>();
+
+			MaximoLaborPageableRestResponse mxlaborPageableRestResponse =
+				JsonConvert.DeserializeObject<MaximoLaborPageableRestResponse>(response.Content);
+			maximoLabors.AddRange(mxlaborPageableRestResponse.member);
+
+			// get next pages if there is any
+			while (mxlaborPageableRestResponse.responseInfo.nextPage != null)
+			{
+				request = createRequest(mxlaborPageableRestResponse.responseInfo.nextPage.href, true);
+
+				response = restClient.Execute(request);
+
+				if (!response.IsSuccessful)
+				{
+					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					// todo - throw exception here?
+					return maximoLabors;
+				}
+
+				mxlaborPageableRestResponse =
+					JsonConvert.DeserializeObject<MaximoLaborPageableRestResponse>(response.Content);
+				maximoLabors.AddRange(mxlaborPageableRestResponse.member);
+			}
+
+			return maximoLabors;
+		}
+
+
 	}
 
 	public class RestSharpJsonNetSerializer : ISerializer

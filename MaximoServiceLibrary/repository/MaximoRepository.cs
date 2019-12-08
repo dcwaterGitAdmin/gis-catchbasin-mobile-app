@@ -131,4 +131,40 @@ namespace MaximoServiceLibrary.repository
         }
 
     }
+
+	public class LaborRepository : DbReposistory<int, MaximoLabor>
+	{
+		public LaborRepository(DbConnection dbConnection) : base(dbConnection)
+		{
+		}
+
+		public override string tableName()
+		{
+			return "labors";
+		}
+
+		public override string keyField()
+		{
+			return "laborcode";
+		}
+
+	}
+
+	public class InventoryRepository : DbReposistory<int, MaximoInventory>
+	{
+		public InventoryRepository(DbConnection dbConnection) : base(dbConnection)
+		{
+		}
+
+		public override string tableName()
+		{
+			return "inventories";
+		}
+
+		public override string keyField()
+		{
+			return "itemnum";
+		}
+
+	}
 }

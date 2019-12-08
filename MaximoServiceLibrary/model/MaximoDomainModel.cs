@@ -25,6 +25,7 @@ namespace MaximoServiceLibrary.model
 
 		public string selectedPersonGroup { get; set; }
 
+
 		public DateTime lastSyncTime { get; set; }
 
 
@@ -62,13 +63,37 @@ namespace MaximoServiceLibrary.model
 		}
 	}
 
+
 	public class MaximoPersonGroup : MaximoBaseEntity
 	{
-		public double persongroupid { get; set; }
+		public int persongroupid { get; set; }
+		public string _rowstamp { get; set; }
 		public string persongroup { get; set; }
 		public string description { get; set; }
 		public string vehiclenum { get; set; }
 		public bool iscrewworkgroup { get; set; }
+		public string persongroupteam_collectionref { get; set; }
+		public List<MaximoPersonGroupTeam> persongroupteam { get; set; }
+		public string langcode { get; set; }
+		public string href { get; set; }
+		public bool hasld { get; set; }
+	}
+
+
+	public class MaximoPersonGroupTeam
+	{
+		public bool groupdefault { get; set; }
+		public int persongroupteamid { get; set; }
+		public int resppartyseq { get; set; }
+		public string _rowstamp { get; set; }
+		public string respparty { get; set; }
+		public bool sitedefault { get; set; }
+		public int resppartygroupseq { get; set; }
+		public string resppartygroup { get; set; }
+		public string localref { get; set; }
+		public bool orgdefault { get; set; }
+		public string href { get; set; }
+		public string dcw_designation { get; set; }
 	}
 
 	public class MaximoPersonGroupMember
@@ -767,191 +792,6 @@ namespace MaximoServiceLibrary.model
 		public string in8 { get; set; } 
 	}
 
-	
-		// MXINVENTORY
-	public class MaximoInventory : MaximoBaseEntity
-	{
-
-		// 2 Years Ago
-		public double issue2yrago { get; set; } 
-
-		// Storeroom
-		public string location { get; set; } 
-
-		// Consignment Vendor
-		public string consvendor { get; set; } 
-
-		// Current Balance
-		public double? curbal { get; set; } 
-
-		// Safety Stock
-		public double? sstock { get; set; } 
-
-		// Frequency Units
-		public string frequnit { get; set; } 
-
-		// GL Control Account
-		public string controlacc { get; set; } 
-
-		// Order Unit
-		public string orderunit { get; set; } 
-
-		// Reorder Point
-		public double maxlevel { get; set; } 
-
-		// Organization
-		public string orgid { get; set; } 
-
-		// Item
-		public string itemnum { get; set; } 
-
-		// Site
-		public string siteid { get; set; } 
-
-		// Reorder Point
-		public double minlevel { get; set; } 
-
-		// External Reference ID
-		public string externalrefid { get; set; } 
-
-		// Count Frequency
-		public int ccf { get; set; } 
-
-		// Cost Adjustment GL Account
-		public string invcostadjacc { get; set; } 
-
-		// Status Date
-		public DateTime statusdate { get; set; } 
-
-		// Status
-		public string status { get; set; } 
-
-		// Next Invoice Date
-		public DateTime? nextinvoicedate { get; set; } 
-
-		// Consignment
-		public bool consignment { get; set; } 
-
-		// Default Bin
-		public string binnum { get; set; } 
-
-		// Catalog #
-		public string catalogcode { get; set; } 
-
-		// Default Stage Bin
-		public string dfltstagebin { get; set; } 
-
-		// Extra Field 1
-		public string il1 { get; set; } 
-
-		// Extra Field 2
-		public string il2 { get; set; } 
-
-		// Extra Field 3
-		public string il3 { get; set; } 
-
-		// Issue Unit
-		public string issueunit { get; set; } 
-
-		// Last Issue Date
-		public DateTime? lastissuedate { get; set; } 
-
-		// Manufacturer
-		public string manufacturer { get; set; } 
-
-		// Economic Order Quantity
-		public double orderqty { get; set; } 
-
-		// Owner System ID
-		public string ownersysid { get; set; } 
-
-		// Storeroom Site
-		public string storelocsiteid { get; set; } 
-
-		// Has Status Changed
-		public bool statusiface { get; set; } 
-
-		// 3 Years Ago
-		public double issue3yrago { get; set; } 
-
-		// Issue Cost Type
-		public string costtype { get; set; } 
-
-		// Sender System ID
-		public string sendersysid { get; set; } 
-
-		// Frequency
-		public int? frequency { get; set; } 
-
-		// Quantity Available
-		public double? avblbalance { get; set; } 
-
-		// Model
-		public string modelnum { get; set; } 
-
-		// Change Status Memo
-		public string np_statusmemo { get; set; } 
-
-		// Item Set
-		public string itemsetid { get; set; } 
-
-		// Quantity Currently Reserved
-		public double? reservedqty { get; set; } 
-
-		// Invoice Generation Type
-		public string invgentype { get; set; } 
-
-		// Internal
-		//public bool internal { get; set; } 
-
-		// INVENTORYID
-		public Int64 inventoryid { get; set; } 
-
-		// ABC Type
-		public string abctype { get; set; } 
-
-		// Item Type
-		public string itemtype { get; set; } 
-
-		// Requires hard reservation on use
-		public bool? hardresissue { get; set; } 
-
-		// GL Account
-		public string glaccount { get; set; } 
-
-		// Lead Time (Days)
-		public int deliverytime { get; set; } 
-
-		// Primary Vendor
-		public string vendor { get; set; } 
-
-		// Shrinkage GL Account
-		public string shrinkageacc { get; set; } 
-
-		// Last Year
-		public double issue1yrago { get; set; } 
-
-		// Reorder
-		public bool? reorder { get; set; } 
-
-		// INVCOST
-		//public List<INVCOST>? invcost { get; set; } 
-
-		// Storeroom
-		public string storeloc { get; set; } 
-
-		// New Issue Cost Type
-		public string newcosttype { get; set; } 
-
-		// Source System ID
-		public string sourcesysid { get; set; } 
-
-		// Receipt Tolerance %
-		public double? receipttolerance { get; set; } 
-
-		// Year to Date
-		public double issueytd { get; set; } 
-	}
 
 	
     public class FailureList : MaximoBaseEntity
@@ -1089,5 +929,123 @@ namespace MaximoServiceLibrary.model
 				return new BitmapImage(new Uri(description));
 			}
 		}
+	}
+
+
+	public class MaximoPerson
+	{
+		public DateTime statusdate { get; set; }
+		public string status { get; set; }
+		public string department { get; set; }
+		public int deviceclass { get; set; }
+		public string locationsite { get; set; }
+		public string localref { get; set; }
+		public string transemailelection { get; set; }
+		public string lastname { get; set; }
+		public string firstname { get; set; }
+		public bool acceptingwfmail { get; set; }
+		public string _rowstamp { get; set; }
+		public string locationorg { get; set; }
+		public string personid { get; set; }
+		public int personuid { get; set; }
+		public bool loctoservreq { get; set; }
+		public string wfmailelection { get; set; }
+		public string href { get; set; }
+		public string displayname { get; set; }
+	}
+
+	public class MaximoLaborCraftRate
+	{
+		public string craft { get; set; }
+		public string _rowstamp { get; set; }
+		public double rate { get; set; }
+		public int laborcraftrateid { get; set; }
+		public string localref { get; set; }
+		public bool defaultcraft { get; set; }
+		public bool inherit { get; set; }
+		public string href { get; set; }
+	}
+
+	public class MaximoLabor : MaximoBaseEntity
+	{
+		public string laborcraftrate_collectionref { get; set; }
+		public List<MaximoPerson> person { get; set; }
+		public double reportedhrs { get; set; }
+		public double ytdothrs { get; set; }
+		public double ytdhrsrefused { get; set; }
+		public string labinventorysite { get; set; }
+		public string status { get; set; }
+		public string laborcode { get; set; }
+		public string lbslocation_collectionref { get; set; }
+		public string worksite { get; set; }
+		public string _rowstamp { get; set; }
+		public string orgid { get; set; }
+		public string person_collectionref { get; set; }
+		public int laborid { get; set; }
+		public string personid { get; set; }
+		public double availfactor { get; set; }
+		public bool lbsdatafromwo { get; set; }
+		public bool la10 { get; set; }
+		public List<MaximoLaborCraftRate> laborcraftrate { get; set; }
+		public string href { get; set; }
+	}
+
+	public class MaximoInventory : MaximoBaseEntity
+	{
+		public double issue2yrago { get; set; }
+		public string sendersysid { get; set; }
+		public string location { get; set; }
+		public string invcost_collectionref { get; set; }
+		public double curbal { get; set; }
+		public double sstock { get; set; }
+		public string controlacc { get; set; }
+		public string orderunit { get; set; }
+		public double avblbalance { get; set; }
+		public double maxlevel { get; set; }
+		public string _rowstamp { get; set; }
+		public string orgid { get; set; }
+		public double reservedqty { get; set; }
+		public string itemsetid { get; set; }
+		public string itemnum { get; set; }
+		public string siteid { get; set; }
+		public double minlevel { get; set; }
+		public string href { get; set; }
+		public bool @internal { get; set; }
+		public int inventoryid { get; set; }
+		public int ccf { get; set; }
+		public string abctype { get; set; }
+		public string itemtype { get; set; }
+		public bool hardresissue { get; set; }
+		public DateTime statusdate { get; set; }
+		public string status { get; set; }
+		public int deliverytime { get; set; }
+		public string vendor { get; set; }
+		public bool consignment { get; set; }
+		public double issue1yrago { get; set; }
+		public string binnum { get; set; }
+		public bool reorder { get; set; }
+		public string il1 { get; set; }
+		public List<Invcost> invcost { get; set; }
+		public double orderqty { get; set; }
+		public string issueunit { get; set; }
+		public DateTime lastissuedate { get; set; }
+		public double issueytd { get; set; }
+		public bool statusiface { get; set; }
+		public double issue3yrago { get; set; }
+		public string costtype { get; set; }
+	}
+
+	public class Invcost
+	{
+		public string _rowstamp { get; set; }
+		public double stdcost { get; set; }
+		public string orgid { get; set; }
+		public int condrate { get; set; }
+		public double avgcost { get; set; }
+		public string localref { get; set; }
+		public int invcostid { get; set; }
+		public double lastcost { get; set; }
+		public string controlacc { get; set; }
+		public string href { get; set; }
 	}
 }

@@ -66,4 +66,10 @@ namespace MaximoServiceLibrary.model
 	public class MaximoInventoryPageableRestResponse : MaximoBasePageableRestResponse<MaximoInventory>
 	{
 	}
+
+	public class MaximoLaborPageableRestResponse : MaximoBasePageableRestResponse<MaximoLabor>
+	{
+	}
+
+
 }
