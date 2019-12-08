@@ -309,8 +309,12 @@ namespace CatchBasin.ViewModel
         public SettingsCommand SettingsCommand { get; set; }
         public void ShowSettings()
         {
-
-        }
+			Settings Settings = new Settings();
+			Settings.DataContext = new SettingsVM(this);
+			Settings.ShowInTaskbar = false;
+			Settings.Owner = ((App)Application.Current).MainWindow;
+			Settings.ShowDialog();
+		}
 
         public LogoutCommand LogoutCommand { get; set; }
         public void DoLogout(Map map)

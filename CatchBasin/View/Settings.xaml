@@ -1,0 +1,59 @@
+﻿<Window x:Class="CatchBasin.View.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CatchBasin.View"
+        mc:Ignorable="d"
+        Title="Settings" Height="450" Width="400">
+    <Grid>
+		<DockPanel LastChildFill="True">
+			<Grid DockPanel.Dock="Bottom">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<Button Command="{Binding CancelCommand}" Grid.Column="0" Content="Cancel"/>
+				<Button Command="{Binding SaveCommand}" Grid.Column="1" Content="Save"/>
+			</Grid>
+			<!--<ScrollViewer>-->
+			<StackPanel Margin="10">
+
+				<Label  Margin="0 0 0 3"  Content="Crew" FontWeight="Bold"/>
+				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding CrewList}"
+                            DisplayMemberPath="persongroup"
+                            SelectedValuePath="persongroup"
+                             SelectedValue="{Binding Crew}"/>
+				<Label  Margin="0 0 0 3"  Content="Lead Man" FontWeight="Bold"/>
+				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+                            DisplayMemberPath="displayname"
+                            SelectedValuePath="personid"
+                             SelectedValue="{Binding LeadMan}"/>
+
+
+				<Label  Margin="0 0 0 3"  Content="Second Man" FontWeight="Bold"/>
+				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+                            DisplayMemberPath="displayname"
+                            SelectedValuePath="personid"
+                             SelectedValue="{Binding SecondMand}"/>
+
+
+				<Label  Margin="0 0 0 3"  Content="Driver" FontWeight="Bold"/>
+				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+                            DisplayMemberPath="displayname"
+                            SelectedValuePath="personid"
+                             SelectedValue="{Binding DriverMan}"/>
+
+				<Label  Margin="0 0 0 3"  Content="Vehicle" FontWeight="Bold"/>
+				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding VehicleList}"
+                            DisplayMemberPath="itemnum"
+                            SelectedValuePath="itemnum"
+                             SelectedValue="{Binding Vehicle}"/>
+
+
+			</StackPanel>
+			<!--</ScrollViewer>-->
+		</DockPanel>
+	</Grid>
+</Window>

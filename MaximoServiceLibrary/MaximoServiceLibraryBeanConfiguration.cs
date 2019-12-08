@@ -19,6 +19,7 @@ namespace MaximoServiceLibrary
 		public static FailureListRepository failureListRepository = new FailureListRepository(dbConnection);
 		public static LaborRepository laborRepository = new LaborRepository(dbConnection);
 		public static InventoryRepository inventoryRepository = new InventoryRepository(dbConnection);
+		public static PersonGroupRepository personGroupRepository = new PersonGroupRepository(dbConnection);
 
 		public static MaximoService maximoService = new MaximoService();
 

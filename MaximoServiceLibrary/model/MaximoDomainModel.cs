@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using LocalDBLibrary.model;
 using System.Windows.Media.Imaging;
+using Newtonsoft.Json;
 
 namespace MaximoServiceLibrary.model
 {
@@ -13,9 +14,9 @@ namespace MaximoServiceLibrary.model
 		// _rowstamp
 		//public string href;
 
-        //localref
-        //public string localref { get; set; }
-    }
+		//localref
+		//public string localref { get; set; }
+	}
 
 	/**
 	 * this class combines relevant data for a specific user, like the current selected crew id, etc.
@@ -27,6 +28,9 @@ namespace MaximoServiceLibrary.model
 
 		public DateTime lastSyncTime { get; set; }
 
+		public MaximoPersonGroup setting {get{
+				return AppContext.personGroupRepository.findOne(this.selectedPersonGroup);
+			} }
 
 	}
 
@@ -36,6 +40,8 @@ namespace MaximoServiceLibrary.model
 		
 		public List<MaximoPersonGroup> personGroupList { get; set; }
 		
+		public string persongroup { get; set; }
+
 		public string userName { get; set; }
 		
 		public string password { get; set; }
@@ -72,14 +78,23 @@ namespace MaximoServiceLibrary.model
 		public string vehiclenum { get; set; }
 		public bool iscrewworkgroup { get; set; }
 		public string persongroupteam_collectionref { get; set; }
-		public List<MaximoPersonGroupTeam> persongroupteam { get; set; }
+		public List<MaximoPersonGroupTeamMember> persongroupteam { get; set; }
 		public string langcode { get; set; }
 		public string href { get; set; }
 		public bool hasld { get; set; }
+
+		[JsonIgnore]
+		public string leadMan { get; set; }
+		[JsonIgnore]
+		public string secondMan { get; set; }
+		[JsonIgnore]
+		public string driverMan { get; set; }
+		[JsonIgnore]
+		public MaximoInventory vehicle { get; set; }
 	}
 
 
-	public class MaximoPersonGroupTeam
+	public class MaximoPersonGroupTeamMember
 	{
 		public bool groupdefault { get; set; }
 		public int persongroupteamid { get; set; }

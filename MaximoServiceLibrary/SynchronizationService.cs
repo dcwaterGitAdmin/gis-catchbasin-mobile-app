@@ -418,27 +418,41 @@ namespace MaximoServiceLibrary
 					mxuser.userPreferences = new UserPreferences();
 				}
 
-				//mxuser.personGroupList = AppContext.maximoService.getPersonGroup(mxuser.personId);
+				mxuser.persongroup = AppContext.maximoService.getPersonGroup(mxuser.personId)?.persongroup;
+				if(mxuser.persongroup == null)
+				{
+					return false;
+				}
 
 				mxuser.password = password;
 
+				
+
+
+				List<MaximoPersonGroup> maximoPersonGroups = AppContext.maximoService.getPersonGroups();
+				
+				for (int i = 0; i < maximoPersonGroups.Count; i++)
+				{
+					if(maximoPersonGroups[i].persongroupteam != null)
+					{
+						if(maximoPersonGroups[i].persongroupteam.Count > 0)
+						{
+							maximoPersonGroups[i].leadMan = maximoPersonGroups[i].persongroupteam[0].respparty;
+							maximoPersonGroups[i].driverMan = maximoPersonGroups[i].persongroupteam[0].respparty;
+
+						}
+						if (maximoPersonGroups[i].persongroupteam.Count > 1)
+						{
+							maximoPersonGroups[i].secondMan = maximoPersonGroups[i].persongroupteam[1].respparty;
+						}
+					}
+				}
+				AppContext.personGroupRepository.removeCollection();
+				AppContext.personGroupRepository.upsertList(maximoPersonGroups);
+
+
 				AppContext.userRepository.upsert(mxuser);
 
-				// whoami
-
-				// download all crew information
-				// write local db crew information
-
-				// condition ??
-
-				//  set setting
-				//  user crew 
-				//  lead man
-				//  second man
-				//  vehicle
-				//  driver
-
-				// write local db setting and user information
 				return true;
 			}
 			else

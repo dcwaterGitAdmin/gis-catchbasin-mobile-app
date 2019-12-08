@@ -132,7 +132,7 @@ namespace MaximoServiceLibrary.repository
 
     }
 
-	public class LaborRepository : DbReposistory<int, MaximoLabor>
+	public class LaborRepository : DbReposistory<string, MaximoLabor>
 	{
 		public LaborRepository(DbConnection dbConnection) : base(dbConnection)
 		{
@@ -150,7 +150,7 @@ namespace MaximoServiceLibrary.repository
 
 	}
 
-	public class InventoryRepository : DbReposistory<int, MaximoInventory>
+	public class InventoryRepository : DbReposistory<string, MaximoInventory>
 	{
 		public InventoryRepository(DbConnection dbConnection) : base(dbConnection)
 		{
@@ -164,6 +164,24 @@ namespace MaximoServiceLibrary.repository
 		public override string keyField()
 		{
 			return "itemnum";
+		}
+
+	}
+
+	public class PersonGroupRepository : DbReposistory<string, MaximoPersonGroup>
+	{
+		public PersonGroupRepository(DbConnection dbConnection) : base(dbConnection)
+		{
+		}
+
+		public override string tableName()
+		{
+			return "persongroups";
+		}
+
+		public override string keyField()
+		{
+			return "persongroup";
 		}
 
 	}
