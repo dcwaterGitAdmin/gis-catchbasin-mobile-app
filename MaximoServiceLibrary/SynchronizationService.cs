@@ -44,7 +44,12 @@ namespace MaximoServiceLibrary
 		{
 			synchronizationTimer.Enabled = true;
 		}
-		
+
+		public void stopSyncronizationTimer()
+		{
+			synchronizationTimer.Enabled = false;
+		}
+
 		public void onSyncTimerElapsed(Object source, ElapsedEventArgs e)
 		{
 			if (isOffline)
@@ -345,27 +350,27 @@ namespace MaximoServiceLibrary
 			clearHelperFromLocalDb();
 
 			// get domains
-			//AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
+			AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
 
 
 			// get attributes
 
-			//AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
-			//// get failurelist
-			//// 1283 CatchBasin failurelist id
-			//List<FailureList> failureLists = new List<FailureList>();
-			//List<FailureList> tempFailureLists = AppContext.maximoService.getFailureList("1283");
-			//failureLists.AddRange(tempFailureLists);
-			//var problemCodes =
-			//	string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
-			//tempFailureLists = AppContext.maximoService.getFailureList(problemCodes);
-			//failureLists.AddRange(tempFailureLists);
-			//var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
-			//tempFailureLists = AppContext.maximoService.getFailureList(causeCodes);
-			//failureLists.AddRange(tempFailureLists);
-			//AppContext.failureListRepository.upsertList(failureLists);
-		
-			
+			AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
+			// get failurelist
+			// 1283 CatchBasin failurelist id
+			List<FailureList> failureLists = new List<FailureList>();
+			List<FailureList> tempFailureLists = AppContext.maximoService.getFailureList("1283");
+			failureLists.AddRange(tempFailureLists);
+			var problemCodes =
+				string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
+			tempFailureLists = AppContext.maximoService.getFailureList(problemCodes);
+			failureLists.AddRange(tempFailureLists);
+			var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
+			tempFailureLists = AppContext.maximoService.getFailureList(causeCodes);
+			failureLists.AddRange(tempFailureLists);
+			AppContext.failureListRepository.upsertList(failureLists);
+
+
 
 			// get labors
 			string[] crafts = new string[] { "SSWR", "SSLR", "SSWL", "SCRW", "CNRW" };
@@ -381,15 +386,42 @@ namespace MaximoServiceLibrary
 			AppContext.inventoryRepository.upsertList(AppContext.maximoService.getInventory());
 
 
+			List<MaximoPersonGroup> maximoPersonGroups = AppContext.maximoService.getPersonGroups();
+
+			for (int i = 0; i < maximoPersonGroups.Count; i++)
+			{
+				if (maximoPersonGroups[i].persongroupteam != null)
+				{
+					if (maximoPersonGroups[i].persongroupteam.Count > 0)
+					{
+						maximoPersonGroups[i].leadMan = maximoPersonGroups[i].persongroupteam[0].respparty;
+						maximoPersonGroups[i].driverMan = maximoPersonGroups[i].persongroupteam[0].respparty;
+
+					}
+					if (maximoPersonGroups[i].persongroupteam.Count > 1)
+					{
+						maximoPersonGroups[i].secondMan = maximoPersonGroups[i].persongroupteam[1].respparty;
+					}
+					
+				}
+			}
+			
+			AppContext.personGroupRepository.upsertList(maximoPersonGroups);
+
+
+			
+
+
 		}
 
 		public void clearHelperFromLocalDb()
 		{
-			//AppContext.domainRepository.removeCollection();
-			//AppContext.assetRepository.removeCollection();
-			//AppContext.failureListRepository.removeCollection();
+			AppContext.domainRepository.removeCollection();
+			AppContext.assetRepository.removeCollection();
+			AppContext.failureListRepository.removeCollection();
 			AppContext.laborRepository.removeCollection();
 			AppContext.inventoryRepository.removeCollection();
+			AppContext.personGroupRepository.removeCollection();
 		}
 
 		// todo : move to userservice
@@ -416,42 +448,19 @@ namespace MaximoServiceLibrary
 				if (mxuser.userPreferences == null)
 				{
 					mxuser.userPreferences = new UserPreferences();
-					
+					mxuser.persongroup = AppContext.maximoService.getPersonGroup(mxuser.personId)?.persongroup;
+					mxuser.userPreferences.selectedPersonGroup = mxuser.persongroup;
+
 				}
 
 				mxuser.persongroup = AppContext.maximoService.getPersonGroup(mxuser.personId)?.persongroup;
-				mxuser.userPreferences.selectedPersonGroup = mxuser.persongroup;
-				if(mxuser.persongroup == null)
+
+				if (mxuser.persongroup == null)
 				{
 					return false;
 				}
 
 				mxuser.password = password;
-
-				
-
-
-				List<MaximoPersonGroup> maximoPersonGroups = AppContext.maximoService.getPersonGroups();
-				
-				for (int i = 0; i < maximoPersonGroups.Count; i++)
-				{
-					if(maximoPersonGroups[i].persongroupteam != null)
-					{
-						if(maximoPersonGroups[i].persongroupteam.Count > 0)
-						{
-							maximoPersonGroups[i].leadMan = maximoPersonGroups[i].persongroupteam[0].respparty;
-							maximoPersonGroups[i].driverMan = maximoPersonGroups[i].persongroupteam[0].respparty;
-
-						}
-						if (maximoPersonGroups[i].persongroupteam.Count > 1)
-						{
-							maximoPersonGroups[i].secondMan = maximoPersonGroups[i].persongroupteam[1].respparty;
-						}
-					}
-				}
-				AppContext.personGroupRepository.removeCollection();
-				AppContext.personGroupRepository.upsertList(maximoPersonGroups);
-
 
 				AppContext.userRepository.upsert(mxuser);
 
@@ -463,8 +472,7 @@ namespace MaximoServiceLibrary
 				if (maximoUser.password.Equals(password))
 				{
 					mxuser = maximoUser;
-					mxuser.userPreferences.selectedPersonGroup = mxuser.personGroupList[0].persongroup;
-
+					
 					AppContext.userRepository.upsert(mxuser);
 
 					return true;

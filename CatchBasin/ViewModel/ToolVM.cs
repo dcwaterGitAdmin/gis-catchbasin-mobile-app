@@ -77,6 +77,11 @@ namespace CatchBasin.ViewModel
 				Duration =  new DateTime(1900, 1, 1).AddHours(ToolTrans.toolhrs);
 				Tool = ToolTrans.itemnum;
 			}
+			else
+			{
+				Quantity = "1";
+				Tool = MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.vehiclenum;
+			}
 		
 		}
 

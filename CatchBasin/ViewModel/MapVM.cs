@@ -69,6 +69,27 @@ namespace CatchBasin.ViewModel
 			set { userInfo = value; OnPropertyChanged("UserInfo"); }
 		}
 
+		public void UpdateUserInfo()
+		{
+			if (((App)Application.Current).AppType == "PM")
+			{
+				UserInfo = $"CREW :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.selectedPersonGroup} \n" +
+					$"LEADMAN :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.leadMan} \n" +
+				$"SECOND :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.secondMan} \n" +
+				$"DRIVER :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.driverMan} \n" +
+				$"VEHICLE :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.vehiclenum} \n";
+
+			}
+			else
+			{
+				UserInfo = $"CREW :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.selectedPersonGroup} \n" +
+					$"LEADMAN :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.leadMan} \n" +
+				//$"SECOND :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.secondMan} \n" +
+				$"DRIVER :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.driverMan} \n" +
+				$"VEHICLE :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.vehiclenum} \n";
+
+			}
+		}
 
 		public MapVM()
         {
@@ -105,11 +126,8 @@ namespace CatchBasin.ViewModel
 
 			MaximoServiceLibrary.AppContext.synchronizationService.synchronizationDelegate += synchronizationStatus;
 			//setBaseMap();
+			UpdateUserInfo();
 
-			UserInfo = $"LEADMAN :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.leadMan} \n" +
-				$"SECOND :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.secondMan} \n" +
-				$"DRIVER :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.driverMan} \n" +
-				$"VEHICLE :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.vehiclenum} \n";
 
 		}
 
@@ -333,7 +351,9 @@ namespace CatchBasin.ViewModel
         public LogoutCommand LogoutCommand { get; set; }
         public void DoLogout(Map map)
         {
-            new Login().Show();
+			MaximoServiceLibrary.AppContext.synchronizationService.stopSyncronizationTimer();
+
+			new Login().Show();
             map.Close();
         }
 

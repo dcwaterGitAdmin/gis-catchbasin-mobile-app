@@ -7,7 +7,7 @@
               xmlns:vm="clr-namespace:CatchBasin.ViewModel"
              mc:Ignorable="d" 
 			 x:Name="woList"
-             d:DesignHeight="450" d:DesignWidth="450">
+             d:DesignHeight="450" d:DesignWidth="350">
 
     <Grid >
         
@@ -42,7 +42,7 @@
                 
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="2">
-                        <Grid Height="90" Width="450">
+                        <Grid Height="90" Width="350">
 
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="2*"/>

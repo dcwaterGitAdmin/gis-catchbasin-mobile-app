@@ -90,6 +90,7 @@
     <Compile Include="ViewModel\Command\ShowAssetCommand.cs" />
     <Compile Include="ViewModel\CompleWorkOrderVM.cs" />
     <Compile Include="ViewModel\Helper\EnumMatchToBooleanConverter.cs" />
+    <Compile Include="ViewModel\Helper\InverseBooleanConverter.cs" />
     <Compile Include="ViewModel\Helper\Model.cs" />
     <Compile Include="ViewModel\Helper\PasswordHelper.cs" />
     <Compile Include="ViewModel\Helper\IDetailVM.cs" />

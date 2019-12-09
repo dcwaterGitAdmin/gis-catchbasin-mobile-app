@@ -101,7 +101,18 @@ namespace CatchBasin.ViewModel
 			SaveCommand = new Command.SaveCommand<LaborVM>(this);
 			LabTrans = labTrans;
 
-			var labors = MaximoServiceLibrary.AppContext.laborRepository.findAll();
+
+			List<string> craftrate;
+			if (((App)Application.Current).AppType == "PM")
+			{
+				craftrate = new string[] { "SSWR", "SSLR", "SSWL" }.ToList();
+			}
+			else
+			{
+				craftrate = new string[] { "SSWR", "SSLR", "SSWL", "SCRW", "CNRW" }.ToList();
+			}
+
+			var labors = MaximoServiceLibrary.AppContext.laborRepository.findAll().Where(labor => labor.laborcraftrate.Where(laborcraftrate => craftrate.Contains(laborcraftrate.craft)).Count() > 0);
 			LaborList = new List<MaximoPerson>();
 			foreach (var labor in labors)
 			{
@@ -122,6 +133,7 @@ namespace CatchBasin.ViewModel
 			{
 				StartDate = DateTime.Now;
 				Type = "WORK";
+				Labor = MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences?.setting?.leadMan;
 			}
 		}
 
@@ -143,7 +155,7 @@ namespace CatchBasin.ViewModel
 				labTrans.dcw_truckdriver = IsDriver;
 				labTrans.dcw_trucksecond = IsSecondMan;
 				labTrans.dcw_trucklead = IsLeadMan;
-				labTrans.dcw_trucknum = "";// todo getvehicle
+				labTrans.dcw_trucknum = MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences?.setting?.vehiclenum;
 				labTrans.enterdate = DateTime.Now;
 				labTrans.laborcode = Labor;
 				labTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;

@@ -89,8 +89,7 @@ namespace MaximoServiceLibrary.model
 		public string secondMan { get; set; }
 		[JsonIgnore]
 		public string driverMan { get; set; }
-		[JsonIgnore]
-		public MaximoInventory vehicle { get; set; }
+
 	}
 
 

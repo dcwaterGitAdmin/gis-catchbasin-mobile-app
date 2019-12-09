@@ -22,7 +22,7 @@
 				<StackPanel Margin="10">
 
 					<Label  Margin="0 0 0 3"  Content="Tool" FontWeight="Bold"/>
-				<ComboBox ItemsSource="{Binding ToolList}" DisplayMemberPath="itemnum" SelectedValuePath="itemnum" SelectedValue="{Binding Tool, Mode=TwoWay}"  Margin="0 3 0 3" MinHeight="100" MaxHeight="100">
+				<ComboBox ItemsSource="{Binding ToolList}" DisplayMemberPath="itemnum" SelectedValuePath="itemnum" SelectedValue="{Binding Tool, Mode=TwoWay}"  Margin="0 3 0 3" MaxHeight="100">
 						
 						
 					</ComboBox>

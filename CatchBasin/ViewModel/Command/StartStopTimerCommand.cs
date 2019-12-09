@@ -73,36 +73,84 @@ namespace CatchBasin.ViewModel.Command
 				TimeSpan? time = stopTimerDate - wo.startTimerDate;
 				Console.WriteLine($"time :{time}");
 
-
+				var mxuser = MaximoServiceLibrary.AppContext.synchronizationService.mxuser;
 
 				MaximoLabTrans labTrans = new MaximoLabTrans();
+				MaximoLabTrans secondlabTrans = new MaximoLabTrans();
+
+
 				labTrans.startdateentered = startTimerDate;
 				labTrans.starttimeentered = new DateTime(1900, 1, 1) + startTimerDate.TimeOfDay;
 				labTrans.finishdateentered = stopTimerDate;
 				labTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
 				labTrans.transdate = DateTime.Now;
 				labTrans.transtype = "WORK";
-				labTrans.craft = null;
-				labTrans.laborcode = null;
+				var _labors =MaximoServiceLibrary.AppContext.laborRepository.Find("person[*].personid", mxuser.userPreferences.setting?.leadMan).ToList() ;
+				labTrans.craft = _labors?[0].laborcraftrate?[0].craft;
 				labTrans.siteid = "DWS_DSS";
 				labTrans.orgid = "DC_WASA";
 				labTrans.dcw_truckdriver = true;
 				labTrans.dcw_trucksecond = false;
 				labTrans.dcw_trucklead = true;
-				labTrans.dcw_trucknum = "";// todo getvehicle
+				labTrans.dcw_trucknum = mxuser.userPreferences.setting.vehiclenum;
 				labTrans.enterdate = DateTime.Now;
-				labTrans.laborcode = "";//todo
+				labTrans.laborcode = mxuser.userPreferences.setting?.leadMan;
 				labTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 				labTrans.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+
+
+
+				if (((App)Application.Current).AppType == "PM")
+				{
+					
+					secondlabTrans.startdateentered = startTimerDate;
+					secondlabTrans.starttimeentered = new DateTime(1900, 1, 1) + startTimerDate.TimeOfDay;
+					secondlabTrans.finishdateentered = stopTimerDate;
+					secondlabTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
+					secondlabTrans.transdate = DateTime.Now;
+					secondlabTrans.transtype = "WORK";
+					_labors = MaximoServiceLibrary.AppContext.laborRepository.Find("person[*].personid", mxuser.userPreferences.setting?.secondMan).ToList();
+					secondlabTrans.craft = _labors?[0].laborcraftrate?[0].craft;
+					secondlabTrans.siteid = "DWS_DSS";
+					secondlabTrans.orgid = "DC_WASA";
+					secondlabTrans.dcw_truckdriver = true;
+					secondlabTrans.dcw_trucksecond = false;
+					secondlabTrans.dcw_trucklead = true;
+					secondlabTrans.dcw_trucknum = mxuser.userPreferences.setting.vehiclenum;
+					secondlabTrans.enterdate = DateTime.Now;
+					secondlabTrans.laborcode = mxuser.userPreferences.setting?.secondMan;
+					secondlabTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
+					secondlabTrans.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+				}
+				
+
+				MaximoToolTrans tool = new MaximoToolTrans();
+				tool.transdate = DateTime.Now;
+				tool.toolrate = 0;
+				tool.toolqty = 1;
+				if (time.HasValue)
+				{
+					tool.toolhrs = time.Value.TotalHours;
+				}
+				tool.itemnum = mxuser.userPreferences.setting.vehiclenum;
+				tool.itemsetid = "IDC_WASA";
+				tool.enterdate = DateTime.Now;
+				tool.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
+				tool.langcode = "EN";
+				tool.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				
 
 
 
-				
-				
 				if (WorkOrderListVM.MapVM.WorkOrderDetailIsVisible)
 				{
 					WorkOrderListVM.MapVM.WorkOrderDetailVM.LabTrans.Add(labTrans);
+					if (((App)Application.Current).AppType == "PM")
+					{
+						WorkOrderListVM.MapVM.WorkOrderDetailVM.LabTrans.Add(secondlabTrans);
+
+					}
+					WorkOrderListVM.MapVM.WorkOrderDetailVM.ToolTrans.Add(tool);
 				}
 				else
 				{
@@ -111,16 +159,30 @@ namespace CatchBasin.ViewModel.Command
 						wo.labtrans = new List<MaximoLabTrans>();
 				
 					}
-					
 					wo.labtrans.Add(labTrans);
+
+					if (((App)Application.Current).AppType == "PM")
+					{
+						wo.labtrans.Add(secondlabTrans);
+
+					}
+
+					if (wo.tooltrans == null)
+					{
+						wo.tooltrans = new List<MaximoToolTrans>();
+					}
+					wo.tooltrans.Add(tool);
+					
 				}
 
 				wo.startTimerDate = null;
 				wo.timerImageUri = "pack://application:,,,/CatchBasin;component/Resources/Images/stopWatch.png";
 				wo = MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
 				WorkOrderListVM.Update();
-
-				WorkOrderListVM.showWorkOrder(wo);
+				if (!WorkOrderListVM.MapVM.WorkOrderDetailIsVisible)
+				{
+					WorkOrderListVM.showWorkOrder(wo);
+				}
 			}
 			
 		}

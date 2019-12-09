@@ -51,6 +51,21 @@ namespace CatchBasin.ViewModel
 			set { cancelCommand = value; OnPropertyChanged("CancelCommand"); }
 		}
 
+		private bool holdIsEnabled;
+
+		public bool HoldIsEnabled
+		{
+			get { return holdIsEnabled; }
+			set { holdIsEnabled = value; OnPropertyChanged("HoldIsEnabled"); }
+		}
+
+		private bool cancelIsEnabled;
+
+		public bool CancelIsEnabled
+		{
+			get { return cancelIsEnabled; }
+			set { cancelIsEnabled = value; OnPropertyChanged("CancelIsEnabled"); }
+		}
 
 
 		WorkOrderDetailVM WorkOrderDetailVM;
@@ -63,14 +78,57 @@ namespace CatchBasin.ViewModel
 
 			StatusDate = DateTime.Now;
 			NewStatus = "COMP";
+			HoldIsEnabled = true;
+			CancelIsEnabled = true;
+			var wo =WorkOrderDetailVM.MaximoWorkOrder;
+			if (wo.worktype == "CM")
+			{
+				HoldIsEnabled = false;
+				CancelIsEnabled = false;
+			} else if (wo.description == "Newly Discovered Asset cleaned by CB Cleaning Crew")
+			{
+				HoldIsEnabled = false;
+				CancelIsEnabled = false;
+			} else if(wo.description == "New Asset cleaned by CB Cleaning Crew")
+			{
+				HoldIsEnabled = false;
+				CancelIsEnabled = false;
+			}else if(wo.description == "CB cleaned by CB Cleaning Crew")
+			{
+				HoldIsEnabled = false;
+				CancelIsEnabled = false;
+			}
+			else if(wo.description == "Newly Discovered Asset Inspected by DSS")
+			{
+				HoldIsEnabled = false;
+				CancelIsEnabled = false;
+
+			}else if(wo.worktype == "INSP")
+			{
+
+			}
+			else
+			{
+				CancelIsEnabled = false;
+			}
+
+
 		}
 
 		public void Save()
 		{
+			if (NewStatus != "COMP" && (Memo == "" || Memo == null))
+			{
+
+				MessageBox.Show("Memo is required", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+				return;
+			}
 			WorkOrderDetailVM.SaveWithoutHide();
 			MaximoWorkOrder wo = WorkOrderDetailVM.MaximoWorkOrder;
 	
 			wo.status = NewStatus;
+			
+
 			wo.statusdate = StatusDate;
 			wo.np_statusmemo = Memo;
 			wo.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;

@@ -44,6 +44,15 @@ namespace CatchBasin.ViewModel
 			set { secondMan = value; OnPropertyChanged("SecondMan"); }
 		}
 
+		private bool secondManIsVisible;
+
+		public bool SecondManIsVisible
+		{
+			get { return secondManIsVisible; }
+			set { secondManIsVisible = value; OnPropertyChanged("SecondManIsVisible"); }
+		}
+
+
 		private string driverMan;
 
 		public string DriverMan
@@ -100,6 +109,7 @@ namespace CatchBasin.ViewModel
 		public MaximoPersonGroup MaximoPersonGroup { get; set; }
 
 		MapVM MapVM;
+		public string AppType = ((App)Application.Current).AppType;
 
 		public SettingsVM(MapVM mapVM)
 		{
@@ -108,8 +118,27 @@ namespace CatchBasin.ViewModel
 			CancelCommand = new Command.CancelCommand<SettingsVM>(this);
 			SaveCommand = new Command.SaveCommand<SettingsVM>(this);
 
+			if(AppType == "PM")
+			{
+				secondManIsVisible = true;
+			}
+			else
+			{
+				secondManIsVisible = false;
+			}
+
 			VehicleList = MaximoServiceLibrary.AppContext.inventoryRepository.findAll().ToList();
-			var labors = MaximoServiceLibrary.AppContext.laborRepository.findAll();
+			List<string> craftrate;
+			if (AppType == "PM")
+			{
+				craftrate = new string[] { "SSWR", "SSLR", "SSWL" }.ToList();
+			}
+			else
+			{
+				craftrate = new string[] { "SSWR", "SSLR", "SSWL", "SCRW", "CNRW" }.ToList();
+			}
+
+			var labors = MaximoServiceLibrary.AppContext.laborRepository.findAll().Where(labor =>labor.laborcraftrate.Where(laborcraftrate => craftrate.Contains(laborcraftrate.craft)).Count()>0);
 			LaborList = new List<MaximoPerson>();
 			foreach (var labor in labors)
 			{
@@ -122,7 +151,11 @@ namespace CatchBasin.ViewModel
 
 			Crew = MaximoPersonGroup.persongroup;
 			LeadMan = MaximoPersonGroup.leadMan;
-			SecondMan = MaximoPersonGroup.secondMan;
+			if(AppType == "PM")
+			{
+				SecondMan = MaximoPersonGroup.secondMan;
+			}
+			
 			DriverMan = MaximoPersonGroup.driverMan;
 			Vehicle = MaximoPersonGroup.vehiclenum;
 
@@ -139,7 +172,11 @@ namespace CatchBasin.ViewModel
 				MaximoPersonGroup = MaximoServiceLibrary.AppContext.personGroupRepository.findOne(Crew);
 
 				LeadMan = MaximoPersonGroup.leadMan;
-				SecondMan = MaximoPersonGroup.secondMan;
+				if (AppType == "PM")
+				{
+					SecondMan = MaximoPersonGroup.secondMan;
+				}
+				
 				DriverMan = MaximoPersonGroup.driverMan;
 				Vehicle = MaximoPersonGroup.vehiclenum;
 			}
@@ -151,12 +188,21 @@ namespace CatchBasin.ViewModel
 
 			MaximoPersonGroup.persongroup = Crew;
 			MaximoPersonGroup.leadMan = LeadMan;
-			MaximoPersonGroup.secondMan =SecondMan;
+			if(AppType == "PM")
+			{
+				MaximoPersonGroup.secondMan = SecondMan;
+			}
+			
 			MaximoPersonGroup.driverMan = DriverMan ;
 			MaximoPersonGroup.vehiclenum =Vehicle ;
 
-			MaximoServiceLibrary.AppContext.personGroupRepository.upsert(MaximoPersonGroup);
 			MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup = Crew;
+			MaximoServiceLibrary.AppContext.personGroupRepository.upsert(MaximoPersonGroup);
+			MaximoServiceLibrary.AppContext.userRepository.upsert(MaximoServiceLibrary.AppContext.synchronizationService.mxuser);
+
+
+			MapVM.WorkOrderListVM.Update();
+			MapVM.UpdateUserInfo();
 			Close();
 		}
 

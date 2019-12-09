@@ -11,6 +11,7 @@
         Title="Labor" Height="400" Width="300">
 	<Window.Resources>
 		<helper:EnumMatchToBooleanConverter x:Key="enumConverter" />
+		<helper:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
 	</Window.Resources>
 	<Grid>
 		<DockPanel LastChildFill="True">
@@ -49,8 +50,8 @@
 				</StackPanel>
 
 				<CheckBox IsChecked="{Binding IsDriver, Mode=TwoWay}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Driver?" />
-				<CheckBox IsChecked="{Binding IsLeadMan, Mode=TwoWay}" Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Lead Man?" />
-				<CheckBox IsChecked="{Binding IsSecondMan, Mode=TwoWay}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Second Man?" />
+				<CheckBox IsChecked="{Binding IsLeadMan, Mode=TwoWay}" IsEnabled="{Binding IsSecondMan, Converter={StaticResource inverseBooleanConverter}}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Lead Man?" />
+				<CheckBox IsChecked="{Binding IsSecondMan, Mode=TwoWay}"  IsEnabled="{Binding IsLeadMan, Converter={StaticResource inverseBooleanConverter}}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Second Man?" />
 
 				
 

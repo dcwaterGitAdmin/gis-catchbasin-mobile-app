@@ -138,12 +138,13 @@
                     
                     <RibbonGroup x:Name="AppRibbonGroup" Header="Application">
                         <RibbonButton Command="{Binding SettingsCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Settings.png" Label="Settings" />
-                        <RibbonButton Command="{Binding LogoutCommand}" CommandParameter="{Binding ElementName=MapWindow}" LargeImageSource="/CatchBasin;component/Resources/Images/logout.png" Label="Logout" />
+						<TextBlock FontSize="10" Text="{Binding UserInfo}"></TextBlock>
+						<RibbonButton Command="{Binding LogoutCommand}" CommandParameter="{Binding ElementName=MapWindow}" LargeImageSource="/CatchBasin;component/Resources/Images/logout.png" Label="Logout" />
 						
 					</RibbonGroup>
 					<RibbonGroup Header="TEST">
 						<RibbonCheckBox IsChecked="{Binding IsOffline}" Label="IsOffline (just for testing)" />
-						<TextBlock Text="{Binding UserInfo}"></TextBlock>
+						
 					</RibbonGroup>
                 </RibbonTab>
             </Ribbon>

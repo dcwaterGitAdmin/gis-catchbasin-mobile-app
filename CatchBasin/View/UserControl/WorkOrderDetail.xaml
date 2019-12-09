@@ -7,11 +7,11 @@
 			 xmlns:model="clr-namespace:MaximoServiceLibrary.model;assembly=MaximoServiceLibrary"
              mc:Ignorable="d" 
 	        x:Name="WoDetail"
-             d:DesignHeight="1300" d:DesignWidth="300">
+             d:DesignHeight="1300" d:DesignWidth="320">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
     </UserControl.Resources>
-    <Grid Width="300">
+    <Grid Width="320">
         <DockPanel LastChildFill="True">
             <Grid DockPanel.Dock="Bottom">
                
@@ -120,7 +120,7 @@
                             SelectedValuePath="value"
                              SelectedValue="{Binding Status, Mode=TwoWay}"/>
                     </StackPanel>
-                    <StackPanel Visibility="{Binding ActualsIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
+					<StackPanel Visibility="{Binding ActualsIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="5*"/>
@@ -138,7 +138,7 @@
                                 </Button.ContextMenu>
                             </Button>
                         </Grid>
-                        <ListView x:Name="Actuals" MaxHeight="300" ItemsSource="{Binding Actuals}" HorizontalContentAlignment="Stretch">
+                        <ListView x:Name="Actuals"  ItemsSource="{Binding Actuals}" HorizontalContentAlignment="Stretch">
 							<ListView.Resources>
 								<DataTemplate DataType="{x:Type model:MaximoLabTrans}">
 									<Border BorderBrush="Black" BorderThickness="2">
@@ -200,7 +200,7 @@
 											<Label Grid.Row="0" Grid.Column="0" Content="Tool" FontWeight="Bold"/>
 											<StackPanel  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
 												<Label  Content="Tool" FontWeight="Bold"/>
-												<TextBlock Text="{Binding toolitem[0].itemnum}"/>
+												<TextBlock Text="{Binding itemnum}"/>
 											</StackPanel>
 
 											<StackPanel  Grid.Row="2" Grid.Column="0">
@@ -237,7 +237,7 @@
                                 <Image Source="/CatchBasin;component/Resources/Images/add.png" />
                             </Button>
                         </Grid>
-						<ListView MaxHeight="300" ItemsSource="{Binding Attachments}"  HorizontalContentAlignment="Stretch">
+						<ListView ItemsSource="{Binding Attachments}"  HorizontalContentAlignment="Stretch">
                             <ListView.ItemTemplate>
 
                                 <DataTemplate >

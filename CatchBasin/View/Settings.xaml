@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:CatchBasin.View"
         mc:Ignorable="d"
         Title="Settings" Height="450" Width="400">
+	<Window.Resources>
+		<BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+	</Window.Resources>
     <Grid>
 		<DockPanel LastChildFill="True">
 			<Grid DockPanel.Dock="Bottom">
@@ -31,13 +34,13 @@
                             SelectedValuePath="personid"
                              SelectedValue="{Binding LeadMan}"/>
 
-
-				<Label  Margin="0 0 0 3"  Content="Second Man" FontWeight="Bold"/>
-				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+				<StackPanel Visibility="{Binding SecondManIsVisible, Converter={StaticResource booleanToVisibilityConverter}}">
+					<Label  Margin="0 0 0 3"  Content="Second Man" FontWeight="Bold"/>
+					<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
                             DisplayMemberPath="displayname"
                             SelectedValuePath="personid"
-                             SelectedValue="{Binding SecondMand}"/>
-
+                             SelectedValue="{Binding SecondMan}"/>
+				</StackPanel>
 
 				<Label  Margin="0 0 0 3"  Content="Driver" FontWeight="Bold"/>
 				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
