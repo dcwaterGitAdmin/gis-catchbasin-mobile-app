@@ -66,7 +66,7 @@ namespace CatchBasin.ViewModel
                 {
 
 					((App)Application.Current).AppType = ApplicationType;
-					//MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+					//MaximoServiceLibrary.AppContext.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
 					// MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
 					MaximoServiceLibrary.AppContext.synchronizationService.startSyncronizationTimer();
 					

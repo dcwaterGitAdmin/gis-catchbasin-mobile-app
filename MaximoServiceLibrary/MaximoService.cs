@@ -261,7 +261,7 @@ namespace MaximoServiceLibrary
 
 			var request = createRequest("/os/mxwo");
 			request.AddQueryParameter("oslc.where", where);
-			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.select", "description_longdescription,schedstart,woclass,workorderid,statusdate,parent,classstructureid,changeby,assetnum,actlabcost,reportedby,woeq10,description,persongroup,np_statusmemo,origproblemtype,origrecordid,service,wolo4,wonum,wolo2,orgid,wo1,siteid,worktype,origrecordclass,remarkdesc,newchildclass,location,status,problemcode,failurecode,receivedvia");
 			request.AddQueryParameter("oslc.pageSize", "10");
 			request.AddQueryParameter("pageno", "1");
 
@@ -304,7 +304,7 @@ namespace MaximoServiceLibrary
 		public List<MaximoWorkOrderSpec> getWorkOrderSpec(MaximoWorkOrder wo)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
-			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.select", "workorderspec");
 			var response = restClient.Execute(request);
 
 			if (!response.IsSuccessful)
@@ -350,7 +350,7 @@ namespace MaximoServiceLibrary
 		public List<MaximoWorkOrderFailureReport> getWorkOrderFailureReport(MaximoWorkOrder wo)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
-			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.select", "failurereport");
 			var response = restClient.Execute(request);
 
 			if (!response.IsSuccessful)
@@ -603,7 +603,7 @@ namespace MaximoServiceLibrary
 			if (assetnum == null) return null;
 			var request = createRequest("/os/mxasset");
 			request.AddQueryParameter("oslc.where", "assetnum=" + assetnum);
-			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.select", "herf,assetspec{numvalue,alnvalue,assetattrid,assetnum},description_longdescription,changeby,changedate,assetnum,assettag,eq3");
 			request.AddQueryParameter("oslc.pageSize", "1");
 
 			var response = restClient.Execute(request);
@@ -625,6 +625,7 @@ namespace MaximoServiceLibrary
 			var request = createRequest("/os/mxlabor");
 			request.AddQueryParameter("oslc.select", "*");
 			request.AddQueryParameter("oslc.pageSize", "10");
+			request.AddQueryParameter("oslc.where",$"laborcraftrate.craft=\"{laborcraft}\"");
 			request.AddQueryParameter("pageno", "1");
 
 			var response = restClient.Execute(request);

@@ -38,9 +38,9 @@ namespace CatchBasin.ViewModel
 
 
 
-		private List<MaximoUser> laborList;
+		private List<MaximoPerson> laborList;
 
-		public List<MaximoUser> LaborList
+		public List<MaximoPerson> LaborList
 		{
 			get { return laborList; }
 			set { laborList = value; OnPropertyChanged("LaborList"); }
@@ -100,7 +100,15 @@ namespace CatchBasin.ViewModel
 			CancelCommand = new Command.CancelCommand<LaborVM>(this);
 			SaveCommand = new Command.SaveCommand<LaborVM>(this);
 			LabTrans = labTrans;
-			if(LabTrans != null)
+
+			var labors = MaximoServiceLibrary.AppContext.laborRepository.findAll();
+			LaborList = new List<MaximoPerson>();
+			foreach (var labor in labors)
+			{
+				LaborList.AddRange(labor.person.Where(per => per.status == "ACTIVE").ToList());
+			}
+
+			if (LabTrans != null)
 			{
 				StartDate = LabTrans.startdateentered + LabTrans.starttimeentered.TimeOfDay;
 				Duration = new DateTime(1900, 1, 1) + (LabTrans.finishdateentered + LabTrans.finishtimeentered.TimeOfDay - LabTrans.startdateentered - LabTrans.starttimeentered.TimeOfDay);

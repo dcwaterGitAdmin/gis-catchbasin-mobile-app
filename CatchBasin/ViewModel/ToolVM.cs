@@ -49,6 +49,14 @@ namespace CatchBasin.ViewModel
 			set { duration = value; OnPropertyChanged("Duration"); }
 		}
 
+		private List<MaximoInventory> toolList;
+
+		public List<MaximoInventory> ToolList
+		{
+			get { return toolList; }
+			set { toolList = value; OnPropertyChanged("ToolList"); }
+		}
+
 
 		bool isDirty { get; set; }
 		WorkOrderDetailVM WorkOrderDetailVM { get; set; }
@@ -61,7 +69,9 @@ namespace CatchBasin.ViewModel
 			CancelCommand = new Command.CancelCommand<ToolVM>(this);
 			SaveCommand = new Command.SaveCommand<ToolVM>(this);
 			ToolTrans = toolTrans;
-			if(ToolTrans!= null)
+
+			ToolList = MaximoServiceLibrary.AppContext.inventoryRepository.findAll().ToList();
+			if (ToolTrans!= null)
 			{
 				Quantity = ToolTrans.toolqty.ToString();
 				Duration =  new DateTime(1900, 1, 1).AddHours(ToolTrans.toolhrs);

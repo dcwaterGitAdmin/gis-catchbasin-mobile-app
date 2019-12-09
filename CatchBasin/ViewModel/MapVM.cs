@@ -61,6 +61,15 @@ namespace CatchBasin.ViewModel
 		}
 
 
+		private string userInfo;
+
+		public string UserInfo
+		{
+			get { return userInfo; }
+			set { userInfo = value; OnPropertyChanged("UserInfo"); }
+		}
+
+
 		public MapVM()
         {
 			if(((App)Application.Current).AppType == null)
@@ -96,8 +105,13 @@ namespace CatchBasin.ViewModel
 
 			MaximoServiceLibrary.AppContext.synchronizationService.synchronizationDelegate += synchronizationStatus;
 			//setBaseMap();
-			
-        }
+
+			UserInfo = $"LEADMAN :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.leadMan} \n" +
+				$"SECOND :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.secondMan} \n" +
+				$"DRIVER :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.driverMan} \n" +
+				$"VEHICLE :{MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting?.vehiclenum} \n";
+
+		}
 
 
 

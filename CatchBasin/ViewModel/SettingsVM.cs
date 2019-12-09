@@ -105,12 +105,15 @@ namespace CatchBasin.ViewModel
 		{
 			MapVM = mapVM;
 
+			CancelCommand = new Command.CancelCommand<SettingsVM>(this);
+			SaveCommand = new Command.SaveCommand<SettingsVM>(this);
+
 			VehicleList = MaximoServiceLibrary.AppContext.inventoryRepository.findAll().ToList();
 			var labors = MaximoServiceLibrary.AppContext.laborRepository.findAll();
 			LaborList = new List<MaximoPerson>();
 			foreach (var labor in labors)
 			{
-				LaborList.AddRange(labor.person);
+				LaborList.AddRange(labor.person.Where(per => per.status == "ACTIVE").ToList());
 			}
 
 			CrewList = MaximoServiceLibrary.AppContext.personGroupRepository.findNot("persongroup", "CB00").ToList();
@@ -123,12 +126,29 @@ namespace CatchBasin.ViewModel
 			DriverMan = MaximoPersonGroup.driverMan;
 			Vehicle = MaximoPersonGroup.vehiclenum;
 
-			
+			PropertyChanged += SettingsVM_PropertyChanged;
 
+		}
+
+		private void SettingsVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName == "Crew")
+			{
+				
+
+				MaximoPersonGroup = MaximoServiceLibrary.AppContext.personGroupRepository.findOne(Crew);
+
+				LeadMan = MaximoPersonGroup.leadMan;
+				SecondMan = MaximoPersonGroup.secondMan;
+				DriverMan = MaximoPersonGroup.driverMan;
+				Vehicle = MaximoPersonGroup.vehiclenum;
+			}
 		}
 
 		public void Save()
 		{
+
+
 			MaximoPersonGroup.persongroup = Crew;
 			MaximoPersonGroup.leadMan = LeadMan;
 			MaximoPersonGroup.secondMan =SecondMan;
@@ -136,6 +156,7 @@ namespace CatchBasin.ViewModel
 			MaximoPersonGroup.vehiclenum =Vehicle ;
 
 			MaximoServiceLibrary.AppContext.personGroupRepository.upsert(MaximoPersonGroup);
+			MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup = Crew;
 			Close();
 		}
 

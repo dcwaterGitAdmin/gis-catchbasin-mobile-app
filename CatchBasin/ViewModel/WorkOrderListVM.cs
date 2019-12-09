@@ -154,44 +154,46 @@ namespace CatchBasin.ViewModel
 
 		public void Update()
 		{
+
 			IEnumerable<MaximoWorkOrder> wos;
-			if (Filter == FilterType.NODISPTCHD)
-			{
-				wos = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("status", "DISPTCHD");
-			}
-			else
-			{
-				wos = MaximoServiceLibrary.AppContext.workOrderRepository.Find("status", "DISPTCHD");
-			}
-			
 
+			wos = MaximoServiceLibrary.AppContext.workOrderRepository.findAll();
 
+		
 			if (((App)Application.Current).AppType == "PM")
 			{
+
+				wos = wos.Where(wo => wo.persongroup == MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup || wo.persongroup == "CB00");
 				wos = wos.Where(wo => wo.worktype == "EMERG" || wo.worktype == "INV" || wo.worktype == "PM" || wo.worktype == "CM");
-				var t = wos.ToList();
-				var mxuser = MaximoServiceLibrary.AppContext.userRepository.findOneIgnoreCase(MaximoServiceLibrary.AppContext
-					.synchronizationService?.mxuser.userName);
-				wos = wos.Where(wo => wo.persongroup == (mxuser.userPreferences.selectedPersonGroup ?? mxuser.personGroupList?[0].persongroup) || wo.persongroup == "CB00");
 
 				switch (Filter)
 				{
 					case FilterType.PMDISPTCHD:
-						wos = wos.Where(wo => wo.worktype == "PM");
+						wos = wos.Where(wo => wo.worktype == "PM" && wo.status == "DISPTCHD");
 						break;
 					case FilterType.NOPMDISPTCHD:
-						wos = wos.Where(wo => wo.worktype == "EMERG" || wo.worktype == "INV");
+						wos = wos.Where(wo => (wo.worktype == "EMERG" || wo.worktype == "INV")  && wo.status == "DISPTCHD");
 						break;
 					case FilterType.EMERGDISPTCHD:
-						wos = wos.Where(wo => wo.worktype == "EMERG");
+						wos = wos.Where(wo => wo.worktype == "EMERG" && wo.status == "DISPTCHD");
+						break;
+					case FilterType.NODISPTCHD:
+						wos = wos.Where(wo =>  wo.status != "DISPTCHD");
 						break;
 				}
 			
 			}
 			else
 			{
-				 wos = wos.Where(wo => wo.worktype == "INSP");
+				wos = wos.Where(wo => wo.persongroup == MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup || wo.persongroup == "CB00");
+				wos = wos.Where(wo => wo.worktype == "INSP");
 
+				switch (Filter)
+				{
+					case FilterType.NODISPTCHD:
+						wos = wos.Where(wo => wo.status != "DISPTCHD");
+						break;
+				}
 			}
 
 			switch (Order)

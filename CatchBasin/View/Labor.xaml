@@ -28,8 +28,8 @@
 
 				<Label  Margin="0 0 0 3"  Content="Labor" FontWeight="Bold"/>
 				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
-                            DisplayMemberPath="description"
-                            SelectedValuePath="failurecode"
+                            DisplayMemberPath="displayname"
+                            SelectedValuePath="personid"
                              SelectedValue="{Binding Labor}"/>
 
 				<Label  Margin="0 3 0 3"  Content="Start Date" FontWeight="Bold"/>

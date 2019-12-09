@@ -220,7 +220,7 @@ namespace MaximoServiceLibrary
 		{
 			DateTime lastSyncTime = mxuser.userPreferences.lastSyncTime;
 
-			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(mxuser.userPreferences.selectedPersonGroup, lastSyncTime);
+			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(mxuser.userPreferences.selectedPersonGroup);
 			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
 
 			/*
@@ -247,7 +247,7 @@ namespace MaximoServiceLibrary
 				maximoWorkOrder.asset = maximoAsset;
 
 				maximoWorkOrder.workorderspec = AppContext.maximoService.getWorkOrderSpec(maximoWorkOrder);
-				maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
+				//maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
 				maximoWorkOrder.failurereport = AppContext.maximoService.getWorkOrderFailureReport(maximoWorkOrder);
 			}
 
@@ -282,7 +282,7 @@ namespace MaximoServiceLibrary
 				maximoWorkOrder.asset = maximoAsset;
 
 				maximoWorkOrder.workorderspec = AppContext.maximoService.getWorkOrderSpec(maximoWorkOrder);
-				maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
+				//maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
 				maximoWorkOrder.failurereport = AppContext.maximoService.getWorkOrderFailureReport(maximoWorkOrder);
 				// synchronize maximoWorkOrder in local db
 				MaximoWorkOrder maximoWorkOrderFromDb = AppContext.workOrderRepository.findOne(maximoWorkOrder.wonum);
@@ -345,25 +345,25 @@ namespace MaximoServiceLibrary
 			clearHelperFromLocalDb();
 
 			// get domains
-			AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
+			//AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
 
 
 			// get attributes
 
-			AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
-			// get failurelist
-			// 1283 CatchBasin failurelist id
-			List<FailureList> failureLists = new List<FailureList>();
-			List<FailureList> tempFailureLists = AppContext.maximoService.getFailureList("1283");
-			failureLists.AddRange(tempFailureLists);
-			var problemCodes =
-				string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
-			tempFailureLists = AppContext.maximoService.getFailureList(problemCodes);
-			failureLists.AddRange(tempFailureLists);
-			var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
-			tempFailureLists = AppContext.maximoService.getFailureList(causeCodes);
-			failureLists.AddRange(tempFailureLists);
-			AppContext.failureListRepository.upsertList(failureLists);
+			//AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
+			//// get failurelist
+			//// 1283 CatchBasin failurelist id
+			//List<FailureList> failureLists = new List<FailureList>();
+			//List<FailureList> tempFailureLists = AppContext.maximoService.getFailureList("1283");
+			//failureLists.AddRange(tempFailureLists);
+			//var problemCodes =
+			//	string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
+			//tempFailureLists = AppContext.maximoService.getFailureList(problemCodes);
+			//failureLists.AddRange(tempFailureLists);
+			//var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
+			//tempFailureLists = AppContext.maximoService.getFailureList(causeCodes);
+			//failureLists.AddRange(tempFailureLists);
+			//AppContext.failureListRepository.upsertList(failureLists);
 		
 			
 
@@ -385,9 +385,9 @@ namespace MaximoServiceLibrary
 
 		public void clearHelperFromLocalDb()
 		{
-			AppContext.domainRepository.removeCollection();
-			AppContext.assetRepository.removeCollection();
-			AppContext.failureListRepository.removeCollection();
+			//AppContext.domainRepository.removeCollection();
+			//AppContext.assetRepository.removeCollection();
+			//AppContext.failureListRepository.removeCollection();
 			AppContext.laborRepository.removeCollection();
 			AppContext.inventoryRepository.removeCollection();
 		}
@@ -416,9 +416,11 @@ namespace MaximoServiceLibrary
 				if (mxuser.userPreferences == null)
 				{
 					mxuser.userPreferences = new UserPreferences();
+					
 				}
 
 				mxuser.persongroup = AppContext.maximoService.getPersonGroup(mxuser.personId)?.persongroup;
+				mxuser.userPreferences.selectedPersonGroup = mxuser.persongroup;
 				if(mxuser.persongroup == null)
 				{
 					return false;
