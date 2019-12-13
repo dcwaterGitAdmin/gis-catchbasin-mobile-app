@@ -24,10 +24,8 @@
 			<StackPanel Margin="10">
 
 				<Label  Margin="0 0 0 3"  Content="Crew" FontWeight="Bold"/>
-				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding CrewList}"
-                            DisplayMemberPath="persongroup"
-                            SelectedValuePath="persongroup"
-                             SelectedValue="{Binding Crew}"/>
+				<TextBlock Text="{Binding Crew}"></TextBlock>
+				
 				<Label  Margin="0 0 0 3"  Content="Lead Man" FontWeight="Bold"/>
 				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
                             DisplayMemberPath="displayname"
@@ -43,7 +41,7 @@
 				</StackPanel>
 
 				<Label  Margin="0 0 0 3"  Content="Driver" FontWeight="Bold"/>
-				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding DriverList}"
                             DisplayMemberPath="displayname"
                             SelectedValuePath="personid"
                              SelectedValue="{Binding DriverMan}"/>

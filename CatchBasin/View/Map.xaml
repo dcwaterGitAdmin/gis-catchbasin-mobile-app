@@ -14,6 +14,7 @@
     <Window.Resources>
         <vm:MapVM x:Key="vm" />
         <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+		<helper:InverseBooleanConverter x:Key="inverseBooleanConverter" />
         <!--Styles-->
         <Style x:Key="MeasureStyle" TargetType="RibbonButton">
             <Style.Triggers>
@@ -43,15 +44,90 @@
     </Window.Resources>
     
 
-    <Grid DataContext="{StaticResource vm}">
+    <Grid x:Name="Grid" DataContext="{StaticResource vm}">
         <DockPanel LastChildFill="True" >
             <Ribbon DockPanel.Dock="Top">
                 <Ribbon.ApplicationMenu>
                     <RibbonApplicationMenu Visibility="Collapsed"></RibbonApplicationMenu>
                 </Ribbon.ApplicationMenu>
-                <RibbonTab Header="Map" >
+                <RibbonTab Header="{Binding Title}" >
+					<RibbonGroup x:Name="MaximoRibbonGroup" Header="Maximo">
+						<RibbonButton Command="{Binding WorkOrdersCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/workOrderList.png" Label="Work Order List" >
+							<RibbonButton.Style>
+								<Style TargetType="RibbonButton">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding WorkOrdersIsVisible}" Value="true">
+											<Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+											<Setter Property="BorderThickness" Value="1"/>
+											<Setter Property="BorderBrush" Value="#1482c5"/>
+											<Setter Property="CornerRadius" Value="3"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</RibbonButton.Style>
+						</RibbonButton>
 
-                    <RibbonGroup x:Name="RibbonMapGroup" Header="Map">
+
+						<RibbonMenuButton  LargeImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Label="Add Workorder" >
+
+							<RibbonMenuItem Visibility="{Binding PMItemIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.TRUCKDUMPING}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Truck Dumping"/>
+							<RibbonMenuItem  Visibility="{Binding PMItemIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.NEWLYDISCOVERED}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Newly Discovered"/>
+							<RibbonMenuItem  Visibility="{Binding PMItemIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.EXISTING}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Child - Existing"/>
+							<RibbonMenuItem  Visibility="{Binding PMItemIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.NOTININVENTORY}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Child - Not In Inventory"/>
+							<RibbonMenuItem  Visibility="{Binding INSPItemIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.INSPECTNEWLYDISCOVERED}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="Inspect - Newly Discovered"/>
+						</RibbonMenuButton>
+
+						<RibbonButton Command="{Binding SyncCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/sync.png" Label="Manual Sync"  />
+						
+
+					</RibbonGroup>
+
+					<RibbonGroup x:Name="GPSRibbonGroup" Header="GPS">
+						<RibbonButton CommandParameter="{Binding ElementName=mapView}"  Command="{Binding KeepGPSCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/keepGPSInView.png" Label="Keep GPS in View" >
+							<RibbonButton.Style>
+								<Style TargetType="RibbonButton">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding HasGPSLocationInMap}" Value="true">
+											<Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+											<Setter Property="BorderThickness" Value="1"/>
+											<Setter Property="BorderBrush" Value="#1482c5"/>
+											<Setter Property="CornerRadius" Value="3"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</RibbonButton.Style>
+						</RibbonButton>
+						<RibbonButton CommandParameter="{Binding ElementName=mapView}"  Command="{Binding ShowGPSInfoCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/showGPSInfo.png" Label="Show GPS Info" >
+							<RibbonButton.Style>
+								<Style TargetType="RibbonButton">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding GPSLocationIsVisible}" Value="true">
+											<Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+											<Setter Property="BorderThickness" Value="1"/>
+											<Setter Property="BorderBrush" Value="#1482c5"/>
+											<Setter Property="CornerRadius" Value="3"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</RibbonButton.Style>
+						</RibbonButton>
+						<RibbonButton CommandParameter="{Binding ElementName=mapView}"  Command="{Binding PanToGPSCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/panTOGPS.png" Label="Pan to GPS"  >
+							<RibbonButton.Style>
+								<Style TargetType="RibbonButton">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding AutoPanModeIsOn}" Value="true">
+											<Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+											<Setter Property="BorderThickness" Value="1"/>
+											<Setter Property="BorderBrush" Value="#1482c5"/>
+											<Setter Property="CornerRadius" Value="3"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</RibbonButton.Style>
+						</RibbonButton>
+					</RibbonGroup>
+
+					<RibbonGroup x:Name="RibbonMapGroup" Header="Map">
                         <RibbonButton Command="{Binding IdentifyCommand}"  LargeImageSource="/CatchBasin;component/Resources/Images/identify.png" Label="Identify" />
                         <RibbonButton Command="{Binding MeasureCommand}" Style="{DynamicResource MeasureStyle}" LargeImageSource="/CatchBasin;component/Resources/Images/measure.png" Label="Measure" />
                         <RibbonButton Command="{Binding SearchCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Search.png" Label="Search"  />
@@ -60,92 +136,18 @@
                         <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomToFullExtentCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomToFullExtent.png" Label="Zoom to Full Extent"  />
                     </RibbonGroup>
 
-                    <RibbonGroup x:Name="GPSRibbonGroup" Header="GPS">
-                        <RibbonButton CommandParameter="{Binding ElementName=mapView}"  Command="{Binding KeepGPSCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/keepGPSInView.png" Label="Keep GPS in View" >
-                            <RibbonButton.Style>
-                                <Style TargetType="RibbonButton">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HasGPSLocationInMap}" Value="true">
-                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
-                                            <Setter Property="BorderThickness" Value="1"/>
-                                            <Setter Property="BorderBrush" Value="#1482c5"/>
-                                            <Setter Property="CornerRadius" Value="3"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </RibbonButton.Style>
-                        </RibbonButton>
-                        <RibbonButton CommandParameter="{Binding ElementName=mapView}"  Command="{Binding ShowGPSInfoCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/showGPSInfo.png" Label="Show GPS Info" >
-                            <RibbonButton.Style>
-                                <Style TargetType="RibbonButton">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding GPSLocationIsVisible}" Value="true">
-                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
-                                            <Setter Property="BorderThickness" Value="1"/>
-                                            <Setter Property="BorderBrush" Value="#1482c5"/>
-                                            <Setter Property="CornerRadius" Value="3"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </RibbonButton.Style>
-                        </RibbonButton>
-                        <RibbonButton CommandParameter="{Binding ElementName=mapView}"  Command="{Binding PanToGPSCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/panTOGPS.png" Label="Pan to GPS"  >
-                            <RibbonButton.Style>
-                                <Style TargetType="RibbonButton">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding AutoPanModeIsOn}" Value="true">
-                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
-                                            <Setter Property="BorderThickness" Value="1"/>
-                                            <Setter Property="BorderBrush" Value="#1482c5"/>
-                                            <Setter Property="CornerRadius" Value="3"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </RibbonButton.Style>
-                        </RibbonButton>
-                    </RibbonGroup>
-
-                    <RibbonGroup x:Name="MaximoRibbonGroup" Header="Maximo">
-
-                        <RibbonButton Command="{Binding SyncCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/sync.png" Label="Manual Sync"  />
-                        <RibbonButton Command="{Binding WorkOrdersCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/workOrderList.png" Label="Work Order List" >
-                            <RibbonButton.Style>
-                                <Style TargetType="RibbonButton">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding WorkOrdersIsVisible}" Value="true">
-                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
-                                            <Setter Property="BorderThickness" Value="1"/>
-                                            <Setter Property="BorderBrush" Value="#1482c5"/>
-                                            <Setter Property="CornerRadius" Value="3"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </RibbonButton.Style>
-                        </RibbonButton>
-
-
-						<RibbonMenuButton  LargeImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Label="Add Workorder" >
-
-							<RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.TRUCKDUMPING}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Truck Dumping"/>
-							<RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.NEWLYDISCOVERED}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Newly Discovered"/> 
-							<RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.EXISTING}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Child - Existing"/>
-                            <RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.NOTININVENTORY}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="New - Child - Not In Inventory"/>
-                            <RibbonMenuItem Command="{Binding CreateWorkOrderCommand}" CommandParameter="{x:Static helper:LocalWorkOrderType.INSPECTNEWLYDISCOVERED}" ImageSource="/CatchBasin;component/Resources/Images/newWorkorder.png" Header="Inspect - Newly Discovered"/>
-						</RibbonMenuButton>
-
-
-					</RibbonGroup>
                     
                     <RibbonGroup x:Name="AppRibbonGroup" Header="Application">
                         <RibbonButton Command="{Binding SettingsCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Settings.png" Label="Settings" />
-						<TextBlock FontSize="10" Text="{Binding UserInfo}"></TextBlock>
 						<RibbonButton Command="{Binding LogoutCommand}" CommandParameter="{Binding ElementName=MapWindow}" LargeImageSource="/CatchBasin;component/Resources/Images/logout.png" Label="Logout" />
+
+						<TextBlock Margin="20 0 20 0" FontSize="10" Text="{Binding UserInfo}"></TextBlock>
 						
 					</RibbonGroup>
-					<RibbonGroup Header="TEST">
+					<!--<RibbonGroup Header="TEST">
 						<RibbonCheckBox IsChecked="{Binding IsOffline}" Label="IsOffline (just for testing)" />
 						
-					</RibbonGroup>
+					</RibbonGroup>-->
                 </RibbonTab>
             </Ribbon>
 
@@ -184,7 +186,7 @@
             
             <esri:MeasureToolbar x:Name="Measure" DockPanel.Dock="Bottom" Visibility="{Binding MeasureIsVisible, Mode=TwoWay, Converter={StaticResource booleanToVisibilityConverter}}"  MapView="{Binding ElementName=mapView}"></esri:MeasureToolbar>
 
-            <esri:MapView Map="{Binding Map}" DockPanel.Dock="Left" x:Name="mapView" />
-        </DockPanel>
+			<esri:MapView  Map="{Binding Map}" DockPanel.Dock="Left" x:Name="mapView" />
+			</DockPanel>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
-﻿using MaximoServiceLibrary;
+﻿using Esri.ArcGISRuntime.Data;
+using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
 using System;
 using System.Collections.Generic;
@@ -80,6 +81,7 @@ namespace CatchBasin.ViewModel
 			NewStatus = "COMP";
 			HoldIsEnabled = true;
 			CancelIsEnabled = true;
+			WorkOrderDetailVM.SaveWithoutHide();
 			var wo =WorkOrderDetailVM.MaximoWorkOrder;
 			if (wo.worktype == "CM")
 			{
@@ -115,7 +117,7 @@ namespace CatchBasin.ViewModel
 
 		}
 
-		public void Save()
+		public async void  Save()
 		{
 			if (NewStatus != "COMP" && (Memo == "" || Memo == null))
 			{
@@ -135,11 +137,24 @@ namespace CatchBasin.ViewModel
 			
 			wo.followups = generateFollowUps(wo);
 
+			var layer =WorkOrderDetailVM.MapVM.GetWorkorderLayer();
+			QueryParameters queryParameters = new QueryParameters();
+			queryParameters.WhereClause = $"wonum='{wo.wonum}'";
+			var features = await layer.FeatureTable.QueryFeaturesAsync(queryParameters);
+
+			foreach (var feature in features)
+			{
+				feature.Attributes["STATUS"] = NewStatus;
+				layer.FeatureTable.UpdateFeatureAsync(feature);
+			}
+
 
 			MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
 
 			Close();
+			WorkOrderDetailVM.Cancel();
 			WorkOrderDetailVM.MapVM.WorkOrderListVM.Update();
+			
 		}
 
 		public void Cancel()

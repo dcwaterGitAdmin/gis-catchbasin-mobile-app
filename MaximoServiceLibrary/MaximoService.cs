@@ -244,16 +244,16 @@ namespace MaximoServiceLibrary
 
 		public List<MaximoWorkOrder> getWorkOrders(string persongroup, DateTime? lastSyncTime)
 		{
-			
+
 			string where = "failurecode=\"CATCHBASIN\"" +
 						   " and siteid=\"DWS_DSS\"" +
 						   " and service=\"DSS\"" +
 						   " and historyflag=0" +
 						   " and status=\"DISPTCHD\"" +
 						   " and worktype in [\"INV\",\"EMERG\",\"PM\",\"INSP\"]" +
-						   $" and persongroup in [\"{persongroup}\",\"CB00\"]" +
-						   " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
-
+						   $" and persongroup in [\"{persongroup}\",\"CB00\"]";
+						//   " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
+						//todo temp
 			if (lastSyncTime != null && lastSyncTime.HasValue)
 			{
 				where += " and changedate>=\"" + lastSyncTime.GetValueOrDefault().ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";

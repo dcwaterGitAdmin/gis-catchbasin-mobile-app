@@ -35,7 +35,7 @@ namespace CatchBasin.ViewModel.Command
 
         public void Execute(object parameter)
         {
-            WorkOrderDetailVM.ShowAssetDetail();
+			WorkOrderDetailVM.MapVM.MapView.GeoViewTapped += WorkOrderDetailVM.MapVM.MapTappedForSelectAsset;
         }
 
     }

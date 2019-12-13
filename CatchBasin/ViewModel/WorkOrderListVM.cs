@@ -40,6 +40,33 @@ namespace CatchBasin.ViewModel
 			set { startStopTimerCommand = value; OnPropertyChanged("StartStopTimerCommand"); }
 		}
 
+
+		private Command.FlashCommand flashCommand;
+
+		public Command.FlashCommand FlashCommand
+		{
+			get { return flashCommand; }
+			set { flashCommand = value; OnPropertyChanged("FlashCommand"); }
+		}
+
+		private Command.ZoomToCommand zoomToCommand;
+
+		public Command.ZoomToCommand ZoomToCommand
+		{
+			get { return zoomToCommand; }
+			set { zoomToCommand = value; OnPropertyChanged("ZoomToCommand"); }
+		}
+
+		private Command.PanToCommand panToCommand;
+
+		public Command.PanToCommand PanToCommand
+		{
+			get { return panToCommand; }
+			set { panToCommand = value; OnPropertyChanged("PanToCommand"); }
+		}
+
+
+
 		private List<OrderDomain> orderList;
 
 		public List<OrderDomain> OrderList
@@ -97,12 +124,15 @@ namespace CatchBasin.ViewModel
         }
 
 
+
 		
 		public WorkOrderListVM(MapVM mapVM )
         {
             MapVM = mapVM;
 			StartStopTimerCommand = new Command.StartStopTimerCommand(this);
-
+			ZoomToCommand = new Command.ZoomToCommand(MapVM);
+			PanToCommand = new Command.PanToCommand(MapVM);
+			FlashCommand = new Command.FlashCommand(MapVM);
 			FilterList = new List<FilterDomain>();
 			FilterList.Add(new FilterDomain("Work Assigned to My Crew", FilterType.ALLDISPTCHD));
 			FilterList.Add(new FilterDomain("Non Dispatched", FilterType.NODISPTCHD));
@@ -180,6 +210,10 @@ namespace CatchBasin.ViewModel
 					case FilterType.NODISPTCHD:
 						wos = wos.Where(wo =>  wo.status != "DISPTCHD");
 						break;
+					default:
+						wos = wos.Where(wo => wo.status == "DISPTCHD");
+						break;
+
 				}
 			
 			}

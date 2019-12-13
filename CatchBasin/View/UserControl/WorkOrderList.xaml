@@ -8,8 +8,7 @@
              mc:Ignorable="d" 
 			 x:Name="woList"
              d:DesignHeight="450" d:DesignWidth="350">
-
-    <Grid >
+	<Grid >
         
         <DockPanel>
             <StackPanel DockPanel.Dock="Top">
@@ -22,28 +21,47 @@
                           SelectedValuePath="OrderType"
                           SelectedValue="{Binding Order}"></ComboBox>
             </StackPanel>
-            
-      
-        
-        
-        <ListView ItemsSource="{Binding WorkOrders}" SelectedIndex="{Binding SelectedIndex}">
-				
-            <ListView.Resources>
+
+
+
+
+			<ListView x:Name="listView" ItemsSource="{Binding WorkOrders}" SelectedIndex="{Binding SelectedIndex}" SelectionMode="Single" PreviewMouseRightButtonDown="ListView_PreviewMouseRightButtonDown">
+				<ListView.Resources>
 					<Style TargetType="{x:Type ListViewItem}">
 						<Style.Triggers>
-							<Trigger Property="IsSelected" Value="true" >
-								
-								<Setter Property="Background" Value="Green" />
-							</Trigger>
+							<MultiTrigger>
+								<MultiTrigger.Conditions>
+									<Condition Property="IsSelected" Value="true" />
+									<Condition Property="Selector.IsSelectionActive" Value="true" />
+
+								</MultiTrigger.Conditions>
+								<Setter Property="Background" Value="Blue" />
+							</MultiTrigger>
+							<DataTrigger Binding="{Binding worktype}"  Value="INV">
+								<Setter Property="Background" Value="Green"></Setter>
+							</DataTrigger>
+							<DataTrigger Binding="{Binding worktype}"  Value="EMERG">
+								<Setter Property="Background" Value="Red"></Setter>
+							</DataTrigger>
 						</Style.Triggers>
 					</Style>
+
 				</ListView.Resources>
-            <ListView.ItemTemplate>
+				<ListView.ItemTemplate>
                 
                 <DataTemplate>
-                    <Border BorderBrush="Black" BorderThickness="2">
-                        <Grid Height="90" Width="350">
 
+						<Border BorderBrush="Black" BorderThickness="2">
+							<StackPanel>
+								<StackPanel.ContextMenu>
+									<ContextMenu>
+										<MenuItem Header="Flash" Command="{Binding Source={x:Reference Name=woList}, Path=DataContext.FlashCommand}"  CommandParameter="{Binding}" Background="WhiteSmoke" />
+										<MenuItem Header="Zoom To" Command="{Binding Source={x:Reference Name=woList}, Path=DataContext.ZoomToCommand}"  CommandParameter="{Binding}" Background="WhiteSmoke" />
+										<MenuItem Header="Pan To" Command="{Binding Source={x:Reference Name=woList}, Path=DataContext.PanToCommand}" CommandParameter="{Binding}" Background="WhiteSmoke" />
+									</ContextMenu>
+								</StackPanel.ContextMenu>
+							<Grid Height="90" Width="350">
+								
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="2*"/>
                                 <RowDefinition Height="*"/>
@@ -71,10 +89,11 @@
                             </Button>
 
                         </Grid>
-                    </Border>
+							</StackPanel>
+						</Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
-
+				
         </ListView>
         </DockPanel>
             

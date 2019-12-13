@@ -62,6 +62,15 @@ namespace CatchBasin.ViewModel
 		}
 
 
+		private List<MaximoPerson> driverList;
+
+		public List<MaximoPerson> DriverList
+		{
+			get { return driverList; }
+			set { driverList = value; OnPropertyChanged("DriverList"); }
+		}
+
+
 		private List<MaximoPerson> laborList;
 
 		public List<MaximoPerson> LaborList
@@ -117,7 +126,7 @@ namespace CatchBasin.ViewModel
 
 			CancelCommand = new Command.CancelCommand<SettingsVM>(this);
 			SaveCommand = new Command.SaveCommand<SettingsVM>(this);
-
+			DriverList = new List<MaximoPerson>();
 			if(AppType == "PM")
 			{
 				secondManIsVisible = true;
@@ -159,27 +168,60 @@ namespace CatchBasin.ViewModel
 			DriverMan = MaximoPersonGroup.driverMan;
 			Vehicle = MaximoPersonGroup.vehiclenum;
 
+
+			// todo generate driverlist
 			PropertyChanged += SettingsVM_PropertyChanged;
 
 		}
 
 		private void SettingsVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName == "Crew")
+
+			switch (e.PropertyName)
 			{
-				
+				case "LeadMan":
+				case "SecondMan":
 
-				MaximoPersonGroup = MaximoServiceLibrary.AppContext.personGroupRepository.findOne(Crew);
+					MaximoPerson leadPerson = null ;
+					MaximoPerson secondPerson = null;
+					var l = LaborList.Where(person => person.personid == LeadMan).ToList();
+					if (l.Count > 0)
+					{
+						leadPerson =l[0];
+					}
+					
+					
+					if (AppType == "PM")
+					{
+						var list = LaborList.Where(person => person.personid == SecondMan).ToList();
+						if (list.Count > 0)
+						{
+							secondPerson = list[0];
+						}
+						
+					}
 
-				LeadMan = MaximoPersonGroup.leadMan;
-				if (AppType == "PM")
-				{
-					SecondMan = MaximoPersonGroup.secondMan;
-				}
-				
-				DriverMan = MaximoPersonGroup.driverMan;
-				Vehicle = MaximoPersonGroup.vehiclenum;
+					var tempList = new List<MaximoPerson>();
+					if(leadPerson != null)
+					{
+						tempList.Add(leadPerson);
+					}
+					if (secondPerson != null)
+					{
+						tempList.Add(secondPerson);
+					}
+					DriverList = tempList;
+					if (DriverMan != LeadMan && DriverMan != SecondMan)
+					{
+						   DriverMan = e.PropertyName == "LeadMan" ? LeadMan : SecondMan;
+					}
+					
+					break;
 			}
+
+		
+
+			
 		}
 
 		public void Save()
@@ -200,7 +242,7 @@ namespace CatchBasin.ViewModel
 			MaximoServiceLibrary.AppContext.personGroupRepository.upsert(MaximoPersonGroup);
 			MaximoServiceLibrary.AppContext.userRepository.upsert(MaximoServiceLibrary.AppContext.synchronizationService.mxuser);
 
-
+			MapVM.updateDefinitionQuery();
 			MapVM.WorkOrderListVM.Update();
 			MapVM.UpdateUserInfo();
 			Close();

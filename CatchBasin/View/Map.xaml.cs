@@ -24,6 +24,15 @@ namespace CatchBasin.ViewModel
         public Map()
         {
             InitializeComponent();
+			try
+			{
+				
+				((MapVM)Grid.DataContext).MapView = mapView;
+			}catch(Exception e)
+			{
+
+			}
+			
         }
 
         // Map initialization logic is contained in MapViewModel.cs

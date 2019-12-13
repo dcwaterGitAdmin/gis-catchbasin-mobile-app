@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using CatchBasin.ViewModel.Helper;
+using Esri.ArcGISRuntime.Data;
 
 namespace CatchBasin.ViewModel
 {
@@ -196,8 +197,100 @@ namespace CatchBasin.ViewModel
             }
         }
 
+		public void SetAsset(GeoElement geoElement)
+		{
+			var asset = new MaximoAsset();
 
-        private string assetTag;
+			asset.assetnum = (string)geoElement.Attributes["MXASSETNUM"];
+			asset.assettag = (string)geoElement.Attributes["ASSETTAG"];
+			asset.eq3 = (string)geoElement.Attributes["LOCATIONDETAIL"];
+
+
+			asset.assetspec = new List<MaximoAssetSpec>();
+
+			var CB_SUBT = new MaximoAssetSpec();
+			CB_SUBT.assetattrid = "CB_SUBT";
+			CB_SUBT.alnvalue = ((int)geoElement.Attributes["SUBTYPE"]).ToString();
+			asset.assetspec.Add(CB_SUBT);
+
+			var TOPMATRL = new MaximoAssetSpec();
+			TOPMATRL.assetattrid = "TOPMATRL";
+			TOPMATRL.alnvalue = (string)geoElement.Attributes["TOPMATRL"];
+			asset.assetspec.Add(TOPMATRL);
+
+			var TOPTHICK = new MaximoAssetSpec();
+			TOPTHICK.assetattrid = "TOPTHICK";
+			TOPTHICK.numvalue = (int)geoElement.Attributes["TOPTHICK"];
+			asset.assetspec.Add(TOPTHICK);
+
+			var GRATETY = new MaximoAssetSpec();
+			GRATETY.assetattrid = "GRATETY";
+			GRATETY.alnvalue = (string)geoElement.Attributes["GRATETY"];
+			asset.assetspec.Add(GRATETY);
+
+			var NUMCHAMB = new MaximoAssetSpec();
+			NUMCHAMB.assetattrid = "NUMCHAMB";
+			NUMCHAMB.numvalue = (int)geoElement.Attributes["NUMCHAMB"];
+			asset.assetspec.Add(NUMCHAMB);
+
+			var NUMTHROAT = new MaximoAssetSpec();
+			NUMTHROAT.assetattrid = "NUMTHROAT";
+			NUMTHROAT.numvalue = (int)geoElement.Attributes["NUMTHROAT"];
+			asset.assetspec.Add(NUMTHROAT);
+
+			var OWNER = new MaximoAssetSpec();
+			OWNER.assetattrid = "OWNER";
+			OWNER.alnvalue = (string)geoElement.Attributes["OWNER"];
+			asset.assetspec.Add(OWNER);
+
+			var CLN_RESP = new MaximoAssetSpec();
+			CLN_RESP.assetattrid = "CLN_RESP";
+			CLN_RESP.alnvalue = (string)geoElement.Attributes["CLNRESP"];
+			asset.assetspec.Add(CLN_RESP);
+
+			var WQ = new MaximoAssetSpec();
+			WQ.assetattrid = "WQ";
+			WQ.alnvalue = (string)geoElement.Attributes["ISWQI"];
+			asset.assetspec.Add(WQ);
+
+			var INMS4 = new MaximoAssetSpec();
+			INMS4.assetattrid = "INMS4";
+			INMS4.alnvalue = (string)geoElement.Attributes["INMS4"];
+			asset.assetspec.Add(INMS4);
+
+			var ISCORNRCB = new MaximoAssetSpec();
+			ISCORNRCB.assetattrid = "ISCORNRCB";
+			ISCORNRCB.alnvalue = (string)geoElement.Attributes["ISCORNRCB"];
+			asset.assetspec.Add(ISCORNRCB);
+
+			var BIOFLTR = new MaximoAssetSpec();
+			BIOFLTR.assetattrid = "BIOFLTR";
+			BIOFLTR.alnvalue = (string)geoElement.Attributes["BIOFLTR"];
+			asset.assetspec.Add(BIOFLTR);
+
+			var FLORESTY = new MaximoAssetSpec();
+			FLORESTY.assetattrid = "FLORESTY";
+			FLORESTY.alnvalue = (string)geoElement.Attributes["FLORESTY"];
+			asset.assetspec.Add(FLORESTY);
+
+			var HASSUMP = new MaximoAssetSpec();
+			HASSUMP.assetattrid = "HASSUMP";
+			HASSUMP.alnvalue = (string)geoElement.Attributes["HASSUMP"];
+			asset.assetspec.Add(HASSUMP);
+
+			var HASWATERSEAL = new MaximoAssetSpec();
+			HASWATERSEAL.assetattrid = "HASWATERSEAL";
+			HASWATERSEAL.alnvalue = (string)geoElement.Attributes["HASWATERSEAL"];
+			asset.assetspec.Add(HASWATERSEAL);
+
+			MaximoWorkOrder.asset = asset;
+			AssetTag = asset.assettag;
+			NeedAssetHelper = false;
+
+
+		}
+
+		private string assetTag;
 
         public string AssetTag
         {
@@ -334,7 +427,55 @@ namespace CatchBasin.ViewModel
             }
         }
 
-        private List<StaticDomain> debrisConditionTypeList;
+		private bool debrisConditionPCIsVisible;
+
+		public bool DebrisConditionPCIsVisible
+		{
+			get { return debrisConditionPCIsVisible; }
+			set
+			{
+				debrisConditionPCIsVisible = value;
+				OnPropertyChanged("DebrisConditionPCIsVisible");
+			}
+		}
+
+		private string debrisConditionPC;
+
+		public string DebrisConditionPC
+		{
+			get { return debrisConditionPC; }
+			set
+			{
+				debrisConditionPC = value;
+				OnPropertyChanged("DebrisConditionPC");
+			}
+		}
+
+		private bool debrisConditionACIsVisible;
+
+		public bool DebrisConditionACIsVisible
+		{
+			get { return debrisConditionACIsVisible; }
+			set
+			{
+				debrisConditionACIsVisible = value;
+				OnPropertyChanged("DebrisConditionACIsVisible");
+			}
+		}
+
+		private string debrisConditionAC;
+
+		public string DebrisConditionAC
+		{
+			get { return debrisConditionAC; }
+			set
+			{
+				debrisConditionAC = value;
+				OnPropertyChanged("DebrisConditionAC");
+			}
+		}
+
+		private List<StaticDomain> debrisConditionTypeList;
 
         public List<StaticDomain> DebrisConditionTypeList
         {
@@ -346,6 +487,9 @@ namespace CatchBasin.ViewModel
             }
         }
 
+
+
+		//propf
 
         private bool statusIsVisible;
 
@@ -1177,8 +1321,12 @@ namespace CatchBasin.ViewModel
                         break;
                     case "CBBCSTATUS":
                         DebrisCondition = workOrderSpec.alnvalue;
-                        break;
-                }
+						DebrisConditionPC = workOrderSpec.alnvalue;
+						break;
+					case "CBACSTATUS":
+						DebrisConditionAC = workOrderSpec.alnvalue;
+						break;
+				}
             }
 
 
@@ -1372,11 +1520,29 @@ namespace CatchBasin.ViewModel
                                 MaximoWorkOrder.workorderspec[i].syncronizationStatus =
                                     LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
                             }
-
-                            MaximoWorkOrder.workorderspec[i].alnvalue = DebrisCondition;
+							if(MaximoWorkOrder.worktype == "INSP")
+							{
+								MaximoWorkOrder.workorderspec[i].alnvalue = DebrisCondition;
+							}
+							else
+							{
+								MaximoWorkOrder.workorderspec[i].alnvalue = DebrisConditionPC;
+							}
+                            
 
                             break;
-                    }
+						case "CBACSTATUS":
+							if (MaximoWorkOrder.workorderspec[i].alnvalue != DebrisCondition)
+							{
+								MaximoWorkOrder.workorderspec[i].syncronizationStatus =
+									LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+							}
+							MaximoWorkOrder.workorderspec[i].alnvalue = DebrisConditionAC;
+							
+
+
+							break;
+					}
                 }
             }
             else
@@ -1475,10 +1641,24 @@ namespace CatchBasin.ViewModel
                 
                 var CBBCSTATUS = new MaximoWorkOrderSpec();
                 CBBCSTATUS.assetattrid = "CBBCSTATUS";
-                CBBCSTATUS.alnvalue = DebrisCondition;
+				if(MaximoWorkOrder.worktype == "INSP")
+				{
+					CBBCSTATUS.alnvalue = DebrisCondition;
+				}
+				else
+				{
+					CBBCSTATUS.alnvalue = DebrisConditionPC;
+				}
+                
                 CBBCSTATUS.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 MaximoWorkOrder.workorderspec.Add(CBBCSTATUS);
-            }
+
+				var CBACSTATUS = new MaximoWorkOrderSpec();
+				CBACSTATUS.assetattrid = "CBACSTATUS";
+				CBACSTATUS.alnvalue = DebrisConditionAC;
+				CBACSTATUS.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+				MaximoWorkOrder.workorderspec.Add(CBACSTATUS);
+			}
 
             MaximoWorkOrder.remarkdesc = Remarks;
 
@@ -1598,6 +1778,13 @@ namespace CatchBasin.ViewModel
             LabTrans.Clear();
             ToolTrans.Clear();
             Actuals.Clear();
+			try
+			{
+				MapVM.MapView.GeoViewTapped -= MapVM.MapTappedForSelectAsset;
+			}catch(Exception e)
+			{
+
+			}
             Hide();
         }
 
@@ -1616,7 +1803,9 @@ namespace CatchBasin.ViewModel
             RemedyIsVisible = false;
             PlacedStickerIsVisible = false;
             DebrisConditionIsVisible = false;
-            StatusIsVisible = false;
+			DebrisConditionACIsVisible = false;
+			DebrisConditionPCIsVisible = false;
+			StatusIsVisible = false;
             ActualsIsVisible = false;
             AttachmentsIsVisible = false;
             BrokenTopIsVisible = false;
@@ -1691,7 +1880,11 @@ namespace CatchBasin.ViewModel
                     TreeRootsIsVisible = true;
                     VacuumingIsVisible = true;
                     WallsNeedRepairIsVisible = true;
-                    break;
+
+					PlacedStickerIsVisible = true;
+					DebrisConditionACIsVisible = true;
+					DebrisConditionPCIsVisible = true;
+					break;
                 case "INSP":
                     
                     AssetTagIsVisible = true;
@@ -1708,19 +1901,25 @@ namespace CatchBasin.ViewModel
                     TreeRootsIsVisible = true;
                     VacuumingIsVisible = true;
                     WallsNeedRepairIsVisible = true;
-                    PlacedStickerIsVisible = true;
-                    DebrisConditionIsVisible = true;
-                    break;
+					PlacedStickerIsVisible = true;
+					DebrisConditionIsVisible = true;
+					break;
             }
-        }
+			
+			if(MaximoWorkOrder.asset == null && MaximoWorkOrder.worktype != "EM")
+			{
+				NeedAssetHelper = true;
+			}
+			// say sigi
+			CCTVIsVisible = false;
+		}
 
         public void ShowAssetDetail()
         {
             if (MaximoWorkOrder != null && MaximoWorkOrder.asset != null)
             {
-                MaximoAsset asset =
-					MaximoServiceLibrary.AppContext.assetRepository.findOne(MaximoWorkOrder.asset.assetnum);
-                MapVM.ShowAssetDetail(asset);
+               
+                MapVM.ShowAssetDetail(MaximoWorkOrder.asset);
             }
             else
             {
@@ -1750,10 +1949,13 @@ namespace CatchBasin.ViewModel
         {
             if (Cause != null)
             {
-                var selectedCause = MaximoServiceLibrary.AppContext.failureListRepository
-                    .Find("failurecode[0].failurecode", Cause).ToArray()[0];
+				var selectedProblem = MaximoServiceLibrary.AppContext.failureListRepository
+				   .Find("failurecode[0].failurecode", Problem).ToArray()[0];
 
-                RemedyList = MaximoServiceLibrary.AppContext.failureListRepository
+				var selectedCause = MaximoServiceLibrary.AppContext.failureListRepository
+					.Find("failurecode[0].failurecode", Cause).Where(failurelist => failurelist.parent == selectedProblem.failurelist).ToArray()[0];
+
+				RemedyList = MaximoServiceLibrary.AppContext.failureListRepository
                     .Find("parent", selectedCause?.failurelist).Select(x => x.failurecode[0]).ToList<FailureCode>();
             }
         }

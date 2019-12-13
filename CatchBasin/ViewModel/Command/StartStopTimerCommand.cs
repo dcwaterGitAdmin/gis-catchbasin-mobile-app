@@ -84,12 +84,28 @@ namespace CatchBasin.ViewModel.Command
 				labTrans.finishdateentered = stopTimerDate;
 				labTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
 				labTrans.transdate = DateTime.Now;
-				labTrans.transtype = "WORK";
+
+				if(wo.worktype =="EM" || wo.worktype == "INV" || wo.worktype == "EMERG"){
+					labTrans.transtype = "TRAVEL";
+				}
+				else
+				{
+					labTrans.transtype = "WORK";
+				}
+				
 				var _labors =MaximoServiceLibrary.AppContext.laborRepository.Find("person[*].personid", mxuser.userPreferences.setting?.leadMan).ToList() ;
-				labTrans.craft = _labors?[0].laborcraftrate?[0].craft;
+				try
+				{
+					labTrans.craft = _labors?[0].laborcraftrate?[0].craft;
+				}
+				catch(Exception e)
+				{
+					labTrans.craft = null;
+				}
+				
 				labTrans.siteid = "DWS_DSS";
 				labTrans.orgid = "DC_WASA";
-				labTrans.dcw_truckdriver = true;
+				labTrans.dcw_truckdriver = mxuser.userPreferences.setting?.leadMan == mxuser.userPreferences.setting?.driverMan;
 				labTrans.dcw_trucksecond = false;
 				labTrans.dcw_trucklead = true;
 				labTrans.dcw_trucknum = mxuser.userPreferences.setting.vehiclenum;
@@ -108,14 +124,28 @@ namespace CatchBasin.ViewModel.Command
 					secondlabTrans.finishdateentered = stopTimerDate;
 					secondlabTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
 					secondlabTrans.transdate = DateTime.Now;
-					secondlabTrans.transtype = "WORK";
+					if (wo.worktype == "EM" || wo.worktype == "INV" || wo.worktype == "EMERG")
+					{
+						secondlabTrans.transtype = "TRAVEL";
+					}
+					else
+					{
+						secondlabTrans.transtype = "WORK";
+					}
 					_labors = MaximoServiceLibrary.AppContext.laborRepository.Find("person[*].personid", mxuser.userPreferences.setting?.secondMan).ToList();
-					secondlabTrans.craft = _labors?[0].laborcraftrate?[0].craft;
+					try
+					{
+						secondlabTrans.craft = _labors?[0].laborcraftrate?[0].craft;
+					}
+					catch (Exception e)
+					{
+						secondlabTrans.craft = null;
+					}
 					secondlabTrans.siteid = "DWS_DSS";
 					secondlabTrans.orgid = "DC_WASA";
-					secondlabTrans.dcw_truckdriver = true;
-					secondlabTrans.dcw_trucksecond = false;
-					secondlabTrans.dcw_trucklead = true;
+					secondlabTrans.dcw_truckdriver = mxuser.userPreferences.setting?.secondMan == mxuser.userPreferences.setting?.driverMan;
+					secondlabTrans.dcw_trucksecond = true;
+					secondlabTrans.dcw_trucklead = false;
 					secondlabTrans.dcw_trucknum = mxuser.userPreferences.setting.vehiclenum;
 					secondlabTrans.enterdate = DateTime.Now;
 					secondlabTrans.laborcode = mxuser.userPreferences.setting?.secondMan;
@@ -142,7 +172,7 @@ namespace CatchBasin.ViewModel.Command
 
 
 
-				if (WorkOrderListVM.MapVM.WorkOrderDetailIsVisible)
+				if (WorkOrderListVM.MapVM.WorkOrderDetailIsVisible && wo == WorkOrderListVM.MapVM.WorkOrderDetailVM.MaximoWorkOrder)
 				{
 					WorkOrderListVM.MapVM.WorkOrderDetailVM.LabTrans.Add(labTrans);
 					if (((App)Application.Current).AppType == "PM")

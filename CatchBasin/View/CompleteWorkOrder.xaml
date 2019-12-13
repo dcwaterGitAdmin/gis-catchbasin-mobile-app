@@ -10,6 +10,7 @@
         Title="Work Order Complete" Height="450" Width="300">
 	<Window.Resources>
 		<helper:EnumMatchToBooleanConverter x:Key="enumConverter" />
+		<BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
 	</Window.Resources>
     <Grid>
 		
@@ -34,8 +35,8 @@
 				<Label  Margin="0 3 0 3"  Content="New Status" FontWeight="Bold"/>
 				<StackPanel Orientation="Horizontal" >
 					<RadioButton  Margin="0 3 10 3"  GroupName="Type" IsChecked="{Binding NewStatus, ConverterParameter=COMP, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Complete" />
-					<RadioButton  Margin="0 3 0 3"  GroupName="Type" IsEnabled="{Binding HoldIsEnabled}" IsChecked="{Binding NewStatus, ConverterParameter=HOLD, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Hold"/>
-					<RadioButton  Margin="0 3 0 3"  GroupName="Type" IsEnabled="{Binding CancelIsEnabled}"  IsChecked="{Binding NewStatus, ConverterParameter=CAN, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Cancel"/>
+					<RadioButton  Margin="0 3 0 3"  GroupName="Type"  Visibility="{Binding HoldIsEnabled, Converter={StaticResource booleanToVisibilityConverter}}"  IsEnabled="{Binding HoldIsEnabled}" IsChecked="{Binding NewStatus, ConverterParameter=HOLD, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Hold"/>
+					<RadioButton  Margin="0 3 0 3"  GroupName="Type"  Visibility="{Binding CancelIsEnabled, Converter={StaticResource booleanToVisibilityConverter}}"  IsEnabled="{Binding CancelIsEnabled}"  IsChecked="{Binding NewStatus, ConverterParameter=CAN, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Cancel"/>
 				</StackPanel>
 				<Label  Margin="0 3 0 3"  Content="Memo" FontWeight="Bold"/>
 				<TextBox  Margin="0 3 0 3"   Text="{Binding Memo, Mode=TwoWay}"></TextBox>

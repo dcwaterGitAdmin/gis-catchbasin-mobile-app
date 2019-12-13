@@ -24,5 +24,10 @@ namespace CatchBasin.View.UserControl
         {
            InitializeComponent();
         }
-    }
+
+		private void ListView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			e.Handled = true;
+		}
+	}
 }

@@ -203,8 +203,9 @@ namespace CatchBasin.ViewModel.Commands
 			{
 				case LocalWorkOrderType.TRUCKDUMPING:
 					wo.status = "DISPTCHD";
+					wo.statusdate = DateTime.Now;
 					wo.description = "CB Cleaning Truck Dumping";
-					wo.problemcode = "PM";
+					wo.problemcode = "TRUCKFULL";
 					wo.worktype = "CM";
 					wo.failurecode = "CATCHBASIN";
 					wo.newchildclass = "WORKORDER";
@@ -220,7 +221,7 @@ namespace CatchBasin.ViewModel.Commands
 
 					wo.failurereport = new List<MaximoWorkOrderFailureReport>();
 					failureProblemCode = new MaximoWorkOrderFailureReport();
-					failureProblemCode.failurecode = "PM";
+					failureProblemCode.failurecode = "TRUCKFULL";
 					failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 					wo.failurereport.Add(failureProblemCode);
 					failureCause = new MaximoWorkOrderFailureReport();

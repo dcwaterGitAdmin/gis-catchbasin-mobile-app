@@ -113,7 +113,27 @@
                                   SelectedValuePath="code"
                                   SelectedValue="{Binding DebrisCondition}"/>
                     </StackPanel>
-                    <StackPanel Visibility="{Binding StatusIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
+
+					<StackPanel Visibility="{Binding DebrisConditionPCIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
+						<Label Content="Debris Condition prior to cleaning" FontWeight="Bold"/>
+						<ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
+                                  DisplayMemberPath="description"
+                                  SelectedValuePath="code"
+                                  SelectedValue="{Binding DebrisConditionPC}"/>
+					</StackPanel>
+
+					<StackPanel Visibility="{Binding DebrisConditionACIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
+						<Label Content="Debris Condition after cleaning" FontWeight="Bold"/>
+						<ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
+                                  DisplayMemberPath="description"
+                                  SelectedValuePath="code"
+                                  SelectedValue="{Binding DebrisConditionAC}"/>
+					</StackPanel>
+
+
+
+
+					<StackPanel Visibility="{Binding StatusIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Label Content="Status" FontWeight="Bold"/>
                         <ComboBox ItemsSource="{Binding StatusList}"
                             DisplayMemberPath="description"
