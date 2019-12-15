@@ -326,78 +326,7 @@ namespace MaximoServiceLibrary
 
 			return maximoWorkOrderList;
 		}
-
-		public List<MaximoWorkOrderSpec> getWorkOrderSpec(MaximoWorkOrder wo)
-		{
-			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
-			request.AddQueryParameter("oslc.select", "workorderspec");
-			var response = restClient.Execute(request);
-
-			if (!response.IsSuccessful)
-			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-				return new List<MaximoWorkOrderSpec>();
-			}
-
-
-			MaximoWorkOrder mxwo =
-				JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
-
-			if (mxwo.workorderspec == null)
-			{
-				return new List<MaximoWorkOrderSpec>();
-			}
-			else
-			{
-				return mxwo.workorderspec;
-			}
-
-		}
-
-		public MaximoWorkOrderFailureRemark getWorkOrderFailureRemark(string workOrderHref)
-		{
-			var request = createRequest(workOrderHref + "/failureremark", true);
-			request.AddQueryParameter("oslc.select", "*");
-			var response = restClient.Execute(request);
-
-			if (!response.IsSuccessful)
-			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-				return new MaximoWorkOrderFailureRemark();
-			}
-
-
-			FailureRemarkPageableRestResponse mxwospecPageableRestResponse =
-				JsonConvert.DeserializeObject<FailureRemarkPageableRestResponse>(response.Content);
-
-			return mxwospecPageableRestResponse.member.Count > 0 ? mxwospecPageableRestResponse.member[0] : new MaximoWorkOrderFailureRemark();
-		}
-
-		public List<MaximoWorkOrderFailureReport> getWorkOrderFailureReport(MaximoWorkOrder wo)
-		{
-			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid, false);
-			request.AddQueryParameter("oslc.select", "failurereport");
-			var response = restClient.Execute(request);
-
-			if (!response.IsSuccessful)
-			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-				return new List<MaximoWorkOrderFailureReport>();
-			}
-
-
-			MaximoWorkOrder mxwo =
-				JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
-
-			if (mxwo.workorderspec == null)
-			{
-				return new List<MaximoWorkOrderFailureReport>();
-			}
-			else
-			{
-				return mxwo.failurereport;
-			}
-		}
+		
 
 		public List<FailureList> getFailureList(string parentIds)
 		{
@@ -468,20 +397,6 @@ namespace MaximoServiceLibrary
 			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
 
 			return response.IsSuccessful;
-		}
-
-		public bool updateAssetSpec(MaximoAssetSpec maximoAssetSpec)
-		{
-			//var request = createRequest(maximoAssetSpec.localref, true, Method.POST);
-			//request.AddHeader("x-method-override", "PATCH");
-
-			//request.AddJsonBody(maximoAssetSpec);
-
-			//var response = restClient.Execute(request);
-			//Console.WriteLine($"/mxasset/refid/assetspec - update operation response : {response.Content}");
-
-			//return response.IsSuccessful;
-			return false;
 		}
 
 		public bool updateAsset(MaximoAsset maximoAsset)
