@@ -327,6 +327,30 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrderList;
 		}
 		
+		public List<MaximoLabTrans> getWorkOrderLabTrans(MaximoWorkOrder wo)
+		{
+			var request = createRequest("/os/dcw_cb_wolabtrans/" + wo.workorderid, false);
+			request.AddQueryParameter("oslc.select", "labtrans");
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				return new List<MaximoLabTrans>();
+			}
+
+
+			MaximoLabTransRestResponse labTransRestResponse = JsonConvert.DeserializeObject<MaximoLabTransRestResponse>(response.Content);
+
+			if (labTransRestResponse.labtrans == null)
+			{
+				return new List<MaximoLabTrans>();
+			}
+			else
+			{
+				return labTransRestResponse.labtrans;
+			}
+		}
 
 		public List<FailureList> getFailureList(string parentIds)
 		{

@@ -831,34 +831,70 @@ namespace MaximoServiceLibrary.model
 
 	public class MaximoLabTrans : MaximoBaseEntity
 	{
+		// Type
+		public string transtype { get; set; } 
+
+		// End Time
+		public DateTime finishtimeentered { get; set; } 
+
+		// Craft
+		public string craft { get; set; } 
+
+		// Transaction Date
+		public DateTime transdate { get; set; } 
+
+		// ID
+		public Int64 labtransid { get; set; } 
+
+		// Location
+		public string location { get; set; } 
+
+		// Truck Driver
+		public bool dcw_truckdriver { get; set; } 
+
+		// Start Date Time
+		public DateTime? startdatetime { get; set; } 
+
+		// Truck Second
+		public bool dcw_trucksecond { get; set; } 
+
+		// Labor
+		public string laborcode { get; set; } 
+
+		// Entered Date
+		public DateTime enterdate { get; set; } 
+
+		// Organization
+		public string orgid { get; set; } 
+
+		// Truck #
+		public string dcw_trucknum { get; set; } 
+
+		// Entered By
+		public string enterby { get; set; } 
+
+		// Truck Lead
+		public bool dcw_trucklead { get; set; } 
+
+		// End Date
+		public DateTime finishdateentered { get; set; } 
+
+		// Start Time
+		public DateTime starttimeentered { get; set; } 
+		
 		public string assetnum { get; set; }
 		public double payrate { get; set; }
-		public string craft { get; set; }
-		public DateTime transdate { get; set; }
 		public string gldebitacct { get; set; }
 		public bool rollup { get; set; }
 		public DateTime startdateentered { get; set; }
 		public double regularhrs { get; set; }
 		public bool lt7 { get; set; }
-		public string laborcode { get; set; }
 		public double linecost { get; set; }
-		public string orgid { get; set; }
-		public string enterby { get; set; }
 		public string refwo { get; set; }
 		public string siteid { get; set; }
-		public DateTime starttimeentered { get; set; }
 		public bool enteredastask { get; set; }
 		public string href { get; set; }
-		public DateTime finishtimeentered { get; set; }
-		public string transtype { get; set; }
-		public int labtransid { get; set; }
-		public bool dcw_truckdriver { get; set; }
-		public bool dcw_trucksecond { get; set; }
 		public bool genapprservreceipt { get; set; }
-		public DateTime enterdate { get; set; }
-		public bool dcw_trucklead { get; set; }
-		public string dcw_trucknum { get; set; }
-		public DateTime finishdateentered { get; set; }
 		public bool outside { get; set; }
 
 		public virtual TimeSpan duration { get { return getDuration(); } }

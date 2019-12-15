@@ -35,6 +35,11 @@ namespace MaximoServiceLibrary.model
 	{
 	}
 
+	public class MaximoLabTransRestResponse : MaximoRestPageRef
+	{
+		public List<MaximoLabTrans> labtrans { get; set; }
+	}
+	
 	public class MaximoAssetRestResponse : MaximoBaseRestResponse<MaximoAsset>
 	{
 	}
@@ -47,19 +52,7 @@ namespace MaximoServiceLibrary.model
 	{
 	}
 
-    public class MaximoWorkOrderSpecPageableRestResponse : MaximoBasePageableRestResponse<MaximoWorkOrderSpec>
-    {
-    }
-
-    public class FailureRemarkPageableRestResponse : MaximoBasePageableRestResponse<MaximoWorkOrderFailureRemark>
-    {
-    }
-
-    public class FailureReportPageableRestResponse : MaximoBasePageableRestResponse<MaximoWorkOrderFailureReport>
-    {
-    }
-
-    public class FailureListPageableRestResponse : MaximoBasePageableRestResponse<FailureList>
+	public class FailureListPageableRestResponse : MaximoBasePageableRestResponse<FailureList>
     {
     }
 
