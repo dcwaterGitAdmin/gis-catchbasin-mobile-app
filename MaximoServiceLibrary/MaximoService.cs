@@ -16,8 +16,8 @@ namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		//private static readonly string BASE_HOST = "http://localhost:8080";
-		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		private static readonly string BASE_HOST = "http://localhost:8080";
+		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -239,11 +239,6 @@ namespace MaximoServiceLibrary
 
 		public List<MaximoWorkOrder> getWorkOrders(string persongroup)
 		{
-			return getWorkOrders(persongroup, null);
-		}
-
-		public List<MaximoWorkOrder> getWorkOrders(string persongroup, DateTime? lastSyncTime)
-		{
 
 			string where = "failurecode=\"CATCHBASIN\"" +
 						   " and siteid=\"DWS_DSS\"" +
@@ -253,16 +248,47 @@ namespace MaximoServiceLibrary
 						   " and worktype in [\"INV\",\"EMERG\",\"PM\",\"INSP\"]" +
 						   $" and persongroup in [\"{persongroup}\",\"CB00\"]";
 						//   " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
-						//todo temp
-			if (lastSyncTime != null && lastSyncTime.HasValue)
-			{
-				where += " and changedate>=\"" + lastSyncTime.GetValueOrDefault().ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
-			}
 
-			var request = createRequest("/os/mxwo");
+			string selectFields =
+				"description_longdescription," +
+				"schedstart,woclass," +
+				"workorderid," +
+				"statusdate," +
+				"parent," +
+				"classstructureid," +
+				"changeby," +
+				"assetnum," +
+				"actlabcost," +
+				"reportedby," +
+				"woeq10," +
+				"description," +
+				"persongroup," +
+				"np_statusmemo," +
+				"origproblemtype," +
+				"origrecordid," +
+				"service," +
+				"wolo4," +
+				"wonum," +
+				"wolo2," +
+				"orgid," +
+				"wo1," +
+				"siteid," +
+				"worktype," +
+				"origrecordclass," +
+				"remarkdesc," +
+				"newchildclass," +
+				"location," +
+				"status," +
+				"problemcode," +
+				"failurecode," +
+				"receivedvia," +
+				"workorderspec," +
+				"failurereport," +
+				"failureremark";
+			var request = createRequest("/os/dcw_cb_wo");
 			request.AddQueryParameter("oslc.where", where);
-			request.AddQueryParameter("oslc.select", "description_longdescription,schedstart,woclass,workorderid,statusdate,parent,classstructureid,changeby,assetnum,actlabcost,reportedby,woeq10,description,persongroup,np_statusmemo,origproblemtype,origrecordid,service,wolo4,wonum,wolo2,orgid,wo1,siteid,worktype,origrecordclass,remarkdesc,newchildclass,location,status,problemcode,failurecode,receivedvia");
-			request.AddQueryParameter("oslc.pageSize", "10");
+			request.AddQueryParameter("oslc.select", selectFields);
+			request.AddQueryParameter("oslc.pageSize", "3");
 			request.AddQueryParameter("pageno", "1");
 
 			var response = restClient.Execute(request);

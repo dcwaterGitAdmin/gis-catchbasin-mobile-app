@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using LocalDBLibrary;
 using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
 using MaximoServiceLibrary.repository;
+using AppContext = MaximoServiceLibrary.AppContext;
 
 namespace MaximoServiceTestConsoleApplication
 {
@@ -12,23 +14,47 @@ namespace MaximoServiceTestConsoleApplication
 	{
 		public static void Main(string[] args)
 		{
-			MaximoServiceLibrary.AppContext maximoServiceLibraryBeanConfiguration = new MaximoServiceLibrary.AppContext();
-			var assets = maximoServiceLibraryBeanConfiguration.assetRepository.findAllToBeScynced();
-			foreach (var asset in assets)
-			{
-				asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.SYNCED;
-				maximoServiceLibraryBeanConfiguration.assetRepository.upsert(asset);
-			}
-			foreach (var wo in maximoServiceLibraryBeanConfiguration.workOrderRepository.findAllToBeScynced())
-			{
-				wo.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.SYNCED;
-				maximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
-			}
+			//AppContext.workOrderRepository.removeCollection();
 
-
-			return;
-
+			IEnumerable<MaximoWorkOrder> maximoWorkOrdersFromDb = AppContext.workOrderRepository.findAll();
 			
+			Console.WriteLine($"fetched : {maximoWorkOrdersFromDb.ToList().Count} workorders from db" );
+			
+
+			MaximoService maximoService = AppContext.maximoService;
+			bool loginResponse = AppContext.maximoService.login("erdem", "password");
+			Console.WriteLine($"authenticated : {loginResponse}" );
+
+			MaximoUser maximoUser = maximoService.whoami();
+			MaximoPersonGroup maximoPersonGroup = maximoService.getPersonGroup(maximoUser.personId);
+
+			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(maximoPersonGroup.persongroup);
+			Console.WriteLine($"fetched : {maximoWorkOrders.Count} workorders from Maximo" );
+			
+			foreach (var maximoWorkOrder in maximoWorkOrders)
+			{
+				MaximoAsset maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
+			}
+
+
+			/*
+				MaximoServiceLibrary.AppContext maximoServiceLibraryBeanConfiguration = new MaximoServiceLibrary.AppContext();
+				var assets = maximoServiceLibraryBeanConfiguration.assetRepository.findAllToBeScynced();
+				foreach (var asset in assets)
+				{
+					asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.SYNCED;
+					maximoServiceLibraryBeanConfiguration.assetRepository.upsert(asset);
+				}
+				foreach (var wo in maximoServiceLibraryBeanConfiguration.workOrderRepository.findAllToBeScynced())
+				{
+					wo.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.SYNCED;
+					maximoServiceLibraryBeanConfiguration.workOrderRepository.upsert(wo);
+				}
+	
+	
+				return;
+	*/
+			/*
 			MaximoService maximoService = maximoServiceLibraryBeanConfiguration.maximoService;
 			DbConnection dbConnection = maximoServiceLibraryBeanConfiguration.dbConnection;
 			UserRepository userRepository = maximoServiceLibraryBeanConfiguration.userRepository;
