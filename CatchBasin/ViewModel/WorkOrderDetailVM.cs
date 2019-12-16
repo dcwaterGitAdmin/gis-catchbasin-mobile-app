@@ -1238,7 +1238,7 @@ namespace CatchBasin.ViewModel
                 ToolTrans.Add(_tooltrans);
             }
 
-            foreach (var _doc in wo.doclinks ?? new List<MaximoDocLinks>())
+            foreach (var _doc in wo.doclink ?? new List<MaximoDocLinks>())
             {
                 Attachments.Add(_doc);
             }
@@ -1357,7 +1357,7 @@ namespace CatchBasin.ViewModel
 
             MaximoWorkOrder.labtrans = LabTrans.ToList();
             MaximoWorkOrder.tooltrans = ToolTrans.ToList();
-            MaximoWorkOrder.doclinks = Attachments.ToList();
+            MaximoWorkOrder.doclink = Attachments.ToList();
 
             if (MaximoWorkOrder.workorderspec != null && MaximoWorkOrder.workorderspec?.Count > 0)
             {

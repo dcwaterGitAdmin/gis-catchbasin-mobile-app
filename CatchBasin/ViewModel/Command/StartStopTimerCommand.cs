@@ -86,7 +86,7 @@ namespace CatchBasin.ViewModel.Command
 				labTrans.transdate = DateTime.Now;
 
 				if(wo.worktype =="EM" || wo.worktype == "INV" || wo.worktype == "EMERG"){
-					labTrans.transtype = "TRAVEL";
+					labTrans.transtype = "TRAV";
 				}
 				else
 				{
@@ -126,7 +126,7 @@ namespace CatchBasin.ViewModel.Command
 					secondlabTrans.transdate = DateTime.Now;
 					if (wo.worktype == "EM" || wo.worktype == "INV" || wo.worktype == "EMERG")
 					{
-						secondlabTrans.transtype = "TRAVEL";
+						secondlabTrans.transtype = "TRAV";
 					}
 					else
 					{

@@ -16,8 +16,8 @@ namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		private static readonly string BASE_HOST = "http://localhost:8080";
-		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		//private static readonly string BASE_HOST = "http://localhost:8080";
+		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -250,6 +250,7 @@ namespace MaximoServiceLibrary
 						//   " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
 
 			string selectFields =
+                "href,"+
 				"description_longdescription," +
 				"schedstart,woclass," +
 				"workorderid," +
@@ -284,7 +285,9 @@ namespace MaximoServiceLibrary
 				"receivedvia," +
 				"workorderspec," +
 				"failurereport," +
-				"failureremark";
+                "labtrans," +
+                "tooltrans," +
+                "failureremark";
 			var request = createRequest("/os/dcw_cb_wo");
 			request.AddQueryParameter("oslc.where", where);
 			request.AddQueryParameter("oslc.select", selectFields);
@@ -353,8 +356,14 @@ namespace MaximoServiceLibrary
 			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc; workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
 			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
-			
-			request.JsonSerializer = new RestSharpJsonNetSerializer();
+            workOrderToBePosted.status = maximoWorkOrder.status;
+
+
+            workOrderToBePosted.np_statusmemo = maximoWorkOrder.np_statusmemo;
+           
+            workOrderToBePosted.statusdate = maximoWorkOrder.statusdate;
+
+            request.JsonSerializer = new RestSharpJsonNetSerializer();
 			request.AddJsonBody(workOrderToBePosted);
 
 			var response = restClient.Execute(request);
@@ -421,15 +430,15 @@ namespace MaximoServiceLibrary
 
 		public bool updateWorkOrderLabTrans(MaximoWorkOrder maximoWorkOrder)
 		{
-			var request = createRequest("/os/dcw_cb_wolabtrans/" + maximoWorkOrder.workorderid, false, Method.POST);
+			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
 			
 			// create an empty workorder
 			MaximoWorkOrderLabtransForUpdate workOrderToBePosted = new MaximoWorkOrderLabtransForUpdate();
 
-			workOrderToBePosted.labtrans = maximoWorkOrder.labtrans; 
-			
-			request.JsonSerializer = new RestSharpJsonNetSerializer();
+			workOrderToBePosted.labtrans = maximoWorkOrder.labtrans;
+            workOrderToBePosted.tooltrans = maximoWorkOrder.tooltrans;
+            request.JsonSerializer = new RestSharpJsonNetSerializer();
 			request.AddJsonBody(workOrderToBePosted);
 
 			var response = restClient.Execute(request);

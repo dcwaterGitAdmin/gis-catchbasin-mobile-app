@@ -148,6 +148,7 @@ namespace CatchBasin.ViewModel
 				layer.FeatureTable.UpdateFeatureAsync(feature);
 			}
 
+            wo.completed = true;
 
 			MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
 

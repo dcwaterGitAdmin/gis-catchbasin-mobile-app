@@ -214,8 +214,8 @@ namespace CatchBasin.ViewModel
             else
             {
                 // todo for test
-                LeadManIsEnabled = false;
-                SecondManIsEnabled = false;
+                LeadManIsEnabled = true;
+                SecondManIsEnabled = true;
             }
 
 			// todo generate driverlist
