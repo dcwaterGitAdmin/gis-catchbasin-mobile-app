@@ -554,7 +554,7 @@ namespace MaximoServiceLibrary
 
 		}
 
-		public bool updateAsset(MaximoAsset maximoAsset)
+		public MaximoAsset updateAsset(MaximoAsset maximoAsset)
 		{
 			var request = createRequest(maximoAsset.href, true, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
@@ -564,8 +564,12 @@ namespace MaximoServiceLibrary
 
 			var response = restClient.Execute(request);
 			Console.WriteLine($"/mxasset - update operation response : {response.Content}");
-
-			return response.IsSuccessful;
+			if (!response.IsSuccessful)
+			{				
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			return getAssetByHref(maximoAsset.href);
 		}
 
 		public List<MaximoAttribute> getAttributes()
@@ -699,7 +703,7 @@ namespace MaximoServiceLibrary
 			if (assetnum == null) return null;
 			var request = createRequest("/os/mxasset");
 			request.AddQueryParameter("oslc.where", "assetnum=" + assetnum);
-			request.AddQueryParameter("oslc.select", "herf,assetspec{numvalue,alnvalue,assetattrid,assetnum},description_longdescription,changeby,changedate,assetnum,assettag,eq3");
+			request.AddQueryParameter("oslc.select", "href,assetspec{numvalue,alnvalue,assetattrid,assetnum},description_longdescription,changeby,changedate,assetnum,assettag,eq3");
 			request.AddQueryParameter("oslc.pageSize", "1");
 
 			var response = restClient.Execute(request);
@@ -715,6 +719,22 @@ namespace MaximoServiceLibrary
 				return null;
 			}
 		}
+		
+		public MaximoAsset getAssetByHref(String assetHref)
+		{
+			var request = createRequest(assetHref, true);
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			MaximoAsset maximoAsset = JsonConvert.DeserializeObject<MaximoAsset>(response.Content);
+			return maximoAsset;
+		}
+
 
 		public List<MaximoLabor> getLabors(string laborcraft)
 		{
