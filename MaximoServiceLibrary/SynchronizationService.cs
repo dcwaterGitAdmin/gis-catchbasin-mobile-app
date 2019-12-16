@@ -42,6 +42,7 @@ namespace MaximoServiceLibrary
 		public void startSyncronizationTimer()
 		{
 			synchronizationTimer.Enabled = true;
+			onSyncTimerElapsed(this, null);
 		}
 
 		public void stopSyncronizationTimer()
@@ -57,7 +58,7 @@ namespace MaximoServiceLibrary
 				return;
 			}
 			
-			Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}", e.SignalTime);
+			Console.WriteLine("The Elapsed event was raised ");
 			synchronizationTimer.Enabled = false;
 
 			synchronizeInBackground();
@@ -337,9 +338,9 @@ namespace MaximoServiceLibrary
 		{
 			List<MaximoDocLinks> freshWorkOrderDocLinksList = new List<MaximoDocLinks>();
 			
-			if (woFromMaximo.doclinks != null)
+			if (woFromMaximo.doclink != null)
 			{
-				foreach (var woDockLinkFromMaximo in woFromMaximo.doclinks)
+				foreach (var woDockLinkFromMaximo in woFromMaximo.doclink)
 				{
 					MaximoDocLinks woDocLinkFromLocal = null;
 					if (woFromLocal != null)
@@ -372,7 +373,7 @@ namespace MaximoServiceLibrary
 							freshWorkOrderDocLinksList.Add(woDocLinkFromLocal);
 						}
 
-						woFromLocal.doclinks.Remove(woDocLinkFromLocal);
+						woFromLocal.doclink.Remove(woDocLinkFromLocal);
 					}
 					//Local copy not found
 					else
@@ -385,9 +386,9 @@ namespace MaximoServiceLibrary
 			
 
 			// if there are still entities in CREATED status in the local copy, add them to fresh list. previously SYNCED entities will be removed
-			if (woFromLocal != null && woFromLocal.doclinks != null)
+			if (woFromLocal != null && woFromLocal.doclink != null)
 			{
-				foreach (var woDocLinkFromLocal in woFromLocal.doclinks)
+				foreach (var woDocLinkFromLocal in woFromLocal.doclink)
 				{
 					// We only put CREATED ones. SYNCED one means it is deleted from maximo side so we dont put into the list in order to delete from local
 					if (woDocLinkFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
