@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using LocalDBLibrary;
+using LocalDBLibrary.model;
 using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
 using MaximoServiceLibrary.repository;
@@ -15,6 +16,12 @@ namespace MaximoServiceTestConsoleApplication
 		public static void Main(string[] args)
 		{
 			AppContext.synchronizationService.login("erdem", "password");
+
+			MaximoWorkOrder maximoWorkOrder =  AppContext.workOrderRepository.findOne("20-85254");
+			maximoWorkOrder.syncronizationStatus = SyncronizationStatus.COMPLETED;
+			AppContext.workOrderRepository.upsert(maximoWorkOrder);
+			
+			
 			AppContext.synchronizationService.synchronizeInBackground();
 
 			/*
@@ -45,6 +52,7 @@ namespace MaximoServiceTestConsoleApplication
 				maximoWorkOrder.doclinks = workOrderDocLists;
 				Console.WriteLine($"fetched {workOrderDocLists.Count} doclinks");
 			}
+			*/
 
 		}
 	}

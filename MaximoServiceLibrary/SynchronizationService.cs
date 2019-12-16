@@ -66,54 +66,60 @@ namespace MaximoServiceLibrary
 		public List<MaximoWorkOrderSpec> generateFreshWorkOrderSpecList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
 		{
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = new List<MaximoWorkOrderSpec>();
-			
-			foreach (var woSpecFromMaximo in woFromMaximo.workorderspec)
+
+			if (woFromMaximo.workorderspec != null)
 			{
-				MaximoWorkOrderSpec woSpecFromLocal = null;
-				if (woFromLocal != null) {
-					woSpecFromLocal = woFromLocal.workorderspec.Find(wospec => wospec.workorderspecid == woSpecFromMaximo.workorderspecid);
-				}
-				
-				// Local copy found
-				if (woSpecFromLocal != null)
+				foreach (var woSpecFromMaximo in woFromMaximo.workorderspec)
 				{
-					//means item is changed in maximo side
-					if (woSpecFromMaximo._rowstamp != woSpecFromLocal._rowstamp)
+					MaximoWorkOrderSpec woSpecFromLocal = null;
+					if (woFromLocal != null)
 					{
-						if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
-						{
-							woSpecFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-							freshWorkOrderSpecList.Add(woSpecFromMaximo);
-						} 
-						else if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
-						{
-							woSpecFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-							freshWorkOrderSpecList.Add(woSpecFromLocal);
-						}
-						else if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
-						{
-							freshWorkOrderSpecList.Add(woSpecFromLocal);
-						}
+						woSpecFromLocal = woFromLocal.workorderspec.Find(wospec =>
+							wospec.workorderspecid == woSpecFromMaximo.workorderspecid);
 					}
-					//means item is not changed in maximo side
+
+					// Local copy found
+					if (woSpecFromLocal != null)
+					{
+						//means item is changed in maximo side
+						if (woSpecFromMaximo._rowstamp != woSpecFromLocal._rowstamp)
+						{
+							if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
+							{
+								woSpecFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+								freshWorkOrderSpecList.Add(woSpecFromMaximo);
+							}
+							else if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
+							{
+								woSpecFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
+								freshWorkOrderSpecList.Add(woSpecFromLocal);
+							}
+							else if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+							{
+								freshWorkOrderSpecList.Add(woSpecFromLocal);
+							}
+						}
+						//means item is not changed in maximo side
+						else
+						{
+							// Add to fresh list, localCopies irregardless of SyncronizationStatus
+							freshWorkOrderSpecList.Add(woSpecFromLocal);
+						}
+
+						woFromLocal.workorderspec.Remove(woSpecFromLocal);
+					}
+					//Local copy not found
 					else
 					{
-						// Add to fresh list, localCopies irregardless of SyncronizationStatus
-						freshWorkOrderSpecList.Add(woSpecFromLocal);
+						woSpecFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+						freshWorkOrderSpecList.Add(woSpecFromMaximo);
 					}
-					
-					woFromLocal.workorderspec.Remove(woSpecFromLocal);
-				}
-				//Local copy not found
-				else
-				{
-					woSpecFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-					freshWorkOrderSpecList.Add(woSpecFromMaximo);
 				}
 			}
 			
+
 			// if there are still entities in CREATED status in the local copy, add them to fresh list. previously SYNCED entities will be removed
-			if (woFromLocal != null)
+			if (woFromLocal != null && woFromLocal.workorderspec != null)
 			{
 				foreach (var woSpecFromLocal in woFromLocal.workorderspec)
 				{
@@ -169,13 +175,15 @@ namespace MaximoServiceLibrary
 
 				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Maximo...");
 				List<MaximoWorkOrder> workOrdersFromMaximo = fetchAllWorkOrdersFromMaximo();
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromMaximo.Count + " workorders from Maximo");
-				
+				synchronizationDelegate("SYNC_IN_PROGRESS",
+					"fetched " + workOrdersFromMaximo.Count + " workorders from Maximo");
+
 				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Local...");
 				// Assuming that when a user changes crew, we will delete all work orders of previous crew
 				IEnumerable<MaximoWorkOrder> workOrdersFromLocal = AppContext.workOrderRepository.findAll();
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromLocal.Count() + " workorders from Local");
-				
+				synchronizationDelegate("SYNC_IN_PROGRESS",
+					"fetched " + workOrdersFromLocal.Count() + " workorders from Local");
+
 				// sync the work orders fetched from Maximo to local db
 				foreach (var woFromMaximo in workOrdersFromMaximo)
 				{
@@ -193,8 +201,8 @@ namespace MaximoServiceLibrary
 								woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 								woFromMaximo.Id = woFromLocal.Id;
 								//insert into local with all childs
-							} 
-							else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED || 
+							}
+							else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
 							         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
 							{
 								woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
@@ -206,7 +214,7 @@ namespace MaximoServiceLibrary
 						{
 							woFinalToBeSaved = woFromLocal;
 						}
-						
+
 					}
 					// There is no Local copy for WorkOrder
 					else
@@ -215,7 +223,8 @@ namespace MaximoServiceLibrary
 						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 					}
 
-					List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
+					List<MaximoWorkOrderSpec> freshWorkOrderSpecList =
+						generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
 					//List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReports = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
 					//List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
 					//List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
@@ -223,15 +232,39 @@ namespace MaximoServiceLibrary
 
 					woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
 
-					if (woFromLocal != null && woFromLocal.syncronizationStatus == SyncronizationStatus.COMPLETED)
+					if (woFromLocal != null && woFromLocal.completed)
 					{
-						woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+						if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
+						{
+							woFromLocal.workorderspec = null;
+							woFromLocal.failurereport = null;
+							woFromLocal.labtrans = null;
+							woFromLocal.tooltrans = null;
+							woFromLocal.doclinks = null;
+							
+							woFinalToBeSaved = AppContext.maximoService.createWorkOrder(woFromLocal);
+
+							woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
+							
+							// TODO - child'ları tekrar gönder,
+							
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+						}
+						else
+						{
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+						}
+						
 						fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
 					}
 
 					AppContext.workOrderRepository.upsert(woFinalToBeSaved);
 				}
-				
+
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.StackTrace);
 			}
 			finally
 			{
@@ -383,7 +416,7 @@ namespace MaximoServiceLibrary
 						mxuser.mergeFrom(mxuserFromMaximo);
 					}
 
-					
+					/*
 					if (AppContext.laborRepository.Find("person[*].personid", mxuser.personId).Count() == 0)
 					{
 						updateLabors();
@@ -392,6 +425,7 @@ namespace MaximoServiceLibrary
 						}
 							
 					}
+					*/
 
 
 					MaximoPersonGroup maximoPersonGroup = AppContext.maximoService.getPersonGroup(mxuser.personId);
