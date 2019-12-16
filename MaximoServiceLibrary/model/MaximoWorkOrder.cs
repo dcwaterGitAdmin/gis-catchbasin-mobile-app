@@ -17,12 +17,8 @@ namespace MaximoServiceLibrary.model
         public string status { get; set; }
 
         public string np_statusmemo { get; set; }
-
-
-
-     
-
-    }
+	}
+	
 	public class MaximoWorkOrderLabtransForUpdate
 	{
 		public List<MaximoLabTrans> labtrans { get; set; }
@@ -42,6 +38,9 @@ namespace MaximoServiceLibrary.model
         [JsonIgnore]
 		public bool completed { get; set; }
 		
+		[JsonIgnore]
+		public List<MaximoWorkOrder> followups { get; set; }
+
 		public MaximoAsset asset { get; set; }
 
         public List<MaximoWorkOrderSpec> workorderspec { get; set; }
@@ -55,16 +54,14 @@ namespace MaximoServiceLibrary.model
 		public List<MaximoLabTrans> labtrans { get; set; }
 
 		public List<MaximoToolTrans> tooltrans { get; set; }
-
-		public List<MaximoWorkOrder> followups { get; set; }
-
-		[Newtonsoft.Json.JsonIgnore]
+		
+		[JsonIgnore]
 		public DateTime? startTimerDate { get; set; }
 
-		[Newtonsoft.Json.JsonIgnore]
+		[JsonIgnore]
 		public string timerImageUri { get; set; }
 
-		[Newtonsoft.Json.JsonIgnore]
+		[JsonIgnore]
 		[LiteDB.BsonIgnore]
 		public BitmapImage timerImage { get
 			{

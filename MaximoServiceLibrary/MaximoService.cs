@@ -379,7 +379,7 @@ namespace MaximoServiceLibrary
 
 		public MaximoWorkOrder createWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
-			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
+			var request = createRequest("/os/dcw_cb_wo", false, Method.POST);
 			request.AddHeader("x-method-override", "POST");
 			
 			request.JsonSerializer = new RestSharpJsonNetSerializer();
@@ -491,6 +491,34 @@ namespace MaximoServiceLibrary
 
 			return FailureLists;
 
+		}
+
+		public MaximoAsset createAsset(MaximoAsset maximoAsset)
+		{
+			var request = createRequest("/os/mxasset", false, Method.POST);
+			request.AddHeader("x-method-override", "POST");
+			
+			request.JsonSerializer = new RestSharpJsonNetSerializer();
+			request.AddJsonBody(maximoAsset);
+
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/mxasset - update operation response : {response.Content}");
+
+			if (!response.IsSuccessful)
+			{				
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+
+			string assetHref = null;
+			
+			foreach (var responseHeader in response.Headers)
+			{
+				if (responseHeader.Name.Equals("Location"))
+				{
+					assetHref = responseHeader.Value.ToString();
+				}
+			}
+			return getAssetByHref(assetHref);
 		}
 
 		public MaximoAsset updateAsset(MaximoAsset maximoAsset)
