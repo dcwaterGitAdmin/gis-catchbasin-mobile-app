@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
@@ -24,8 +25,6 @@ namespace MaximoServiceLibrary
 		
 		public SynchronizationService()
 		{
-
-
 			// every 10 seconds / minutes
 			synchronizationTimer = new Timer(10000);
 			synchronizationTimer.Elapsed += onSyncTimerElapsed;
@@ -63,7 +62,104 @@ namespace MaximoServiceLibrary
 
 			synchronizeInBackground();
 		}
+
+		public List<MaximoWorkOrderSpec> generateFreshWorkOrderSpecList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
+		{
+			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = new List<MaximoWorkOrderSpec>();
+
+			if (woFromMaximo.workorderspec != null)
+			{
+				foreach (var woSpecFromMaximo in woFromMaximo.workorderspec)
+				{
+					MaximoWorkOrderSpec woSpecFromLocal = null;
+					if (woFromLocal != null)
+					{
+						woSpecFromLocal = woFromLocal.workorderspec.Find(wospec =>
+							wospec.workorderspecid == woSpecFromMaximo.workorderspecid);
+					}
+
+					// Local copy found
+					if (woSpecFromLocal != null)
+					{
+						//means item is changed in maximo side
+						if (woSpecFromMaximo._rowstamp != woSpecFromLocal._rowstamp)
+						{
+							if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
+							{
+								woSpecFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+								freshWorkOrderSpecList.Add(woSpecFromMaximo);
+							}
+							else if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
+							{
+								woSpecFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
+								freshWorkOrderSpecList.Add(woSpecFromLocal);
+							}
+							else if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+							{
+								freshWorkOrderSpecList.Add(woSpecFromLocal);
+							}
+						}
+						//means item is not changed in maximo side
+						else
+						{
+							// Add to fresh list, localCopies irregardless of SyncronizationStatus
+							freshWorkOrderSpecList.Add(woSpecFromLocal);
+						}
+
+						woFromLocal.workorderspec.Remove(woSpecFromLocal);
+					}
+					//Local copy not found
+					else
+					{
+						woSpecFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+						freshWorkOrderSpecList.Add(woSpecFromMaximo);
+					}
+				}
+			}
+			
+
+			// if there are still entities in CREATED status in the local copy, add them to fresh list. previously SYNCED entities will be removed
+			if (woFromLocal != null && woFromLocal.workorderspec != null)
+			{
+				foreach (var woSpecFromLocal in woFromLocal.workorderspec)
+				{
+					if (woSpecFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
+					{
+						freshWorkOrderSpecList.Add(woSpecFromLocal);
+					}
+				}
+			}
+
+			return freshWorkOrderSpecList;
+		}
+
+		public List<MaximoWorkOrderFailureReport> generateFreshWorkOrderFailureReportList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
+		{
+			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = new List<MaximoWorkOrderFailureReport>();
+
+			return freshWorkOrderFailureReportList;
+		}
 		
+		public List<MaximoLabTrans> generateFreshWorkOrderLabTransList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
+		{
+			List<MaximoLabTrans> freshWorkOrderLabTransList = new List<MaximoLabTrans>();
+
+			return freshWorkOrderLabTransList;
+		}
+		
+		public List<MaximoToolTrans> generateFreshWorkOrderToolTransList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
+		{
+			List<MaximoToolTrans> freshWorkOrderToolTransList = new List<MaximoToolTrans>();
+
+			return freshWorkOrderToolTransList;
+		}
+		
+		public List<MaximoDocLinks> generateFreshWorkOrderDocLinksList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
+		{
+			List<MaximoDocLinks> freshWorkOrderDocLinksList = new List<MaximoDocLinks>();
+			return freshWorkOrderDocLinksList;
+		}
+
 		public async void synchronizeInBackground()
 		{
 			synchronizationDelegate("SYNC_STARTED", "started synchronization in background");
@@ -71,112 +167,104 @@ namespace MaximoServiceLibrary
 			try
 			{
 				bool isOnline = AppContext.maximoService.checkIsOnline(mxuser.userName, mxuser.password);
-				var lastSyncTime = DateTime.Now;
-
 				if (!isOnline)
 				{
 					synchronizationDelegate("MAXIMO_OFFLINE", "Maximo service is offline, sleeping...");
 					return;
 				}
 
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching modified work orders from Maximo...");
-				
-				List<MaximoWorkOrder> maximoWorkOrdersFromMaximo = fetchChangedWorkOrdersFromMaximoSinceLastSyncTime();
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + maximoWorkOrdersFromMaximo.Count + " workorders from Maximo");
-				
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Maximo...");
+				List<MaximoWorkOrder> workOrdersFromMaximo = fetchAllWorkOrdersFromMaximo();
+				synchronizationDelegate("SYNC_IN_PROGRESS",
+					"fetched " + workOrdersFromMaximo.Count + " workorders from Maximo");
+
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Local...");
+				// Assuming that when a user changes crew, we will delete all work orders of previous crew
+				IEnumerable<MaximoWorkOrder> workOrdersFromLocal = AppContext.workOrderRepository.findAll();
+				synchronizationDelegate("SYNC_IN_PROGRESS",
+					"fetched " + workOrdersFromLocal.Count() + " workorders from Local");
+
 				// sync the work orders fetched from Maximo to local db
-				foreach (var workOrderFromMaximo in maximoWorkOrdersFromMaximo)
+				foreach (var woFromMaximo in workOrdersFromMaximo)
 				{
-					foreach (var maximoWorkOrderSpec in workOrderFromMaximo.workorderspec)
-					{
-						maximoWorkOrderSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
-					}
-					foreach (var maximoWorkOrderFailureReport in workOrderFromMaximo.failurereport)
-					{
-						maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
-					}
-					
-					syncEntityFromMaximoToLocalDb<string, MaximoWorkOrder>(AppContext.workOrderRepository, workOrderFromMaximo,
-						workOrderFromMaximo.wonum);
+					MaximoWorkOrder woFromLocal = workOrdersFromLocal.FirstOrDefault(wo => wo.wonum == woFromMaximo.wonum);
 
-					MaximoAsset maximoAsset = workOrderFromMaximo.asset;
-					if(maximoAsset != null)
+					MaximoWorkOrder woFinalToBeSaved = woFromMaximo;
+					// There exists a Local copy for WorkOrder
+					if (woFromLocal != null)
 					{
-						foreach (var maximoAssetSpec in maximoAsset.assetspec)
+						//means item is changed in maximo side
+						if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
 						{
-							maximoAssetSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
+							if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
+							{
+								woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+								woFromMaximo.Id = woFromLocal.Id;
+								//insert into local with all childs
+							}
+							else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
+							         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+							{
+								woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
+								woFinalToBeSaved = woFromLocal;
+							}
+						}
+						//means item is not changed in maximo side
+						else
+						{
+							woFinalToBeSaved = woFromLocal;
 						}
 
-						syncEntityFromMaximoToLocalDb<string, MaximoAsset>(AppContext.assetRepository, maximoAsset,
-						maximoAsset.assetnum);
 					}
-					
-				}
-
-				IEnumerable<MaximoWorkOrder> workOrdersToBeScyncedFromDb = AppContext.workOrderRepository.findAllToBeScynced();
-				foreach (var workOrderToBeSyncedFromDb in workOrdersToBeScyncedFromDb)
-				{
-					// TODO - find how to post child entities
-					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating work order " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-					MaximoWorkOrder maximoWorkOrderFreshCopy = AppContext.maximoService.updateWorkOrder(workOrderToBeSyncedFromDb);
-
-					if (maximoWorkOrderFreshCopy != null)
-					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-
-						workOrderToBeSyncedFromDb.syncronizationStatus = SyncronizationStatus.SYNCED;
-						
-						foreach (var maximoWorkOrderSpec in workOrderToBeSyncedFromDb.workorderspec)
-						{
-							maximoWorkOrderSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
-						}
-						
-						foreach (var maximoWorkOrderFailureReport in workOrderToBeSyncedFromDb.failurereport)
-						{
-							maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
-						}
-
-						AppContext.workOrderRepository.upsert(workOrderToBeSyncedFromDb);
-					}
+					// There is no Local copy for WorkOrder
 					else
 					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Failed to update workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-						
+						// Insert WorkOrder as SYNCED
+						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 					}
 
-				}
+					List<MaximoWorkOrderSpec> freshWorkOrderSpecList =
+						generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
+					//List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReports = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
+					//List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
+					//List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
+					//List<MaximoDocLinks> freshWorkOrderDocLinksList = generateFreshWorkOrderDocLinksList(woFromMaximo, woFromLocal);
 
-				IEnumerable<MaximoAsset> assetsToBeScyncedFromDb = AppContext.assetRepository.findAllToBeScynced();
-				foreach (var assetToBeSyncedFromDb in assetsToBeScyncedFromDb)
-				{
-					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
+					woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
 
-					bool isSuccessfulAssetOperation = AppContext.maximoService.updateAsset(assetToBeSyncedFromDb);
-
-					if (isSuccessfulAssetOperation)
+					if (woFromLocal != null && woFromLocal.completed)
 					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
-
-						MaximoAsset maximoAssetFreshCopyFromServer = AppContext.maximoService.getAsset(assetToBeSyncedFromDb.assetnum);
-						maximoAssetFreshCopyFromServer.Id = assetToBeSyncedFromDb.Id;
-						maximoAssetFreshCopyFromServer.syncronizationStatus = SyncronizationStatus.SYNCED;
-						
-						foreach (var maximoAssetSpec in maximoAssetFreshCopyFromServer.assetspec)
+						if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
 						{
-							maximoAssetSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
-						}
+							woFromLocal.workorderspec = null;
+							woFromLocal.failurereport = null;
+							woFromLocal.labtrans = null;
+							woFromLocal.tooltrans = null;
+							woFromLocal.doclinks = null;
+							
+							woFinalToBeSaved = AppContext.maximoService.createWorkOrder(woFromLocal);
 
-						AppContext.assetRepository.upsert(maximoAssetFreshCopyFromServer);
-					}
-					else
-					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Failed to update asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
+							woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
+							
+							// TODO - child'ları tekrar gönder,
+							
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+						}
+						else
+						{
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+						}
 						
+						fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
 					}
+
+					AppContext.workOrderRepository.upsert(woFinalToBeSaved);
 				}
 
-				mxuser.userPreferences.lastSyncTime = lastSyncTime;
-				AppContext.userRepository.upsert(mxuser);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.StackTrace);
 			}
 			finally
 			{
@@ -186,155 +274,31 @@ namespace MaximoServiceLibrary
 			}
 		}
 
-		private T syncEntityFromMaximoToLocalDb<K, T>(DbReposistory<K, T> dbRepository, T entityFromMaximo,
-			K entityKeyValue) where T : BasePersistenceEntity
+
+		private List<MaximoWorkOrder> fetchAllWorkOrdersFromMaximo()
 		{
-			T entityFromDb = dbRepository.findOne(entityKeyValue);
-			if (entityFromDb == null)
-			{
-				Console.WriteLine($"inserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
-				entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-				dbRepository.insert(entityFromMaximo);
-			}
-			else
-			{
-				if (entityFromDb.syncronizationStatus == null ||
-				    entityFromDb.syncronizationStatus == SyncronizationStatus.SYNCED)
-				{
-					Console.WriteLine($"upserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
-					entityFromMaximo.Id = entityFromDb.Id;
-					entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-					dbRepository.upsert(entityFromMaximo);
-				}
-				else
-				{
-					Console.WriteLine(
-						$"sync CONFLICT at entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
-					// this is a conflicting scenario, what should we do here? 
-					// TODO - decide what to do here
-
-					entityFromDb.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-					dbRepository.upsert(entityFromDb);
-				}
-			}
-
-			return entityFromMaximo;
-		}
-
-		private List<MaximoWorkOrder> fetchChangedWorkOrdersFromMaximoSinceLastSyncTime()
-		{
-			DateTime lastSyncTime = mxuser.userPreferences.lastSyncTime;
-
+			// WorkOrderSpec and WorkOrderFailureReport come inside WorkOrder
 			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(mxuser.userPreferences.selectedPersonGroup);
-			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
-
 			/*
 			 * for each work order, fetch its details (asset, etc.) 
 			 */
 			foreach (var maximoWorkOrder in maximoWorkOrders)
 			{
-				MaximoAsset maximoAsset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
-				if (maximoAsset != null)
-				{
-					if (maximoAsset.assetspec != null)
-					{
-						List<MaximoAssetSpec> assetSpecs = new List<MaximoAssetSpec>();
-						foreach (var assetSpec in maximoAsset.assetspec)
-						{
-							assetSpec.assetnum = maximoAsset.assetnum;
-							assetSpecs.Add(assetSpec);
-						}
-
-						maximoAsset.assetspec = assetSpecs;
-					}
-				}
-
-				maximoWorkOrder.asset = maximoAsset;
-
-				//maximoWorkOrder.workorderspec = AppContext.maximoService.getWorkOrderSpec(maximoWorkOrder);
-				//maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				//maximoWorkOrder.failurereport = AppContext.maximoService.getWorkOrderFailureReport(maximoWorkOrder);
+				fetchWorkOrderDetailsFromMaximo(maximoWorkOrder);
 			}
 
 			return maximoWorkOrders;
 		}
-
-		public void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
+		private void fetchWorkOrderDetailsFromMaximo(MaximoWorkOrder maximoWorkOrder)
 		{
-			clearWorkOrderCompositeFromLocalDb();
-
-			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(mxuser.userPreferences.selectedPersonGroup);
-			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
-
-			/*
-			 * for each work order, fetch its details (asset, etc.) 
-			 */
-			foreach (var maximoWorkOrder in maximoWorkOrders)
-			{
-				// check if the asset is already in DB
-				MaximoAsset maximoAsset = AppContext.assetRepository.findOne(maximoWorkOrder.assetnum);
-				if (maximoAsset == null)
-				{
-					maximoAsset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
-
-
-					if (maximoAsset != null)
-					{
-						maximoAsset = AppContext.assetRepository.upsert(maximoAsset);
-					}
-				}
-
-				maximoWorkOrder.asset = maximoAsset;
-
-				//maximoWorkOrder.workorderspec = AppContext.maximoService.getWorkOrderSpec(maximoWorkOrder);
-				//maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				//maximoWorkOrder.failurereport = AppContext.maximoService.getWorkOrderFailureReport(maximoWorkOrder);
-				// synchronize maximoWorkOrder in local db
-				MaximoWorkOrder maximoWorkOrderFromDb = AppContext.workOrderRepository.findOne(maximoWorkOrder.wonum);
-				if (maximoWorkOrderFromDb != null)
-				{
-					maximoWorkOrder.Id = maximoWorkOrderFromDb.Id;
-				}
-
-				AppContext.workOrderRepository.upsert(maximoWorkOrder);
-			}
+				maximoWorkOrder.asset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
+				maximoWorkOrder.labtrans = AppContext.maximoService.getWorkOrderLabTrans(maximoWorkOrder);
+				// TODO not implemented yet
+				//maximoWorkOrder.tooltrans = AppContext.maximoService.getWorkOrderToolTrans(maximoWorkOrder);
+				//maximoWorkOrder.docs = AppContext.maximoService.getWorkOrderDockLinks(maximoWorkOrder);
 		}
 
-		public async void synchronizeWorkOrderCompositeFromLocalDbToMaximo()
-		{
-			// todo:this is next step
-//			IEnumerable<MaximoWorkOrder> maximoWorkOrders = workOrderRepository.findAllUpdated();
-//			foreach (var maximoWorkOrder in maximoWorkOrders)
-//			{
-//				Console.WriteLine($"synchronizing workorder : [{maximoWorkOrder.wonum}] to Maximo");
-//
-//				bool isSuccessful = maximoService.updateWorkOrder(maximoWorkOrder);
-//
-//				if (isSuccessful)
-//				{
-//					maximoWorkOrder.editedFromApp = false;
-//					workOrderRepository.upsert(maximoWorkOrder);
-//				}
-//			}
-
-			IEnumerable<MaximoAssetSpec> maximoAssetSpecs = AppContext.assetSpecRepository.findAllUpdated();
-
-			foreach (var assetnum in maximoAssetSpecs.Select(x => x.assetnum).Distinct())
-			{
-				var asset = AppContext.assetRepository.findOne(assetnum);
-				asset.assetspec = AppContext.assetSpecRepository.Find("assetnum", assetnum).ToList();
-				;
-
-				bool isSuccessful = AppContext.maximoService.updateAsset(asset);
-
-				if (isSuccessful)
-				{
-					// todo review
-					//maximoAssetSpec.editedFromApp = false;
-					//assetSpecRepository.upsert(maximoAssetSpec);
-				}
-			}
-		}
+		
 
 
 		public void clearWorkOrderCompositeFromLocalDb()
@@ -452,7 +416,7 @@ namespace MaximoServiceLibrary
 						mxuser.mergeFrom(mxuserFromMaximo);
 					}
 
-					
+					/*
 					if (AppContext.laborRepository.Find("person[*].personid", mxuser.personId).Count() == 0)
 					{
 						updateLabors();
@@ -461,6 +425,7 @@ namespace MaximoServiceLibrary
 						}
 							
 					}
+					*/
 
 
 					MaximoPersonGroup maximoPersonGroup = AppContext.maximoService.getPersonGroup(mxuser.personId);

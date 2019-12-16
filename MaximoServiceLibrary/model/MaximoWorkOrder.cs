@@ -29,8 +29,8 @@ namespace MaximoServiceLibrary.model
 	// MXWO
 	public class MaximoWorkOrder : MaximoBaseEntity
 	{
-		public string href { get; set; }
-
+		public bool completed { get; set; }
+		
 		public MaximoAsset asset { get; set; }
 
         public List<MaximoWorkOrderSpec> workorderspec { get; set; }
