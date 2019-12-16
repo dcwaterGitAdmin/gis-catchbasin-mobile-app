@@ -405,30 +405,7 @@ namespace MaximoServiceLibrary
 			return getWorkOrderByHref(workOrderHref);
 		}
 
-		public List<MaximoLabTrans> getWorkOrderLabTrans(MaximoWorkOrder wo)
-		{
-			var request = createRequest("/os/dcw_cb_wolabtrans/" + wo.workorderid, false);
-			request.AddQueryParameter("oslc.select", "labtrans");
-			var response = restClient.Execute(request);
-
-			if (!response.IsSuccessful)
-			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-			}
-			
-			MaximoWorkOrder maximoWorkOrder = JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
-			if (maximoWorkOrder.labtrans == null)
-			{
-				return new List<MaximoLabTrans>();
-			}
-			else
-			{
-				return maximoWorkOrder.labtrans;
-			}
-		}
-
-		public bool updateWorkOrderLabTrans(MaximoWorkOrder maximoWorkOrder)
+		public MaximoWorkOrder updateWorkOrderActuals(MaximoWorkOrder maximoWorkOrder)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
@@ -443,50 +420,12 @@ namespace MaximoServiceLibrary
 
 			var response = restClient.Execute(request);
 			Console.WriteLine($"/dcw_cb_wolabtrans - update operation response : {response.Content}");
-
-			return response.IsSuccessful;
-		}
-
-		public List<MaximoToolTrans> getWorkOrderToolTrans(MaximoWorkOrder wo)
-		{
-			var request = createRequest("/os/dcw_cb_wotooltrans/" + wo.workorderid, false);
-			request.AddQueryParameter("oslc.select", "tooltrans");
-			var response = restClient.Execute(request);
-
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
-			
-			MaximoWorkOrder maximoWorkOrder = JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
-			if (maximoWorkOrder.tooltrans == null)
-			{
-				return new List<MaximoToolTrans>();
-			}
-			else
-			{
-				return maximoWorkOrder.tooltrans;
-			}
-		}
 
-		public bool updateWorkOrderToolTrans(MaximoWorkOrder maximoWorkOrder)
-		{
-			var request = createRequest("/os/dcw_cb_wotooltrans/" + maximoWorkOrder.workorderid, false, Method.POST);
-			request.AddHeader("x-method-override", "PATCH");
-			
-			// create an empty workorder
-			MaximoWorkOrderTooltransForUpdate workOrderToBePosted = new MaximoWorkOrderTooltransForUpdate();
-
-			workOrderToBePosted.tooltrans = maximoWorkOrder.tooltrans; 
-			
-			request.JsonSerializer = new RestSharpJsonNetSerializer();
-			request.AddJsonBody(workOrderToBePosted);
-
-			var response = restClient.Execute(request);
-			Console.WriteLine($"/dcw_cb_wotooltrans - update operation response : {response.Content}");
-
-			return response.IsSuccessful;
+			return getWorkOrderByHref(maximoWorkOrder.href);
 		}
 
 		public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
