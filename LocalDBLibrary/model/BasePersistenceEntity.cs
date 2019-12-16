@@ -12,9 +12,9 @@ namespace LocalDBLibrary.model
 		[JsonIgnore]
         public int Id { get; set; }
 
-		[JsonIgnore]
-		public SyncronizationStatus? syncronizationStatus { get; set; }
-        
+        [JsonIgnore] 
+        public SyncronizationStatus syncronizationStatus { get; set; } = SyncronizationStatus.SYNCED;
+
     }
 
     public enum SyncronizationStatus

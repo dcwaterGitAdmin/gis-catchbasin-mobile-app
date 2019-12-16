@@ -226,76 +226,12 @@ namespace MaximoServiceLibrary
 					if (woFromLocal != null && woFromLocal.syncronizationStatus == SyncronizationStatus.COMPLETED)
 					{
 						woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
-						
+						fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
 					}
 
 					AppContext.workOrderRepository.upsert(woFinalToBeSaved);
 				}
-
-				IEnumerable<MaximoWorkOrder> workOrdersToBeScyncedFromDb = AppContext.workOrderRepository.findAllToBeScynced();
-				foreach (var workOrderToBeSyncedFromDb in workOrdersToBeScyncedFromDb)
-				{
-					// TODO - find how to post child entities
-					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating work order " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-					bool isSuccessfulWorkOrderOperation = AppContext.maximoService.updateWorkOrder(workOrderToBeSyncedFromDb);
-
-					if (isSuccessfulWorkOrderOperation)
-					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-
-						workOrderToBeSyncedFromDb.syncronizationStatus = SyncronizationStatus.SYNCED;
-						
-						foreach (var maximoWorkOrderSpec in workOrderToBeSyncedFromDb.workorderspec)
-						{
-							maximoWorkOrderSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
-						}
-						
-						foreach (var maximoWorkOrderFailureReport in workOrderToBeSyncedFromDb.failurereport)
-						{
-							maximoWorkOrderFailureReport.syncronizationStatus = SyncronizationStatus.SYNCED;
-						}
-
-						AppContext.workOrderRepository.upsert(workOrderToBeSyncedFromDb);
-					}
-					else
-					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Failed to update workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-						
-					}
-
-				}
-
-				IEnumerable<MaximoAsset> assetsToBeScyncedFromDb = AppContext.assetRepository.findAllToBeScynced();
-				foreach (var assetToBeSyncedFromDb in assetsToBeScyncedFromDb)
-				{
-					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
-
-					bool isSuccessfulAssetOperation = AppContext.maximoService.updateAsset(assetToBeSyncedFromDb);
-
-					if (isSuccessfulAssetOperation)
-					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
-
-						MaximoAsset maximoAssetFreshCopyFromServer = AppContext.maximoService.getAsset(assetToBeSyncedFromDb.assetnum);
-						maximoAssetFreshCopyFromServer.Id = assetToBeSyncedFromDb.Id;
-						maximoAssetFreshCopyFromServer.syncronizationStatus = SyncronizationStatus.SYNCED;
-						
-						foreach (var maximoAssetSpec in maximoAssetFreshCopyFromServer.assetspec)
-						{
-							maximoAssetSpec.syncronizationStatus = SyncronizationStatus.SYNCED;
-						}
-
-						AppContext.assetRepository.upsert(maximoAssetFreshCopyFromServer);
-					}
-					else
-					{
-						synchronizationDelegate("SYNC_IN_PROGRESS", "Failed to update asset " + assetToBeSyncedFromDb.assetnum +  " to Maximo...");
-						
-					}
-				}
-
-				mxuser.userPreferences.lastSyncTime = lastSyncTime;
-				AppContext.userRepository.upsert(mxuser);
+				
 			}
 			finally
 			{
@@ -305,40 +241,6 @@ namespace MaximoServiceLibrary
 			}
 		}
 
-		private T syncEntityFromMaximoToLocalDb<K, T>(DbReposistory<K, T> dbRepository, T entityFromMaximo,
-			K entityKeyValue) where T : BasePersistenceEntity
-		{
-			T entityFromDb = dbRepository.findOne(entityKeyValue);
-			if (entityFromDb == null)
-			{
-				Console.WriteLine($"inserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
-				entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-				dbRepository.insert(entityFromMaximo);
-			}
-			else
-			{
-				if (entityFromDb.syncronizationStatus == null ||
-				    entityFromDb.syncronizationStatus == SyncronizationStatus.SYNCED)
-				{
-					Console.WriteLine($"upserting entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
-					entityFromMaximo.Id = entityFromDb.Id;
-					entityFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-					dbRepository.upsert(entityFromMaximo);
-				}
-				else
-				{
-					Console.WriteLine(
-						$"sync CONFLICT at entity [{typeof(T)}: {entityKeyValue}] fetched from Maximo to local db");
-					// this is a conflicting scenario, what should we do here? 
-					// TODO - decide what to do here
-
-					entityFromDb.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-					dbRepository.upsert(entityFromDb);
-				}
-			}
-
-			return entityFromMaximo;
-		}
 
 		private List<MaximoWorkOrder> fetchAllWorkOrdersFromMaximo()
 		{
@@ -349,92 +251,21 @@ namespace MaximoServiceLibrary
 			 */
 			foreach (var maximoWorkOrder in maximoWorkOrders)
 			{
+				fetchWorkOrderDetailsFromMaximo(maximoWorkOrder);
+			}
+
+			return maximoWorkOrders;
+		}
+		private void fetchWorkOrderDetailsFromMaximo(MaximoWorkOrder maximoWorkOrder)
+		{
 				maximoWorkOrder.asset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
 				maximoWorkOrder.labtrans = AppContext.maximoService.getWorkOrderLabTrans(maximoWorkOrder);
 				// TODO not implemented yet
 				//maximoWorkOrder.tooltrans = AppContext.maximoService.getWorkOrderToolTrans(maximoWorkOrder);
 				//maximoWorkOrder.docs = AppContext.maximoService.getWorkOrderDockLinks(maximoWorkOrder);
-			}
-
-			return maximoWorkOrders;
 		}
 
-		public void synchronizeWorkOrderCompositeFromMaximoToLocalDb()
-		{
-			clearWorkOrderCompositeFromLocalDb();
-
-			List<MaximoWorkOrder> maximoWorkOrders = AppContext.maximoService.getWorkOrders(mxuser.userPreferences.selectedPersonGroup);
-			Console.WriteLine($"Fetched {maximoWorkOrders.Count} work orders");
-
-			/*
-			 * for each work order, fetch its details (asset, etc.) 
-			 */
-			foreach (var maximoWorkOrder in maximoWorkOrders)
-			{
-				// check if the asset is already in DB
-				MaximoAsset maximoAsset = AppContext.assetRepository.findOne(maximoWorkOrder.assetnum);
-				if (maximoAsset == null)
-				{
-					maximoAsset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
-
-
-					if (maximoAsset != null)
-					{
-						maximoAsset = AppContext.assetRepository.upsert(maximoAsset);
-					}
-				}
-
-				maximoWorkOrder.asset = maximoAsset;
-
-				maximoWorkOrder.workorderspec = AppContext.maximoService.getWorkOrderSpec(maximoWorkOrder);
-				//maximoWorkOrder.failureRemark = AppContext.maximoService.getWorkOrderFailureRemark(maximoWorkOrder.href);
-				maximoWorkOrder.failurereport = AppContext.maximoService.getWorkOrderFailureReport(maximoWorkOrder);
-				// synchronize maximoWorkOrder in local db
-				MaximoWorkOrder maximoWorkOrderFromDb = AppContext.workOrderRepository.findOne(maximoWorkOrder.wonum);
-				if (maximoWorkOrderFromDb != null)
-				{
-					maximoWorkOrder.Id = maximoWorkOrderFromDb.Id;
-				}
-
-				AppContext.workOrderRepository.upsert(maximoWorkOrder);
-			}
-		}
-
-		public async void synchronizeWorkOrderCompositeFromLocalDbToMaximo()
-		{
-			// todo:this is next step
-//			IEnumerable<MaximoWorkOrder> maximoWorkOrders = workOrderRepository.findAllUpdated();
-//			foreach (var maximoWorkOrder in maximoWorkOrders)
-//			{
-//				Console.WriteLine($"synchronizing workorder : [{maximoWorkOrder.wonum}] to Maximo");
-//
-//				bool isSuccessful = maximoService.updateWorkOrder(maximoWorkOrder);
-//
-//				if (isSuccessful)
-//				{
-//					maximoWorkOrder.editedFromApp = false;
-//					workOrderRepository.upsert(maximoWorkOrder);
-//				}
-//			}
-
-			IEnumerable<MaximoAssetSpec> maximoAssetSpecs = AppContext.assetSpecRepository.findAllUpdated();
-
-			foreach (var assetnum in maximoAssetSpecs.Select(x => x.assetnum).Distinct())
-			{
-				var asset = AppContext.assetRepository.findOne(assetnum);
-				asset.assetspec = AppContext.assetSpecRepository.Find("assetnum", assetnum).ToList();
-				;
-
-				bool isSuccessful = AppContext.maximoService.updateAsset(asset);
-
-				if (isSuccessful)
-				{
-					// todo review
-					//maximoAssetSpec.editedFromApp = false;
-					//assetSpecRepository.upsert(maximoAssetSpec);
-				}
-			}
-		}
+		
 
 
 		public void clearWorkOrderCompositeFromLocalDb()

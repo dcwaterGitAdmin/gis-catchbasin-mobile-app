@@ -14,6 +14,17 @@ namespace MaximoServiceLibrary.model
 
 
 	}
+	public class MaximoWorkOrderLabtransForUpdate
+	{
+		public List<MaximoLabTrans> labtrans { get; set; }
+	}
+
+	public class MaximoWorkOrderTooltransForUpdate
+	{
+		public List<MaximoToolTrans> tooltrans { get; set; }
+	}
+
+	
 	
 	// MXWO
 	public class MaximoWorkOrder : MaximoBaseEntity
@@ -28,8 +39,8 @@ namespace MaximoServiceLibrary.model
 
         public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
         
-		public List<MaximoDocument> docs { get; set; }
-
+		public List<MaximoDocLinks> doclinks { get; set; }
+		
 		public List<MaximoLabTrans> labtrans { get; set; }
 
 		public List<MaximoToolTrans> tooltrans { get; set; }

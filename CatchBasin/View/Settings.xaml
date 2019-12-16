@@ -27,14 +27,14 @@
 				<TextBlock Text="{Binding Crew}"></TextBlock>
 				
 				<Label  Margin="0 0 0 3"  Content="Lead Man" FontWeight="Bold"/>
-				<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+				<ComboBox  IsEnabled="{Binding LeadManIsEnabled}" Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
                             DisplayMemberPath="displayname"
                             SelectedValuePath="personid"
                              SelectedValue="{Binding LeadMan}"/>
 
 				<StackPanel Visibility="{Binding SecondManIsVisible, Converter={StaticResource booleanToVisibilityConverter}}">
 					<Label  Margin="0 0 0 3"  Content="Second Man" FontWeight="Bold"/>
-					<ComboBox  Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
+                    <ComboBox  IsEnabled="{Binding SecondManIsEnabled}"   Margin="0 3 0 3"  ItemsSource="{Binding LaborList}"
                             DisplayMemberPath="displayname"
                             SelectedValuePath="personid"
                              SelectedValue="{Binding SecondMan}"/>

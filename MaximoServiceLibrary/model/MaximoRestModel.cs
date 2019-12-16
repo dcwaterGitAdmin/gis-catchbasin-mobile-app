@@ -35,9 +35,8 @@ namespace MaximoServiceLibrary.model
 	{
 	}
 
-	public class MaximoLabTransRestResponse : MaximoRestPageRef
+	public class MaximoDocLinksRestResponse : MaximoBaseRestResponse<MaximoDocLinks>
 	{
-		public List<MaximoLabTrans> labtrans { get; set; }
 	}
 	
 	public class MaximoAssetRestResponse : MaximoBaseRestResponse<MaximoAsset>

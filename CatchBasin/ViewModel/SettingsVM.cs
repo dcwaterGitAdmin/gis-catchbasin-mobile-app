@@ -96,10 +96,25 @@ namespace CatchBasin.ViewModel
 			set { vehicleList = value; OnPropertyChanged("VehicleList"); }
 		}
 
+        private bool leadManIsEnabled;
+
+        public bool LeadManIsEnabled
+        {
+            get { return leadManIsEnabled; }
+            set { leadManIsEnabled = value; OnPropertyChanged("LeadManIsEnabled"); }
+        }
+
+        private bool secondManIsEnabled;
+
+        public bool SecondManIsEnabled
+        {
+            get { return secondManIsEnabled; }
+            set { secondManIsEnabled = value; OnPropertyChanged("SecondManIsEnabled"); }
+        }
 
 
 
-		private Command.SaveCommand<SettingsVM> saveCommand;
+        private Command.SaveCommand<SettingsVM> saveCommand;
 
 		public Command.SaveCommand<SettingsVM> SaveCommand
 		{
@@ -127,6 +142,8 @@ namespace CatchBasin.ViewModel
 			CancelCommand = new Command.CancelCommand<SettingsVM>(this);
 			SaveCommand = new Command.SaveCommand<SettingsVM>(this);
 			DriverList = new List<MaximoPerson>();
+
+       
 			if(AppType == "PM")
 			{
 				secondManIsVisible = true;
@@ -153,10 +170,25 @@ namespace CatchBasin.ViewModel
 			{
 				LaborList.AddRange(labor.person.Where(per => per.status == "ACTIVE").ToList());
 			}
+            MaximoPersonGroup = MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting;
+            // find leadMan
+            var leadList=LaborList.Where(person => person.personid == MaximoPersonGroup.leadMan).ToList();
+            if (leadList.Count > 0)
+            {
+                DriverList.Add(leadList[0]);
+            }
+           
+            if(AppType == "PM")
+            {
+                var secondList = LaborList.Where(person => person.personid == MaximoPersonGroup.secondMan).ToList();
+                if (secondList.Count > 0)
+                {
+                    DriverList.Add(secondList[0]);
+                }
+            }
 
-			CrewList = MaximoServiceLibrary.AppContext.personGroupRepository.findNot("persongroup", "CB00").ToList();
 
-		   MaximoPersonGroup = MaximoServiceLibrary.AppContext.synchronizationService.mxuser?.userPreferences?.setting;
+         
 
 			Crew = MaximoPersonGroup.persongroup;
 			LeadMan = MaximoPersonGroup.leadMan;
@@ -168,6 +200,23 @@ namespace CatchBasin.ViewModel
 			DriverMan = MaximoPersonGroup.driverMan;
 			Vehicle = MaximoPersonGroup.vehiclenum;
 
+
+
+            if(LeadMan.ToUpper() == MaximoServiceLibrary.AppContext.synchronizationService.mxuser.personId.ToUpper())
+            {
+                LeadManIsEnabled = false;
+                SecondManIsEnabled = true;
+            }else if(SecondMan.ToUpper() == MaximoServiceLibrary.AppContext.synchronizationService.mxuser.personId.ToUpper())
+            {
+                LeadManIsEnabled = true;
+                SecondManIsEnabled = false;
+            }
+            else
+            {
+                // todo for test
+                LeadManIsEnabled = false;
+                SecondManIsEnabled = false;
+            }
 
 			// todo generate driverlist
 			PropertyChanged += SettingsVM_PropertyChanged;

@@ -14,8 +14,10 @@ namespace MaximoServiceTestConsoleApplication
 	{
 		public static void Main(string[] args)
 		{
-			//AppContext.workOrderRepository.removeCollection();
+			AppContext.synchronizationService.login("erdem", "password");
+			AppContext.synchronizationService.synchronizeInBackground();
 
+			/*
 			IEnumerable<MaximoWorkOrder> maximoWorkOrdersFromDb = AppContext.workOrderRepository.findAll();
 			
 			Console.WriteLine($"fetched : {maximoWorkOrdersFromDb.ToList().Count} workorders from db" );
