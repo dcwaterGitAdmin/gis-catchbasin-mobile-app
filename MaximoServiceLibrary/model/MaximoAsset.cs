@@ -458,140 +458,21 @@ namespace MaximoServiceLibrary.model
         // todo : review
         public string assetnum { get; set; }
 
-		// Changed Date
-		public DateTime changedate { get; set; } 
-
-		// Table Value
-		public string tablevalue { get; set; } 
-
-		// Unit of Measure
-		public string measureunitid { get; set; } 
 
 		// Alphanumeric Value
 		public string alnvalue { get; set; } 
 
-		// Item Specification Value Changed 
-		public bool itemspecvalchanged { get; set; } 
-
-		// Display Sequence
-		public int displaysequence { get; set; } 
-
-		// Start Y Offset
-		public double? startyoffset { get; set; } 
-
-		// Unit of Start Offset
-		public string startoffsetunitid { get; set; } 
-
-		// End Unit of Measure
-		public string endmeasureunitid { get; set; } 
-
-		// Unit of End Offset
-		public string endoffsetunitid { get; set; } 
-
-		// Start Y Offset Referent
-		public string startyoffsetref { get; set; } 
-
+	
 		// Attribute
 		public string assetattrid { get; set; } 
-
-		// Organization
-		public string orgid { get; set; } 
-
-		// Linked to Section
-		public string linkedtosection { get; set; } 
-
-		// Start Offset
-		public double? startoffset { get; set; } 
 
 		// ASSETSPECID
 		public Int64 assetspecid { get; set; } 
 
-		// Start Unit of Measure
-		public string startmeasureunitid { get; set; } 
-
-		// Continuous
-		public bool continuous { get; set; } 
-
-		// Unit of Base Measure
-		public string basemeasureunitid { get; set; } 
-
-		// Class Structure
-		public string classstructureid { get; set; } 
-
-		// Inherited from Item
-		public bool inheritedfromitem { get; set; } 
-
-		// Changed By
-		public string changeby { get; set; } 
-
-		// End Z Offset
-		public double? endzoffset { get; set; } 
-
-		// Mandatory
-		public bool mandatory { get; set; } 
-
-		// End Y Offset Referent
-		public string endyoffsetref { get; set; } 
-
-		// Start Z Offset
-		public double? startzoffset { get; set; } 
-
-		// Start Measure
-		public double? startmeasure { get; set; } 
-
+	
 		// Numeric Value
 		public double? numvalue { get; set; } 
 
-		// Start Asset Feature ID
-		public Int64? startassetfeatureid { get; set; } 
-
-		// Es02
-		public string es02 { get; set; } 
-
-		// Es03
-		public string es03 { get; set; } 
-
-		// Section
-		public string section { get; set; } 
-
-		// Es04
-		public DateTime? es04 { get; set; } 
-
-		// End Y Offset
-		public double? endyoffset { get; set; } 
-
-		// Es05
-		public double? es05 { get; set; } 
-
-		// Es01
-		public string es01 { get; set; } 
-
-		// Start Base Measure
-		public double? startbasemeasure { get; set; } 
-
-		// End Offset
-		public double? endoffset { get; set; } 
-
-		// End Z Offset Referent
-		public string endzoffsetref { get; set; } 
-
-		// End Asset Feature ID
-		public Int64? endassetfeatureid { get; set; } 
-
-		// Start Z Offset Referent
-		public string startzoffsetref { get; set; } 
-
-		// Linked to Attribute
-		public string linkedtoattribute { get; set; } 
-
-		// End Base Measure
-		public double? endbasemeasure { get; set; } 
-
-		// Linear Specification Id
-		public Int64 linearassetspecid { get; set; } 
-
-		// End Measure
-		public double? endmeasure { get; set; } 
 	}
 	
 	// MXL_ASSETATTRIBUTE
