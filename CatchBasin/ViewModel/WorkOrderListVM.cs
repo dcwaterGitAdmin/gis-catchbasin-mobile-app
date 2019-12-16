@@ -233,17 +233,44 @@ namespace CatchBasin.ViewModel
 			switch (Order)
 			{
 				case OrderType.SCHEDSTART:
-					wos = wos.OrderBy(wo => wo.schedstart);
+					wos = wos.OrderBy(wo => getOrderValue(wo.worktype)).ThenBy(wo => wo.schedstart);
 					break;
 				case OrderType.STATUS:
 					wos = wos.OrderBy(wo => wo.status);
 					break;
 				case OrderType.WORKTYPE:
-					wos = wos.OrderBy(wo => wo.worktype);
+					wos = wos.OrderBy(wo => getOrderValue(wo.worktype));
 					break;
 			}
 
 			WorkOrders = wos.ToList();
 		}
+
+        public int getOrderValue(string worktype)
+        {
+            if(worktype == "CM")
+            {
+                return 3;
+            } else if(worktype == "PM")
+            {
+                return 4;
+            }
+            else if (worktype == "INV")
+            {
+                return 2;
+            }
+            else if (worktype == "EMERG")
+            {
+                return 1;
+            }
+            else if (worktype == "INSP")
+            {
+                return 5;
+            }
+            else
+            {
+                return 6;
+            }
+        }
     }
 }

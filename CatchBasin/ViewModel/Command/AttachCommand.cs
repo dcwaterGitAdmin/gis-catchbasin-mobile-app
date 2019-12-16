@@ -43,11 +43,12 @@ namespace CatchBasin.ViewModel.Command
 			{
 				foreach (string filename in openFileDialog.FileNames)
 				{
-					MaximoDocument maximoDocument = new MaximoDocument();
-					maximoDocument.description = filename;
-					maximoDocument.fileName = System.IO.Path.GetFileName(filename);
-					maximoDocument.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-					WorkOrderDetailVM.Attachments.Add(maximoDocument);
+					MaximoDocLinks maximoDocLinks = new MaximoDocLinks();
+                    //maximoDocument.
+					//maximoDocument.description = filename;
+					//maximoDocument.fileName = System.IO.Path.GetFileName(filename);
+					//maximoDocument.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+					WorkOrderDetailVM.Attachments.Add(maximoDocLinks);
 				}
 			}
 		}
