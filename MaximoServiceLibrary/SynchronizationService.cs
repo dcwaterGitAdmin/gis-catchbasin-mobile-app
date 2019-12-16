@@ -13,10 +13,11 @@ namespace MaximoServiceLibrary
 	public class SynchronizationService
 	{
 		public bool isOffline { get; set; }
-		
+	
+		public bool isInSynchronization { get; set; }
+	
 		private Timer synchronizationTimer;
 		
-	
 		public SynchronizationDelegateHandler synchronizationDelegate;
 
 		public MaximoUser mxuser;
@@ -25,11 +26,6 @@ namespace MaximoServiceLibrary
 		
 		public SynchronizationService()
 		{
-			// every 10 seconds / minutes
-			synchronizationTimer = new Timer(10000);
-			synchronizationTimer.Elapsed += onSyncTimerElapsed;
-			synchronizationTimer.Enabled = false;
-			
 			synchronizationDelegate = new SynchronizationDelegateHandler(logSynchronizationStatus);
 
 		}
@@ -38,11 +34,20 @@ namespace MaximoServiceLibrary
 		{
 			Console.WriteLine($"syncronization status:{status}, substatus:{substatus}");
 		}
-		
+
 		public void startSyncronizationTimer()
 		{
+			// every 10 seconds / minutes
+			startSyncronizationTimer(10000);
+		}
+		
+		public void startSyncronizationTimer(double interval)
+		{
+			synchronizationTimer = new Timer(interval);
+			synchronizationTimer.Elapsed += onSyncTimerElapsed;
 			synchronizationTimer.Enabled = true;
-			onSyncTimerElapsed(this, null);
+			
+			triggerSynchronization();
 		}
 
 		public void stopSyncronizationTimer()
@@ -52,18 +57,176 @@ namespace MaximoServiceLibrary
 
 		public void onSyncTimerElapsed(Object source, ElapsedEventArgs e)
 		{
+			triggerSynchronization();
+		}
+
+		public void triggerSynchronization()
+		{
 			if (isOffline)
 			{
 				synchronizationDelegate("SYNC_OFFLINE", "The synchronization is set to be offline, returning");
 				return;
 			}
+
+			if (isInSynchronization)
+			{
+				synchronizationDelegate("SYNC_IN_PROGRESS", "The synchronization is already running");
+				return;
+			}
 			
 			Console.WriteLine("The Elapsed event was raised ");
-			synchronizationTimer.Enabled = false;
 
 			synchronizeInBackground();
 		}
+		
+		public async void synchronizeInBackground()
+		{
+			synchronizationDelegate("SYNC_STARTED", "started synchronization in background");
 
+			try
+			{
+				isInSynchronization = true;			
+				synchronizationTimer.Enabled = false;
+
+				bool isOnline = AppContext.maximoService.checkIsOnline(mxuser.userName, mxuser.password);
+				if (!isOnline)
+				{
+					synchronizationDelegate("MAXIMO_OFFLINE", "Maximo service is offline, sleeping...");
+					return;
+				}
+
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Maximo...");
+				List<MaximoWorkOrder> workOrdersFromMaximo = fetchAllWorkOrdersFromMaximo();
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromMaximo.Count + " workorders from Maximo");
+
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Local...");
+				// TODO Assuming that when a user changes crew, we will delete all work orders of previous crew
+				IEnumerable<MaximoWorkOrder> workOrdersFromLocal = AppContext.workOrderRepository.findAll();
+				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromLocal.Count() + " workorders from Local");
+
+				// sync the work orders
+				foreach (var woFromMaximo in workOrdersFromMaximo)
+				{
+					MaximoWorkOrder woFromLocal = workOrdersFromLocal.FirstOrDefault(wo => wo.wonum == woFromMaximo.wonum);
+
+					MaximoWorkOrder woFinalToBeSaved = woFromMaximo;
+					// There exists a Local copy for WorkOrder
+					if (woFromLocal != null)
+					{
+						//means item is changed in maximo side
+						if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
+						{
+							if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
+							{
+								woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+								woFromMaximo.Id = woFromLocal.Id;
+								//insert into local with all childs
+							}
+							else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
+							         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+							{
+								woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
+								woFinalToBeSaved = woFromLocal;
+							}
+						}
+						//means item is not changed in maximo side
+						else
+						{
+							woFinalToBeSaved = woFromLocal;
+						}
+
+					}
+					// There is no Local copy for WorkOrder
+					else
+					{
+						// Insert WorkOrder as SYNCED
+						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+					}
+
+					List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
+					List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
+					List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
+					List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
+					//List<MaximoDocLinks> freshWorkOrderDocLinksList = generateFreshWorkOrderDocLinksList(woFromMaximo, woFromLocal);
+
+					woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
+					woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
+					woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
+					woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
+					//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
+					
+					// SYNCH ASSET
+					MaximoAsset woAssetFinalToBeSaved = synchAsset(woFromMaximo, woFromLocal);
+					if (woAssetFinalToBeSaved != null)
+					{
+						List<MaximoAssetSpec> freshAssetSpecList = generateFreshAssetSpecList(woFromMaximo, woFromLocal);
+						woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
+						if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
+						{
+							// Call createAsset
+						} 
+						else if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
+						{
+							woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
+						}
+					}
+					woFinalToBeSaved.asset = woAssetFinalToBeSaved;
+					
+					
+					if (woFinalToBeSaved != null && woFinalToBeSaved.completed)
+					{
+						if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
+						{
+							// in the first create call to Maximo, we have to clear the related entities
+							woFinalToBeSaved.workorderspec = null;
+							woFinalToBeSaved.failurereport = null;
+							woFinalToBeSaved.labtrans = null;
+							woFinalToBeSaved.tooltrans = null;
+							woFinalToBeSaved.doclink = null;
+							
+							woFinalToBeSaved = AppContext.maximoService.createWorkOrder(woFinalToBeSaved);
+
+							// in the second  call to Maximo, we have to put the related entities in the request
+							woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
+							woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
+							
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+							
+							woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
+							woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
+							//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
+							
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
+							
+						}
+						else
+						{
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+							
+							woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
+						}
+						
+						fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
+					}
+					
+					AppContext.workOrderRepository.upsert(woFinalToBeSaved);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.StackTrace);
+			}
+			finally
+			{
+				synchronizationDelegate("SYNC_FINISHED", null);
+
+				isInSynchronization = false;
+				synchronizationTimer.Enabled = true;
+			}
+		}
+
+		
 		public List<MaximoWorkOrderSpec> generateFreshWorkOrderSpecList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
 		{
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = new List<MaximoWorkOrderSpec>();
@@ -468,148 +631,6 @@ namespace MaximoServiceLibrary
 			return freshAssetSpecList;
 		}
 		
-		public async void synchronizeInBackground()
-		{
-			synchronizationDelegate("SYNC_STARTED", "started synchronization in background");
-
-			try
-			{
-				bool isOnline = AppContext.maximoService.checkIsOnline(mxuser.userName, mxuser.password);
-				if (!isOnline)
-				{
-					synchronizationDelegate("MAXIMO_OFFLINE", "Maximo service is offline, sleeping...");
-					return;
-				}
-
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Maximo...");
-				List<MaximoWorkOrder> workOrdersFromMaximo = fetchAllWorkOrdersFromMaximo();
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromMaximo.Count + " workorders from Maximo");
-
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Local...");
-				// TODO Assuming that when a user changes crew, we will delete all work orders of previous crew
-				IEnumerable<MaximoWorkOrder> workOrdersFromLocal = AppContext.workOrderRepository.findAll();
-				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromLocal.Count() + " workorders from Local");
-
-				// sync the work orders
-				foreach (var woFromMaximo in workOrdersFromMaximo)
-				{
-					MaximoWorkOrder woFromLocal = workOrdersFromLocal.FirstOrDefault(wo => wo.wonum == woFromMaximo.wonum);
-
-					MaximoWorkOrder woFinalToBeSaved = woFromMaximo;
-					// There exists a Local copy for WorkOrder
-					if (woFromLocal != null)
-					{
-						//means item is changed in maximo side
-						if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
-						{
-							if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
-							{
-								woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-								woFromMaximo.Id = woFromLocal.Id;
-								//insert into local with all childs
-							}
-							else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
-							         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
-							{
-								woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-								woFinalToBeSaved = woFromLocal;
-							}
-						}
-						//means item is not changed in maximo side
-						else
-						{
-							woFinalToBeSaved = woFromLocal;
-						}
-
-					}
-					// There is no Local copy for WorkOrder
-					else
-					{
-						// Insert WorkOrder as SYNCED
-						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-					}
-
-					List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
-					List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
-					List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
-					List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
-					List<MaximoDocLinks> freshWorkOrderDocLinksList = generateFreshWorkOrderDocLinksList(woFromMaximo, woFromLocal);
-
-					woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
-					woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
-					woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
-					woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
-					//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
-					
-					// SYNCH ASSET
-					MaximoAsset woAssetFinalToBeSaved = synchAsset(woFromMaximo, woFromLocal);
-					if (woAssetFinalToBeSaved != null)
-					{
-						List<MaximoAssetSpec> freshAssetSpecList = generateFreshAssetSpecList(woFromMaximo, woFromLocal);
-						woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
-						if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
-						{
-							// Call createAsset
-						} 
-						else if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
-						{
-							woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
-						}
-					}
-					woFinalToBeSaved.asset = woAssetFinalToBeSaved;
-					
-					
-					if (woFinalToBeSaved != null && woFinalToBeSaved.completed)
-					{
-						if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
-						{
-							// in the first create call to Maximo, we have to clear the related entities
-							woFinalToBeSaved.workorderspec = null;
-							woFinalToBeSaved.failurereport = null;
-							woFinalToBeSaved.labtrans = null;
-							woFinalToBeSaved.tooltrans = null;
-							woFinalToBeSaved.doclink = null;
-							
-							woFinalToBeSaved = AppContext.maximoService.createWorkOrder(woFinalToBeSaved);
-
-							// in the second  call to Maximo, we have to put the related entities in the request
-							woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
-							woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
-							
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
-							
-							woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
-							woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
-							//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
-							
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
-							
-						}
-						else
-						{
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
-							
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
-						}
-						
-						fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
-					}
-					
-					AppContext.workOrderRepository.upsert(woFinalToBeSaved);
-				}
-
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.StackTrace);
-			}
-			finally
-			{
-				synchronizationDelegate("SYNC_FINISHED", null);
-				
-				synchronizationTimer.Enabled = true;
-			}
-		}
 
 		public MaximoAsset synchAsset(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
 		{
