@@ -22,6 +22,7 @@ namespace LocalDBLibrary.model
 	    SYNCED = 0,
 	    MODIFIED = 1,
 	    CREATED = 2,
-	    CONFLICTED = 3
+	    CONFLICTED = 3,
+	    COMPLETED = 4,
     }
 }
