@@ -649,7 +649,7 @@ namespace CatchBasin.ViewModel
 			MaximoWorkOrder fwo = new MaximoWorkOrder();
 
 			fwo.origrecordid = wo.wonum;
-
+            
 
 			fwo.description = "Catch Basin Follow Up - Missing Lid";
 			fwo.status = "WAPPR";
@@ -938,7 +938,7 @@ namespace CatchBasin.ViewModel
 			c.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 
 			fwo.failurereport.Add(pc);
-			fwo.failurereport.Add(pc);
+			fwo.failurereport.Add(c);
 			// todo: ask end user (remedy)
 
 			fwo.persongroup = "SS_CBF";

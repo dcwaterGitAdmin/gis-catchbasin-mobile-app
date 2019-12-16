@@ -1689,44 +1689,50 @@ namespace CatchBasin.ViewModel
                 failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 MaximoWorkOrder.failurereport.Add(failureProblemCode);
             }
-
-            if (count > 1)
+            if (!String.IsNullOrEmpty(Cause))
             {
-                if (MaximoWorkOrder.failurereport[1].failurecode != Cause)
+                if (count > 1)
                 {
-                    MaximoWorkOrder.failurereport[1].failurecode = Cause;
-                    MaximoWorkOrder.failurereport[1].syncronizationStatus =
-                        LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+                    if (MaximoWorkOrder.failurereport[1].failurecode != Cause)
+                    {
+                        MaximoWorkOrder.failurereport[1].failurecode = Cause;
+                        MaximoWorkOrder.failurereport[1].syncronizationStatus =
+                            LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+                    }
+                }
+                else
+                {
+                    var failureCause = new MaximoWorkOrderFailureReport();
+                    failureCause.failurecode = Cause;
+                    // failureCause.wonum = MaximoWorkOrder.wonum;
+                    failureCause.type = "CAUSE";
+                    failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+                    MaximoWorkOrder.failurereport.Add(failureCause);
                 }
             }
-            else
+           
+            if (!String.IsNullOrEmpty(Remedy))
             {
-                var failureCause = new MaximoWorkOrderFailureReport();
-                failureCause.failurecode = Cause;
-               // failureCause.wonum = MaximoWorkOrder.wonum;
-                failureCause.type = "CAUSE";
-                failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-                MaximoWorkOrder.failurereport.Add(failureCause);
-            }
-
-            if (count > 2)
-            {
-                if (MaximoWorkOrder.failurereport[2].failurecode != Remedy)
+                if (count > 2)
                 {
-                    MaximoWorkOrder.failurereport[2].failurecode = Remedy;
-                    MaximoWorkOrder.failurereport[2].syncronizationStatus =
-                        LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+                    if (MaximoWorkOrder.failurereport[2].failurecode != Remedy)
+                    {
+                        MaximoWorkOrder.failurereport[2].failurecode = Remedy;
+                        MaximoWorkOrder.failurereport[2].syncronizationStatus =
+                            LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+                    }
+                }
+                else
+                {
+                    var failureRemedy = new MaximoWorkOrderFailureReport();
+                    failureRemedy.failurecode = Remedy;
+                    failureRemedy.type = "REMEDY";
+                    //  failureRemedy.wonum = MaximoWorkOrder.wonum;
+                    failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+                    MaximoWorkOrder.failurereport.Add(failureRemedy);
                 }
             }
-            else
-            {
-                var failureRemedy = new MaximoWorkOrderFailureReport();
-                failureRemedy.failurecode = Remedy;
-                failureRemedy.type = "REMEDY";
-              //  failureRemedy.wonum = MaximoWorkOrder.wonum;
-                failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-                MaximoWorkOrder.failurereport.Add(failureRemedy);
-            }
+            
 
 
             if (MaximoWorkOrder.Id > 0)
