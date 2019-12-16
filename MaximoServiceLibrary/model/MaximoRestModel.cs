@@ -39,7 +39,12 @@ namespace MaximoServiceLibrary.model
 	{
 		public List<MaximoLabTrans> labtrans { get; set; }
 	}
-	
+
+	public class MaximoToolTransRestResponse : MaximoRestPageRef
+	{
+		public List<MaximoToolTrans> tooltrans { get; set; }
+	}
+
 	public class MaximoAssetRestResponse : MaximoBaseRestResponse<MaximoAsset>
 	{
 	}

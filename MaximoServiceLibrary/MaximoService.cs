@@ -389,6 +389,48 @@ namespace MaximoServiceLibrary
 
 			return response.IsSuccessful;
 		}
+
+		public List<MaximoToolTrans> getWorkOrderToolTrans(MaximoWorkOrder wo)
+		{
+			var request = createRequest("/os/dcw_cb_wotooltrans/" + wo.workorderid, false);
+			request.AddQueryParameter("oslc.select", "tooltrans");
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			MaximoToolTransRestResponse toolTransRestResponse = JsonConvert.DeserializeObject<MaximoToolTransRestResponse>(response.Content);
+			if (toolTransRestResponse.tooltrans == null)
+			{
+				return new List<MaximoToolTrans>();
+			}
+			else
+			{
+				return toolTransRestResponse.tooltrans;
+			}
+		}
+
+		public bool updateWorkOrderToolTrans(MaximoWorkOrder maximoWorkOrder)
+		{
+			var request = createRequest("/os/dcw_cb_wotooltrans/" + maximoWorkOrder.workorderid, false, Method.POST);
+			request.AddHeader("x-method-override", "PATCH");
+			
+			// create an empty workorder
+			MaximoWorkOrderTooltransForUpdate workOrderToBePosted = new MaximoWorkOrderTooltransForUpdate();
+
+			workOrderToBePosted.tooltrans = maximoWorkOrder.tooltrans; 
+			
+			request.JsonSerializer = new RestSharpJsonNetSerializer();
+			request.AddJsonBody(workOrderToBePosted);
+
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/dcw_cb_wotooltrans - update operation response : {response.Content}");
+
+			return response.IsSuccessful;
+		}
 		
 		public List<FailureList> getFailureList(string parentIds)
 		{
