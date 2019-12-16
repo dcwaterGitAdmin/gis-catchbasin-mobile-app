@@ -865,9 +865,9 @@ namespace CatchBasin.ViewModel
         }
 
         // todo: object to doclinks or docinfo
-        private ObservableCollection<MaximoDocument> attachments;
+        private ObservableCollection<MaximoDocLinks> attachments;
 
-        public ObservableCollection<MaximoDocument> Attachments
+        public ObservableCollection<MaximoDocLinks> Attachments
         {
             get { return attachments; }
             set
@@ -1166,7 +1166,7 @@ namespace CatchBasin.ViewModel
             Actuals = new ObservableCollection<object>();
             LabTrans = new ObservableCollection<MaximoLabTrans>();
             ToolTrans = new ObservableCollection<MaximoToolTrans>();
-            Attachments = new ObservableCollection<MaximoDocument>();
+            Attachments = new ObservableCollection<MaximoDocLinks>();
             LabTrans.CollectionChanged += LabTrans_CollectionChanged;
             ToolTrans.CollectionChanged += ToolTrans_CollectionChanged;
             ProblemList = MaximoServiceLibrary.AppContext.failureListRepository.Find("type", "PROBLEM")
@@ -1238,7 +1238,7 @@ namespace CatchBasin.ViewModel
                 ToolTrans.Add(_tooltrans);
             }
 
-            foreach (var _doc in wo.doclinks ?? new List<MaximoDocument>())
+            foreach (var _doc in wo.doclinks ?? new List<MaximoDocLinks>())
             {
                 Attachments.Add(_doc);
             }
@@ -1910,7 +1910,7 @@ namespace CatchBasin.ViewModel
 			{
 				NeedAssetHelper = true;
 			}
-			// say sigi
+			
 			CCTVIsVisible = false;
 		}
 

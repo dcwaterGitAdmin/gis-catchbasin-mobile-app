@@ -38,7 +38,7 @@ namespace CatchBasin.ViewModel.Command
 
         public void Execute(object parameter)
         {
-			WorkOrderDetailVM.Attachments.Remove((MaximoDocument)parameter);
+			WorkOrderDetailVM.Attachments.Remove((MaximoDocLinks)parameter);
 		
 		}
 
