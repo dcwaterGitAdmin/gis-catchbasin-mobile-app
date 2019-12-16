@@ -12,7 +12,7 @@ namespace MaximoServiceLibrary.model
 		public string _rowstamp { get; set; }
 
 		// _rowstamp
-		//public string href;
+		public string href;
 
 		//localref
 		//public string localref { get; set; }

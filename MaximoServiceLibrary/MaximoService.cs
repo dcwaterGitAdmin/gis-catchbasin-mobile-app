@@ -360,14 +360,14 @@ namespace MaximoServiceLibrary
 				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 			
-			MaximoLabTransRestResponse labTransRestResponse = JsonConvert.DeserializeObject<MaximoLabTransRestResponse>(response.Content);
-			if (labTransRestResponse.labtrans == null)
+			MaximoWorkOrder maximoWorkOrder = JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
+			if (maximoWorkOrder.labtrans == null)
 			{
 				return new List<MaximoLabTrans>();
 			}
 			else
 			{
-				return labTransRestResponse.labtrans;
+				return maximoWorkOrder.labtrans;
 			}
 		}
 
@@ -402,14 +402,14 @@ namespace MaximoServiceLibrary
 				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 			
-			MaximoToolTransRestResponse toolTransRestResponse = JsonConvert.DeserializeObject<MaximoToolTransRestResponse>(response.Content);
-			if (toolTransRestResponse.tooltrans == null)
+			MaximoWorkOrder maximoWorkOrder = JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
+			if (maximoWorkOrder.tooltrans == null)
 			{
 				return new List<MaximoToolTrans>();
 			}
 			else
 			{
-				return toolTransRestResponse.tooltrans;
+				return maximoWorkOrder.tooltrans;
 			}
 		}
 
@@ -430,6 +430,28 @@ namespace MaximoServiceLibrary
 			Console.WriteLine($"/dcw_cb_wotooltrans - update operation response : {response.Content}");
 
 			return response.IsSuccessful;
+		}
+
+		public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
+		{
+			var request = createRequest("/os/dcw_cb_doclink/" + wo.workorderid + "/doclinks", false);
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			MaximoDocLinksRestResponse maximoDocLinksRestResponse = JsonConvert.DeserializeObject<MaximoDocLinksRestResponse>(response.Content);
+			if (maximoDocLinksRestResponse.member == null)
+			{
+				return new List<MaximoDocLinks>();
+			}
+			else
+			{
+				return maximoDocLinksRestResponse.member;
+			}
 		}
 		
 		public List<FailureList> getFailureList(string parentIds)

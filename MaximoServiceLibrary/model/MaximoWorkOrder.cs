@@ -39,8 +39,8 @@ namespace MaximoServiceLibrary.model
 
         public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
         
-		public List<MaximoDocument> docs { get; set; }
-
+		public List<MaximoDocLinks> doclinks { get; set; }
+		
 		public List<MaximoLabTrans> labtrans { get; set; }
 
 		public List<MaximoToolTrans> tooltrans { get; set; }
