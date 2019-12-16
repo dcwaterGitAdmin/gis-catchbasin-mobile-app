@@ -327,11 +327,26 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrderList;
 		}
 		
-		public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
+		public MaximoWorkOrder getWorkOrderByHref(String workOrderHref)
+		{
+			var request = createRequest(workOrderHref, true);
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			MaximoWorkOrder maximoWorkOrder = JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
+			return maximoWorkOrder;
+		}
+		
+		public MaximoWorkOrder updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
-			
+
 			// create an empty workorder
 			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
 
@@ -345,9 +360,42 @@ namespace MaximoServiceLibrary
 			var response = restClient.Execute(request);
 			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
 
-			return response.IsSuccessful;
+			if (!response.IsSuccessful)
+			{				
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			return getWorkOrderByHref(maximoWorkOrder.href);
 		}
-		
+
+		public MaximoWorkOrder createWorkOrder(MaximoWorkOrder maximoWorkOrder)
+		{
+			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
+			request.AddHeader("x-method-override", "POST");
+			
+			request.JsonSerializer = new RestSharpJsonNetSerializer();
+			request.AddJsonBody(maximoWorkOrder);
+
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
+
+			if (!response.IsSuccessful)
+			{				
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+
+			string workOrderHref = null;
+			
+			foreach (var responseHeader in response.Headers)
+			{
+				if (responseHeader.Name.Equals("Location"))
+				{
+					workOrderHref = responseHeader.Value.ToString();
+				}
+			}
+			return getWorkOrderByHref(workOrderHref);
+		}
+
 		public List<MaximoLabTrans> getWorkOrderLabTrans(MaximoWorkOrder wo)
 		{
 			var request = createRequest("/os/dcw_cb_wolabtrans/" + wo.workorderid, false);
