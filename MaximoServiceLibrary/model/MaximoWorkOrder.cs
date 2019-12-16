@@ -14,6 +14,11 @@ namespace MaximoServiceLibrary.model
 
 
 	}
+	public class MaximoWorkOrderLabtransForUpdate
+	{
+		public List<MaximoLabTrans> labtrans { get; set; }
+	}
+
 	
 	// MXWO
 	public class MaximoWorkOrder : MaximoBaseEntity

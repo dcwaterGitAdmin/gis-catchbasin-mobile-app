@@ -327,6 +327,27 @@ namespace MaximoServiceLibrary
 			return maximoWorkOrderList;
 		}
 		
+		public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
+		{
+			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
+			request.AddHeader("x-method-override", "PATCH");
+			
+			// create an empty workorder
+			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
+
+			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc; workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
+			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
+			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
+			
+			request.JsonSerializer = new RestSharpJsonNetSerializer();
+			request.AddJsonBody(workOrderToBePosted);
+
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
+
+			return response.IsSuccessful;
+		}
+		
 		public List<MaximoLabTrans> getWorkOrderLabTrans(MaximoWorkOrder wo)
 		{
 			var request = createRequest("/os/dcw_cb_wolabtrans/" + wo.workorderid, false);
@@ -336,12 +357,10 @@ namespace MaximoServiceLibrary
 			if (!response.IsSuccessful)
 			{
 				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-				return new List<MaximoLabTrans>();
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
-
-
+			
 			MaximoLabTransRestResponse labTransRestResponse = JsonConvert.DeserializeObject<MaximoLabTransRestResponse>(response.Content);
-
 			if (labTransRestResponse.labtrans == null)
 			{
 				return new List<MaximoLabTrans>();
@@ -352,6 +371,25 @@ namespace MaximoServiceLibrary
 			}
 		}
 
+		public bool updateWorkOrderLabTrans(MaximoWorkOrder maximoWorkOrder)
+		{
+			var request = createRequest("/os/dcw_cb_wolabtrans/" + maximoWorkOrder.workorderid, false, Method.POST);
+			request.AddHeader("x-method-override", "PATCH");
+			
+			// create an empty workorder
+			MaximoWorkOrderLabtransForUpdate workOrderToBePosted = new MaximoWorkOrderLabtransForUpdate();
+
+			workOrderToBePosted.labtrans = maximoWorkOrder.labtrans; 
+			
+			request.JsonSerializer = new RestSharpJsonNetSerializer();
+			request.AddJsonBody(workOrderToBePosted);
+
+			var response = restClient.Execute(request);
+			Console.WriteLine($"/dcw_cb_wolabtrans - update operation response : {response.Content}");
+
+			return response.IsSuccessful;
+		}
+		
 		public List<FailureList> getFailureList(string parentIds)
 		{
 			var request = createRequest("/os/dcw_kona_failurelist");
@@ -393,34 +431,6 @@ namespace MaximoServiceLibrary
 
 			return FailureLists;
 
-		}
-
-		public bool updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
-		{
-			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
-			request.AddHeader("x-method-override", "PATCH");
-
-			// TODO edelioglu, add required request params
-
-			// create an empty workorder
-			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
-
-
-			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc; workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
-			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
-			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
-
-
-			request.JsonSerializer = new RestSharpJsonNetSerializer();
-
-			var q = new RestSharpJsonNetSerializer().Serialize(workOrderToBePosted);
-
-			request.AddJsonBody(workOrderToBePosted);
-
-			var response = restClient.Execute(request);
-			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
-
-			return response.IsSuccessful;
 		}
 
 		public bool updateAsset(MaximoAsset maximoAsset)
