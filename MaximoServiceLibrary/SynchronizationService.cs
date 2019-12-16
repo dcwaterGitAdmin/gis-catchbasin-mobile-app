@@ -118,9 +118,9 @@ namespace MaximoServiceLibrary
 				{
 					// TODO - find how to post child entities
 					synchronizationDelegate("SYNC_IN_PROGRESS", "Updating work order " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
-					bool isSuccessfulWorkOrderOperation = AppContext.maximoService.updateWorkOrder(workOrderToBeSyncedFromDb);
+					MaximoWorkOrder maximoWorkOrderFreshCopy = AppContext.maximoService.updateWorkOrder(workOrderToBeSyncedFromDb);
 
-					if (isSuccessfulWorkOrderOperation)
+					if (maximoWorkOrderFreshCopy != null)
 					{
 						synchronizationDelegate("SYNC_IN_PROGRESS", "Successfully updated workorder " + workOrderToBeSyncedFromDb.wonum +  " to Maximo...");
 
