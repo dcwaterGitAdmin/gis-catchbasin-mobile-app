@@ -461,7 +461,7 @@ namespace CatchBasin.ViewModel
             }
             else
             {
-				if(Asset.assetnum != null)
+				if(!String.IsNullOrEmpty(Asset.assetnum))
 				{
 					Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
 				}
@@ -470,7 +470,7 @@ namespace CatchBasin.ViewModel
 					Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				}
 
-				MaximoServiceLibrary.AppContext.assetRepository.insert(Asset);
+				MaximoServiceLibrary.AppContext.assetRepository.upsert(Asset);
             }
             isDirty = false;
             WorkOrderDetailVM.HideAssetDetail();

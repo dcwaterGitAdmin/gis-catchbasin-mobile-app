@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
 
+
 namespace CatchBasin.ViewModel
 {
     class LoginVM : BaseVM
@@ -55,20 +56,22 @@ namespace CatchBasin.ViewModel
 
         public void DoLogin(Window window)
         {
-            //new Map().Show();
-            //window.Close();
-            //return;
-
-           
+          
             try
             {
                 if (MaximoServiceLibrary.AppContext.synchronizationService.login(UserName, Password))
                 {
 
+
+                    Console.WriteLine("test");
 					((App)Application.Current).AppType = ApplicationType;
-					//MaximoServiceLibrary.AppContext.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
-					// MaximoServiceLibraryBeanConfiguration.synchronizationService.synchronizeWorkOrderCompositeFromMaximoToLocalDb();
-					MaximoServiceLibrary.AppContext.synchronizationService.startSyncronizationTimer();
+                    if (MaximoServiceLibrary.AppContext.inventoryRepository.findAll().Count() == 0)
+                    {
+                        MaximoServiceLibrary.AppContext.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
+                    }
+
+                    var interval = Convert.ToDouble(System.Configuration.ConfigurationManager.AppSettings["SyncIntervalTime"]);
+                    MaximoServiceLibrary.AppContext.synchronizationService.startSyncronizationTimer(interval);
 					
 					new Map().Show();
                     window.Close();

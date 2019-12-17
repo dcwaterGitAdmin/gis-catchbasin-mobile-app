@@ -43,7 +43,7 @@ namespace CatchBasin.ViewModel.Command
 			Labor Tool = new Labor();
 			Tool.DataContext = new LaborVM(WorkOrderDetailVM,(MaximoLabTrans)parameter);
 			Tool.ShowInTaskbar = false;
-			Tool.Owner = ((App)Application.Current).MainWindow;
+			//Tool.Owner = ((App)Application.Current).MainWindow;
 			Tool.ShowDialog();
 		}
 

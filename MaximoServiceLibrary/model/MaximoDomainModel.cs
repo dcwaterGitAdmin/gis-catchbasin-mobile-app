@@ -561,22 +561,28 @@ namespace MaximoServiceLibrary.model
 		public string lo5 { get; set; } 
 	}
 
-	// DCW_KONA_DOCLINKS
+	
 	public class MaximoDocLinks : MaximoBaseEntity
 	{
 
-		// WORKORDERID
-		public Int64 workorderid { get; set; } 
+        public string document { get; set; }
+        public string documentdata { get; set; }
+        public string urlname { get; set; }
+        public string ownertable { get; set; }
+        public bool printthrulink { get; set; }
+        public string description { get; set; }
+        public string urltype { get; set; }
+        public string doctype { get; set; }
 
-		// DOCLINKS
-		//public List<DOCLINKS>? doclinks { get; set; } 
-
-		// Site
-		public string siteid { get; set; } 
-
-		// Work Order
-		public string wonum { get; set; } 
-	}
+        [LiteDB.BsonIgnore]
+        public virtual BitmapImage BitmapImage
+        {
+            get
+            {
+                return new BitmapImage(new Uri(urlname));
+            }
+        }
+    }
 
 		
 
@@ -970,14 +976,7 @@ namespace MaximoServiceLibrary.model
 		public string ownertable { get; set; }
 		public string href { get; set; }
 
-		[LiteDB.BsonIgnore]
-		public virtual BitmapImage BitmapImage
-		{
-			get
-			{
-				return new BitmapImage(new Uri(description));
-			}
-		}
+		
 	}
 
 

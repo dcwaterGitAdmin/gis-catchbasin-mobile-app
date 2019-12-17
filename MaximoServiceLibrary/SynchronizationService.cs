@@ -778,12 +778,12 @@ namespace MaximoServiceLibrary
 			clearHelperFromLocalDb();
 
 			// get domains
-			//AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
+			AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
 
 
 			// get attributes
 
-			//AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
+			AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
 			// get failurelist
 			// 1283 CatchBasin failurelist id
 			List<FailureList> failureLists = new List<FailureList>();
@@ -806,45 +806,17 @@ namespace MaximoServiceLibrary
 
 
 			// get inventories
-			//AppContext.inventoryRepository.upsertList(AppContext.maximoService.getInventory());
-
-
-			//List<MaximoPersonGroup> maximoPersonGroups = AppContext.maximoService.getPersonGroups();
-
-			//for (int i = 0; i < maximoPersonGroups.Count; i++)
-			//{
-			//	if (maximoPersonGroups[i].persongroupteam != null)
-			//	{
-			//		if (maximoPersonGroups[i].persongroupteam.Count > 0)
-			//		{
-			//			maximoPersonGroups[i].leadMan = maximoPersonGroups[i].persongroupteam[0].respparty;
-			//			maximoPersonGroups[i].driverMan = maximoPersonGroups[i].persongroupteam[0].respparty;
-
-			//		}
-			//		if (maximoPersonGroups[i].persongroupteam.Count > 1)
-			//		{
-			//			maximoPersonGroups[i].secondMan = maximoPersonGroups[i].persongroupteam[1].respparty;
-			//		}
-					
-			//	}
-			//}
-			
-			//AppContext.personGroupRepository.upsertList(maximoPersonGroups);
-
-
-			
-
+			AppContext.inventoryRepository.upsertList(AppContext.maximoService.getInventory());
 
 		}
 
 		public void clearHelperFromLocalDb()
 		{
-			//AppContext.domainRepository.removeCollection();
-			//AppContext.assetRepository.removeCollection();
+			AppContext.domainRepository.removeCollection();
+			AppContext.assetRepository.removeCollection();
 			AppContext.failureListRepository.removeCollection();
-			//
-			//AppContext.inventoryRepository.removeCollection();
-			//AppContext.personGroupRepository.removeCollection();
+			AppContext.inventoryRepository.removeCollection();
+			
 		}
 
 		public void updateLabors()
@@ -880,7 +852,7 @@ namespace MaximoServiceLibrary
 						mxuser.mergeFrom(mxuserFromMaximo);
 					}
 
-					/*
+					
 					if (AppContext.laborRepository.Find("person[*].personid", mxuser.personId).Count() == 0)
 					{
 						updateLabors();
@@ -889,7 +861,7 @@ namespace MaximoServiceLibrary
 						}
 							
 					}
-					*/
+					
 
 
 					MaximoPersonGroup maximoPersonGroup = AppContext.maximoService.getPersonGroup(mxuser.personId);
@@ -953,11 +925,8 @@ namespace MaximoServiceLibrary
 				MaximoUser maximoUser = AppContext.userRepository.findOneIgnoreCase(username);
 				if (maximoUser.password.Equals(password))
 				{
-					mxuser = maximoUser;
-					mxuser.userPreferences.selectedPersonGroup = "CB06";
-					mxuser.persongroup = "CB06";
-					AppContext.userRepository.upsert(mxuser);
-
+                    mxuser = maximoUser;
+	
 					return true;
 				}
 				else

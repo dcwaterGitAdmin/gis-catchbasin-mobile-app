@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatchBasin", "CatchBasin\Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xceed.Wpf.Toolkit", "..\wpftoolkit\ExtendedWPFToolkitSolution\Src\Xceed.Wpf.Toolkit\Xceed.Wpf.Toolkit.csproj", "{72E591D6-8F83-4D8C-8F67-9C325E623234}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CatchBasinSetup", "Setup\Setup.vdproj", "{BA31B93F-499D-42A5-85D9-92818643FD86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,7 +34,6 @@ Global
 		{AE27B58B-7EC6-4F5A-A98E-055CC543D202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE27B58B-7EC6-4F5A-A98E-055CC543D202}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE27B58B-7EC6-4F5A-A98E-055CC543D202}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE27B58B-7EC6-4F5A-A98E-055CC543D202}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A8FFA91-58E0-4991-B22F-72B738D9CEED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2A8FFA91-58E0-4991-B22F-72B738D9CEED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A8FFA91-58E0-4991-B22F-72B738D9CEED}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +46,8 @@ Global
 		{72E591D6-8F83-4D8C-8F67-9C325E623234}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72E591D6-8F83-4D8C-8F67-9C325E623234}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72E591D6-8F83-4D8C-8F67-9C325E623234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA31B93F-499D-42A5-85D9-92818643FD86}.Debug|Any CPU.ActiveCfg = Debug
+		{BA31B93F-499D-42A5-85D9-92818643FD86}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

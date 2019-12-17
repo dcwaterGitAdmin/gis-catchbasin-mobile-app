@@ -39,7 +39,7 @@ namespace CatchBasin.ViewModel.Command
 			Labor Labor = new Labor();
 			Labor.DataContext = new LaborVM(WorkOrderDetailVM);
 			Labor.ShowInTaskbar = false;
-			Labor.Owner = ((App)Application.Current).MainWindow;
+			//Labor.Owner = ((App)Application.Current).MainWindow;
 			Labor.ShowDialog();
 
 

@@ -37,7 +37,7 @@ namespace CatchBasin.ViewModel.Command
 			Tool Tool = new Tool();
 			Tool.DataContext = new ToolVM(WorkOrderDetailVM);
 			Tool.ShowInTaskbar = false;
-			Tool.Owner = ((App)Application.Current).MainWindow;
+			//Tool.Owner = ((App)Application.Current).MainWindow;
 			Tool.ShowDialog();
 		}
 	}

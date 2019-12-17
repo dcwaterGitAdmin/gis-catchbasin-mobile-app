@@ -202,6 +202,16 @@ namespace CatchBasin.ViewModel
 			var asset = new MaximoAsset();
 
 			asset.assetnum = (string)geoElement.Attributes["MXASSETNUM"];
+
+            if (String.IsNullOrEmpty(asset.assetnum))
+            {
+                asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+            }
+            else
+            {
+                asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.SYNCED;
+            }
+
 			asset.assettag = (string)geoElement.Attributes["ASSETTAG"];
 			asset.eq3 = (string)geoElement.Attributes["LOCATIONDETAIL"];
 
@@ -210,7 +220,15 @@ namespace CatchBasin.ViewModel
 
 			var CB_SUBT = new MaximoAssetSpec();
 			CB_SUBT.assetattrid = "CB_SUBT";
-			CB_SUBT.alnvalue = ((int)geoElement.Attributes["SUBTYPE"]).ToString();
+            try
+            {
+                CB_SUBT.alnvalue = ((int?)geoElement.Attributes["SUBTYPE"]).ToString();
+            }
+            catch (Exception e)
+            {
+                CB_SUBT.alnvalue = null;
+            }
+			
 			asset.assetspec.Add(CB_SUBT);
 
 			var TOPMATRL = new MaximoAssetSpec();
@@ -220,7 +238,7 @@ namespace CatchBasin.ViewModel
 
 			var TOPTHICK = new MaximoAssetSpec();
 			TOPTHICK.assetattrid = "TOPTHICK";
-			TOPTHICK.numvalue = (int)geoElement.Attributes["TOPTHICK"];
+			TOPTHICK.numvalue = (int?)geoElement.Attributes["TOPTHICK"];
 			asset.assetspec.Add(TOPTHICK);
 
 			var GRATETY = new MaximoAssetSpec();
@@ -230,12 +248,12 @@ namespace CatchBasin.ViewModel
 
 			var NUMCHAMB = new MaximoAssetSpec();
 			NUMCHAMB.assetattrid = "NUMCHAMB";
-			NUMCHAMB.numvalue = (int)geoElement.Attributes["NUMCHAMB"];
+			NUMCHAMB.numvalue = (int?)geoElement.Attributes["NUMCHAMB"];
 			asset.assetspec.Add(NUMCHAMB);
 
 			var NUMTHROAT = new MaximoAssetSpec();
 			NUMTHROAT.assetattrid = "NUMTHROAT";
-			NUMTHROAT.numvalue = (int)geoElement.Attributes["NUMTHROAT"];
+			NUMTHROAT.numvalue = (int?)geoElement.Attributes["NUMTHROAT"];
 			asset.assetspec.Add(NUMTHROAT);
 
 			var OWNER = new MaximoAssetSpec();
@@ -285,6 +303,7 @@ namespace CatchBasin.ViewModel
 
 			MaximoWorkOrder.asset = asset;
 			AssetTag = asset.assettag;
+            SaveWithoutHide();
 			NeedAssetHelper = false;
 
 
@@ -1704,7 +1723,6 @@ namespace CatchBasin.ViewModel
                 {
                     var failureCause = new MaximoWorkOrderFailureReport();
                     failureCause.failurecode = Cause;
-                    // failureCause.wonum = MaximoWorkOrder.wonum;
                     failureCause.type = "CAUSE";
                     failureCause.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                     MaximoWorkOrder.failurereport.Add(failureCause);
@@ -1727,7 +1745,6 @@ namespace CatchBasin.ViewModel
                     var failureRemedy = new MaximoWorkOrderFailureReport();
                     failureRemedy.failurecode = Remedy;
                     failureRemedy.type = "REMEDY";
-                    //  failureRemedy.wonum = MaximoWorkOrder.wonum;
                     failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                     MaximoWorkOrder.failurereport.Add(failureRemedy);
                 }
@@ -1915,7 +1932,11 @@ namespace CatchBasin.ViewModel
 			if(MaximoWorkOrder.asset == null && MaximoWorkOrder.worktype != "EM")
 			{
 				NeedAssetHelper = true;
-			}
+            }
+            else
+            {
+                NeedAssetHelper = false;
+            }
 			
 			CCTVIsVisible = false;
 		}

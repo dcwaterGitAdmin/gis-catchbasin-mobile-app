@@ -36,7 +36,7 @@ namespace CatchBasin.ViewModel.Command
 		public bool CanExecute(object parameter)
 		{
 
-			if(WorkOrderDetailVM.ToolTrans.Count>0 && WorkOrderDetailVM.LabTrans.Count > 0)
+			if(WorkOrderDetailVM.ToolTrans.Count>0 && WorkOrderDetailVM.LabTrans.Count > 0 && WorkOrderDetailVM.MaximoWorkOrder.startTimerDate != null)
 			{
 				return true;
 			}
@@ -53,7 +53,7 @@ namespace CatchBasin.ViewModel.Command
 			CompleteWorkOrder CompleteWorkOrder = new CompleteWorkOrder();
 			CompleteWorkOrder.DataContext = new CompleteWorkorderVM(WorkOrderDetailVM);
 			CompleteWorkOrder.ShowInTaskbar = false;
-			CompleteWorkOrder.Owner = ((App)Application.Current).MainWindow;
+			//CompleteWorkOrder.Owner = ((App)Application.Current).MainWindow;
 			CompleteWorkOrder.ShowDialog();
 
 		}

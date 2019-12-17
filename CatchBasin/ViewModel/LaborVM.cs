@@ -139,6 +139,12 @@ namespace CatchBasin.ViewModel
 
 		public void Save()
 		{
+            if (String.IsNullOrEmpty(Labor))
+            {
+                MessageBox.Show("Please Select Labor", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
 			if(LabTrans == null)
 			{
 				MaximoLabTrans labTrans = new MaximoLabTrans();
@@ -148,7 +154,14 @@ namespace CatchBasin.ViewModel
 				labTrans.finishtimeentered = new DateTime(1900, 1, 1) + (StartDate + Duration.TimeOfDay).TimeOfDay;
 				labTrans.transdate = DateTime.Now;
 				labTrans.transtype = Type;
-				labTrans.craft = null;
+
+
+                var _labor = MaximoServiceLibrary.AppContext.laborRepository.Find("person[*].personid", Labor).FirstOrDefault();
+               
+                labTrans.craft = _labor?.laborcraftrate.FirstOrDefault()?.craft;
+                
+        
+                labTrans.craft = null;
 				labTrans.laborcode = null;
 				labTrans.siteid = "DWS_DSS";
 				labTrans.orgid = "DC_WASA";
@@ -158,6 +171,7 @@ namespace CatchBasin.ViewModel
 				labTrans.dcw_trucknum = MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences?.setting?.vehiclenum;
 				labTrans.enterdate = DateTime.Now;
 				labTrans.laborcode = Labor;
+
 				labTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 				labTrans.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 				WorkOrderDetailVM.LabTrans.Add(labTrans);
@@ -169,9 +183,6 @@ namespace CatchBasin.ViewModel
 				LabTrans.dcw_truckdriver = IsDriver;
 				LabTrans.dcw_trucksecond = IsSecondMan;
 				LabTrans.dcw_trucklead = IsLeadMan;
-				LabTrans.dcw_truckdriver = IsDriver;
-				LabTrans.dcw_trucksecond = IsSecondMan;
-				LabTrans.dcw_trucklead = IsLeadMan;
 				LabTrans.transtype = Type;
 				LabTrans.startdateentered = StartDate.Date;
 				LabTrans.starttimeentered = new DateTime(1900, 1, 1) + StartDate.TimeOfDay;
@@ -179,7 +190,11 @@ namespace CatchBasin.ViewModel
 				LabTrans.finishtimeentered = new DateTime(1900, 1, 1) + (StartDate + Duration.TimeOfDay).TimeOfDay;
 				LabTrans.enterdate = DateTime.Now;
 				LabTrans.laborcode = Labor;
-				LabTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
+                var _labor = MaximoServiceLibrary.AppContext.laborRepository.Find("person[*].personid", Labor).FirstOrDefault();
+
+                LabTrans.craft = _labor?.laborcraftrate.FirstOrDefault()?.craft;
+
+                LabTrans.enterby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
 
 				if(LabTrans.syncronizationStatus != LocalDBLibrary.model.SyncronizationStatus.CREATED)
 				{

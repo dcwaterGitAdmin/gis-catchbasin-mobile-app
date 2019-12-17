@@ -357,7 +357,7 @@ namespace MaximoServiceLibrary
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
 			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
             workOrderToBePosted.status = maximoWorkOrder.status;
-
+            workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
 
             workOrderToBePosted.np_statusmemo = maximoWorkOrder.np_statusmemo;
            

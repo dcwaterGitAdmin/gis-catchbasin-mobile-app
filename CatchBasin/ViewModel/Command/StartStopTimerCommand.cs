@@ -172,7 +172,7 @@ namespace CatchBasin.ViewModel.Command
 
 
 
-				if (WorkOrderListVM.MapVM.WorkOrderDetailIsVisible && wo == WorkOrderListVM.MapVM.WorkOrderDetailVM.MaximoWorkOrder)
+				if (WorkOrderListVM.MapVM.WorkOrderDetailIsVisible && wo?.Id == WorkOrderListVM.MapVM.WorkOrderDetailVM.MaximoWorkOrder?.Id)
 				{
 					WorkOrderListVM.MapVM.WorkOrderDetailVM.LabTrans.Add(labTrans);
 					if (((App)Application.Current).AppType == "PM")

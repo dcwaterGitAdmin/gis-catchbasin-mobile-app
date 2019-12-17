@@ -17,7 +17,9 @@ namespace MaximoServiceLibrary.model
         public string status { get; set; }
 
         public string np_statusmemo { get; set; }
-	}
+
+        public List<MaximoDocLinks> doclinks { get; set; }
+    }
 	
 	public class MaximoWorkOrderLabtransForUpdate
 	{

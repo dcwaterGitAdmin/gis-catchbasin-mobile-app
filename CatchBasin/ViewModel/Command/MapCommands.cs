@@ -180,8 +180,9 @@ namespace CatchBasin.ViewModel.Commands
 				}
 				else
 				{
-					return true;
-				}
+                    return !(MapVM.WorkOrderDetailVM.MaximoWorkOrder?.worktype == "EMERG" || MapVM.WorkOrderDetailVM?.MaximoWorkOrder?.worktype == "INV");
+
+                }
 				
 			}
 			else

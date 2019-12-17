@@ -35,7 +35,17 @@ namespace CatchBasin.ViewModel.Command
 
         public void Execute(object parameter)
         {
-			WorkOrderDetailVM.MapVM.MapView.GeoViewTapped += WorkOrderDetailVM.MapVM.MapTappedForSelectAsset;
+
+            try
+            {
+                WorkOrderDetailVM.MapVM.MapView.GeoViewTapped -= WorkOrderDetailVM.MapVM.MapTappedForCreateAsset;
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            WorkOrderDetailVM.MapVM.MapView.GeoViewTapped += WorkOrderDetailVM.MapVM.MapTappedForSelectAsset;
         }
 
     }
