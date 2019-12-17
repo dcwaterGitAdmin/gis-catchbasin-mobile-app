@@ -16,8 +16,8 @@ namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		//private static readonly string BASE_HOST = "http://localhost:8080";
-		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		private static readonly string BASE_HOST = "http://localhost:8080";
+		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -430,7 +430,7 @@ namespace MaximoServiceLibrary
 
 		public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
 		{
-			var request = createRequest("/os/dcw_cb_doclink/" + wo.workorderid + "/doclinks", false);
+			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid + "/doclinks", false);
 			var response = restClient.Execute(request);
 
 			if (!response.IsSuccessful)
@@ -446,7 +446,13 @@ namespace MaximoServiceLibrary
 			}
 			else
 			{
-				return maximoDocLinksRestResponse.member;
+				List<MaximoDocLinks> result = new List<MaximoDocLinks>();
+				foreach (var maximoDocLinksWrapper in maximoDocLinksRestResponse.member)
+				{
+					result.Add(maximoDocLinksWrapper.describedBy);
+				}
+				
+				return result;
 			}
 		}
 		

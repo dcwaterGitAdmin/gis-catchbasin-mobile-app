@@ -761,8 +761,7 @@ namespace MaximoServiceLibrary
 		{
 				// labTrans, toolTrans, workOrderSpec, workOrderFailureReport are coming from getWorkOrders
 				maximoWorkOrder.asset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
-				// TODO not implemented yet
-				//maximoWorkOrder.docs = AppContext.maximoService.getWorkOrderDockLinks(maximoWorkOrder);
+				maximoWorkOrder.doclink = AppContext.maximoService.getWorkOrderDocLinks(maximoWorkOrder);
 		}
 
 		public void clearWorkOrderCompositeFromLocalDb()

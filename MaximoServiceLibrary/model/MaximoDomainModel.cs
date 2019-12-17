@@ -571,8 +571,8 @@ namespace MaximoServiceLibrary.model
         public string ownertable { get; set; }
         public bool printthrulink { get; set; }
         public string description { get; set; }
-        public string urltype { get; set; }
-        public string doctype { get; set; }
+        public string urlType { get; set; }
+        public string docType { get; set; }
 
         [LiteDB.BsonIgnore]
         public virtual BitmapImage BitmapImage
