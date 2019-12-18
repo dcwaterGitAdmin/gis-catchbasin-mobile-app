@@ -82,7 +82,7 @@
                     </StackPanel>
                     <StackPanel Visibility="{Binding ProblemIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Label Content="Problem" FontWeight="Bold"/>
-                        <ComboBox ItemsSource="{Binding ProblemList}"
+                        <ComboBox IsEnabled="{Binding ProblemIsEnabled}" ItemsSource="{Binding ProblemList}"
                             DisplayMemberPath="description"
                             SelectedValuePath="failurecode"
                              SelectedValue="{Binding Problem}"/>

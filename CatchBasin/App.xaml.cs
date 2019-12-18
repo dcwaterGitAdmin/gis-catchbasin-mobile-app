@@ -17,12 +17,12 @@ namespace CatchBasin
     public partial class App : Application
     {
 
-        FileStream ostrm;
-        StreamWriter writer;
+       
         public string AppType = null;
-        TextWriter oldOut = Console.Out;
+      
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
+            log4net.Config.XmlConfigurator.Configure();
             try
             {
                 // Deployed applications must be licensed at the Lite level or greater. 
@@ -39,22 +39,7 @@ namespace CatchBasin
 
               
 
-                try
-                {
-                    ostrm = new FileStream("./log.txt", FileMode.OpenOrCreate, FileAccess.Write);
-                    writer = new StreamWriter(ostrm);
-                }
-                catch (Exception fileStreamException)
-                {
-                    Console.WriteLine("Cannot open Redirect.txt for writing");
-                    Console.WriteLine(fileStreamException.Message);
-                    return;
-                }
-                if(writer != null)
-                {
-                    Console.SetOut(writer);
-                }
-                
+               
 
                 // Initialize the ArcGIS Runtime before any components are created.
                 ArcGISRuntimeEnvironment.Initialize();
@@ -78,9 +63,7 @@ namespace CatchBasin
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            Console.SetOut(oldOut);
-            writer?.Close();
-            ostrm?.Close();
+           
         }
     }
 }

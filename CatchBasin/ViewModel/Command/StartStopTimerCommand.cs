@@ -71,7 +71,7 @@ namespace CatchBasin.ViewModel.Command
 				DateTime stopTimerDate = DateTime.Now;
 				DateTime startTimerDate = Convert.ToDateTime(wo.startTimerDate);
 				TimeSpan? time = stopTimerDate - wo.startTimerDate;
-				Console.WriteLine($"time :{time}");
+				MaximoServiceLibrary.AppContext.Log.Warn($"time :{time}");
 
 				var mxuser = MaximoServiceLibrary.AppContext.synchronizationService.mxuser;
 

@@ -78,8 +78,8 @@ namespace MaximoServiceLibrary
 			request.AddQueryParameter("lean", "1");
 			request.AddCookie(_jsessionid_Cookie_Name, sessionId);
 			request.AddCookie(_ltpatoken2_Cookie_Name, token);
-
-			return request;
+            request.JsonSerializer = new RestSharpJsonNetSerializer();
+            return request;
 		}
 
 		public bool checkIsOnline(string username, string password)
@@ -153,7 +153,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return null;
 			}
 
@@ -202,7 +202,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<MaximoPersonGroup>();
 			}
 			List<MaximoPersonGroup> personGroups = new List<MaximoPersonGroup>();
@@ -220,7 +220,7 @@ namespace MaximoServiceLibrary
 
 				if (!response.IsSuccessful)
 				{
-					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 					// todo - throw exception here?
 					return personGroups;
 				}
@@ -298,7 +298,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<MaximoWorkOrder>();
 			}
 
@@ -317,7 +317,7 @@ namespace MaximoServiceLibrary
 
 				if (!response.IsSuccessful)
 				{
-					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 					// todo - throw exception here?
 					return maximoWorkOrderList;
 				}
@@ -337,7 +337,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 			
@@ -363,15 +363,17 @@ namespace MaximoServiceLibrary
            
             workOrderToBePosted.statusdate = maximoWorkOrder.statusdate;
 
-            request.JsonSerializer = new RestSharpJsonNetSerializer();
+           
 			request.AddJsonBody(workOrderToBePosted);
 
 			var response = restClient.Execute(request);
-			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
+			AppContext.Log.Warn($"/mxwo - update operation response : {response.Content}");
 
 			if (!response.IsSuccessful)
-			{				
-				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			{
+                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
+                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 			
 			return getWorkOrderByHref(maximoWorkOrder.href);
@@ -382,15 +384,18 @@ namespace MaximoServiceLibrary
 			var request = createRequest("/os/dcw_cb_wo", false, Method.POST);
 			request.AddHeader("x-method-override", "POST");
 			
-			request.JsonSerializer = new RestSharpJsonNetSerializer();
+			
 			request.AddJsonBody(maximoWorkOrder);
 
 			var response = restClient.Execute(request);
-			Console.WriteLine($"/mxwo - update operation response : {response.Content}");
+			AppContext.Log.Warn($"/mxwo - update operation response : {response.Content}");
 
 			if (!response.IsSuccessful)
-			{				
-				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			{
+                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoWorkOrder)}");
+
+                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 
 			string workOrderHref = null;
@@ -419,10 +424,12 @@ namespace MaximoServiceLibrary
 			request.AddJsonBody(workOrderToBePosted);
 
 			var response = restClient.Execute(request);
-			Console.WriteLine($"/dcw_cb_wolabtrans - update operation response : {response.Content}");
+			AppContext.Log.Warn($"/dcw_cb_wolabtrans - update operation response : {response.Content}");
 			if (!response.IsSuccessful)
 			{
-				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoWorkOrder)}");
+                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 
 			return getWorkOrderByHref(maximoWorkOrder.href);
@@ -435,7 +442,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 			
@@ -460,7 +467,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<FailureList>();
 			}
 
@@ -479,7 +486,7 @@ namespace MaximoServiceLibrary
 
 				if (!response.IsSuccessful)
 				{
-					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 					// todo - throw exception here?
 					return FailureLists;
 				}
@@ -498,15 +505,16 @@ namespace MaximoServiceLibrary
 			var request = createRequest("/os/mxasset", false, Method.POST);
 			request.AddHeader("x-method-override", "POST");
 			
-			request.JsonSerializer = new RestSharpJsonNetSerializer();
 			request.AddJsonBody(maximoAsset);
 
 			var response = restClient.Execute(request);
-			Console.WriteLine($"/mxasset - update operation response : {response.Content}");
+			AppContext.Log.Warn($"/mxasset - update operation response : {response.Content}");
 
 			if (!response.IsSuccessful)
-			{				
-				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			{
+                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
+                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 
 			string assetHref = null;
@@ -530,10 +538,12 @@ namespace MaximoServiceLibrary
 			request.AddJsonBody(maximoAsset);
 
 			var response = restClient.Execute(request);
-			Console.WriteLine($"/mxasset - update operation response : {response.Content}");
+			AppContext.Log.Warn($"/mxasset - update operation response : {response.Content}");
 			if (!response.IsSuccessful)
-			{				
-				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			{
+                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
+                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 			
 			return getAssetByHref(maximoAsset.href);
@@ -548,7 +558,7 @@ namespace MaximoServiceLibrary
 			var response = restClient.Execute(request);
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<MaximoAttribute>();
 			}
 			List<MaximoAttribute> maximoAttributes = new List<MaximoAttribute>();
@@ -566,7 +576,7 @@ namespace MaximoServiceLibrary
 
 				if (!response.IsSuccessful)
 				{
-					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 					// todo - throw exception here?
 					return maximoAttributes;
 				}
@@ -591,7 +601,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<MaximoInventory>();
 			}
 			List<MaximoInventory> tools = new List<MaximoInventory>();
@@ -609,7 +619,7 @@ namespace MaximoServiceLibrary
 
 				if (!response.IsSuccessful)
 				{
-					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 					// todo - throw exception here?
 					return tools;
 				}
@@ -633,7 +643,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<MaximoDomain>();
 			}
 			List<MaximoDomain> maximoDomains = new List<MaximoDomain>();
@@ -651,7 +661,7 @@ namespace MaximoServiceLibrary
 
 				if (!response.IsSuccessful)
 				{
-					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 					// todo - throw exception here?
 					return maximoDomains;
 				}
@@ -694,7 +704,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 			
@@ -715,7 +725,7 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-				Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 				return new List<MaximoLabor>();
 			}
 			List<MaximoLabor> maximoLabors = new List<MaximoLabor>();
@@ -733,7 +743,7 @@ namespace MaximoServiceLibrary
 
 				if (!response.IsSuccessful)
 				{
-					Console.WriteLine("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 					// todo - throw exception here?
 					return maximoLabors;
 				}

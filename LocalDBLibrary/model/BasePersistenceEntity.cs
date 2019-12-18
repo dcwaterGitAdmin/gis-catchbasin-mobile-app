@@ -12,8 +12,28 @@ namespace LocalDBLibrary.model
 		[JsonIgnore]
         public int Id { get; set; }
 
+        [JsonIgnore]
+        private SyncronizationStatus syncStatus = SyncronizationStatus.SYNCED;
+
         [JsonIgnore] 
-        public SyncronizationStatus syncronizationStatus { get; set; } = SyncronizationStatus.SYNCED;
+        public SyncronizationStatus syncronizationStatus
+        {
+        get { return syncStatus; }
+            set {
+                //  CREATED not set MODIFIED
+                if (!(syncStatus == SyncronizationStatus.CREATED && value == SyncronizationStatus.MODIFIED)) {
+                    syncStatus = value;
+                }
+                }
+        }
+
+        private int myVar;
+
+        public int MyProperty
+        {
+            get { return myVar; }
+            set { myVar = value; }
+        }
 
     }
 

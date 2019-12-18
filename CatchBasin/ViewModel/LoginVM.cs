@@ -9,13 +9,13 @@ using MaximoServiceLibrary;
 using System.Windows;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
-
+using log4net;
 
 namespace CatchBasin.ViewModel
 {
     class LoginVM : BaseVM
     {
-
+      
         public LoginCommand LoginCommand { get; set; } 
 
       
@@ -56,34 +56,38 @@ namespace CatchBasin.ViewModel
 
         public void DoLogin(Window window)
         {
-          
+            MaximoServiceLibrary.AppContext.Log.Warn("DoLogin");
             try
             {
-                if (MaximoServiceLibrary.AppContext.synchronizationService.login(UserName, Password))
+
+                string loginStatus = MaximoServiceLibrary.AppContext.synchronizationService.login(UserName, Password);
+                if (loginStatus == "success")
                 {
 
+                    
 
-                    Console.WriteLine("test");
-					((App)Application.Current).AppType = ApplicationType;
+                    ((App)Application.Current).AppType = ApplicationType;
                     if (MaximoServiceLibrary.AppContext.inventoryRepository.findAll().Count() == 0)
                     {
                         MaximoServiceLibrary.AppContext.synchronizationService.synchronizeHelperFromMaximoToLocalDb();
                     }
+                    new Map().Show();
 
                     var interval = Convert.ToDouble(System.Configuration.ConfigurationManager.AppSettings["SyncIntervalTime"]);
                     MaximoServiceLibrary.AppContext.synchronizationService.startSyncronizationTimer(interval);
 					
-					new Map().Show();
+					
                     window.Close();
                 }
                 else
                 {
-                    MessageBox.Show($"Something is wrong!\n", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Something is wrong!\n{loginStatus}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch(Exception e)
             {
-
+                MaximoServiceLibrary.AppContext.Log.Error(e);
+                MessageBox.Show($"Something is wrong!\n{e}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             
         }

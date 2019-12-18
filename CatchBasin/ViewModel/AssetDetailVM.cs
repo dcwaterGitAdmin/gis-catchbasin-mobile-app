@@ -41,9 +41,9 @@ namespace CatchBasin.ViewModel
             get { return topMaterial; }
             set { topMaterial = value;  OnPropertyChanged("TopMaterial");}
         }
-        private int? topThickness;
+        private double? topThickness;
 
-        public int? TopThickness
+        public double? TopThickness
         {
             get { return topThickness; }
             set { topThickness = value;  OnPropertyChanged("TopThickness");}

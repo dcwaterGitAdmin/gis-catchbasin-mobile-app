@@ -1,5 +1,7 @@
 using LocalDBLibrary;
+using log4net;
 using MaximoServiceLibrary.repository;
+using System.Reflection;
 
 namespace MaximoServiceLibrary
 {
@@ -25,6 +27,12 @@ namespace MaximoServiceLibrary
 
 		public static SynchronizationService synchronizationService = new SynchronizationService();
 
-		
+        public static ILog Log
+        {
+            get
+            {
+                return log4net.LogManager.GetLogger("CBLOG");
+            }
+        }
     }
 }

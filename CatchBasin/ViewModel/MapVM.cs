@@ -51,7 +51,7 @@ namespace CatchBasin.ViewModel
 
         public void synchronizationStatus(string status, string substatus)
         {
-            SyncStatus = $"{status} | {substatus}";
+            SyncStatus = $"{substatus}";
         }
 
         private bool isOffline;
@@ -166,7 +166,7 @@ namespace CatchBasin.ViewModel
                 feature.Attributes["ASSETTAG"] = tag;
                 feature.Attributes["SUBTYPE"] = 0;
                 feature.Attributes["TOPMATRL"] = "C";
-                feature.Attributes["TOPTHICK"] = 4;
+                feature.Attributes["TOPTHICK"] = Convert.ToDouble(4);
                 feature.Attributes["LOCATIONDETAIL"] = "";
                 feature.Attributes["OWNER"] = "WASA";
                 feature.Attributes["CLNRESP"] = "DC WASA";
@@ -569,7 +569,7 @@ namespace CatchBasin.ViewModel
                 Settings.ShowDialog();
             }catch(Exception e)
             {
-                Console.WriteLine(e.ToString());
+                MaximoServiceLibrary.AppContext.Log.Warn(e.ToString());
             }
             
         }
@@ -921,7 +921,7 @@ namespace CatchBasin.ViewModel
                 if (job.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
                 {
                     // report success ...
-                    Console.WriteLine("Synchronization is complete!");
+                    MaximoServiceLibrary.AppContext.Log.Warn("Synchronization is complete!");
                     GISSyncStatus = $"Synchronization is complete! {layername}";
                     try
                     {
@@ -931,14 +931,14 @@ namespace CatchBasin.ViewModel
                     }
                     catch (Exception _e)
                     {
-
+                        MaximoServiceLibrary.AppContext.Log.Error(_e);
                     }
 
                 }
                 else if (job.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
                 {
                     // report failure ...
-                    Console.WriteLine();
+                    MaximoServiceLibrary.AppContext.Log.Warn(job.Error.Message);
                     GISSyncStatus = $"Error: {job.Error.Message}";
                 }
                 else

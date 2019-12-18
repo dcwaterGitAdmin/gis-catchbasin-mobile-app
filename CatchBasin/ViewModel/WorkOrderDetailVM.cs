@@ -220,15 +220,46 @@ namespace CatchBasin.ViewModel
 
 			var CB_SUBT = new MaximoAssetSpec();
 			CB_SUBT.assetattrid = "CB_SUBT";
-            try
+
+            var type = (int?)geoElement.Attributes["SUBTYPE"];
+
+            switch (type)
             {
-                CB_SUBT.alnvalue = ((int?)geoElement.Attributes["SUBTYPE"]).ToString();
+                case 0:
+                    CB_SUBT.alnvalue = "UNKNOWN";
+                    break;
+                case 1:
+                    CB_SUBT.alnvalue = "SINGLE";
+                    break;
+                case 2:
+                    CB_SUBT.alnvalue = "DOUBLE";
+                    break;
+                case 3:
+                    CB_SUBT.alnvalue = "TRIPLE";
+                    break;
+                case 4:
+                    CB_SUBT.alnvalue = "GRATE";
+                    break;
+                case 5:
+                    CB_SUBT.alnvalue = "QUADRUPLE";
+                    break;
+                case 6:
+                    CB_SUBT.alnvalue = "ELONGATE";
+                    break;
+                case 7:
+                    CB_SUBT.alnvalue = "DOUBLE GRATE";
+                    break;
+                case 8:
+                    CB_SUBT.alnvalue = "FIELD DRAIN";
+                    break;
+                case 9:
+                    CB_SUBT.alnvalue = "TRENCH DRAIN";
+                    break;
+                default:
+                    CB_SUBT.alnvalue = "";
+                    break;
             }
-            catch (Exception e)
-            {
-                CB_SUBT.alnvalue = null;
-            }
-			
+           
 			asset.assetspec.Add(CB_SUBT);
 
 			var TOPMATRL = new MaximoAssetSpec();
@@ -319,6 +350,14 @@ namespace CatchBasin.ViewModel
                 assetTag = value;
                 OnPropertyChanged("AssetTag");
             }
+        }
+
+        private bool problemIsEnabled;
+
+        public bool ProblemIsEnabled
+        {
+            get { return problemIsEnabled; }
+            set { problemIsEnabled = value; OnPropertyChanged("ProblemIsEnabled"); }
         }
 
 
@@ -1861,10 +1900,15 @@ namespace CatchBasin.ViewModel
             AttachmentsIsVisible = true;
             RemarksIsVisible = true;
 
+            // Problem is always enabled  except worktype is "CM"
+            ProblemIsEnabled = true;
+
+
             switch (MaximoWorkOrder.worktype)
             {
                 case "CM":
                     DumpEstIsVisible = true;
+                    ProblemIsEnabled = false;
                     break;
                 case "EMERG":
                 case "INV":

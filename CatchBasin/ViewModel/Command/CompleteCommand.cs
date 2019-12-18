@@ -36,7 +36,16 @@ namespace CatchBasin.ViewModel.Command
 		public bool CanExecute(object parameter)
 		{
 
-			if(WorkOrderDetailVM.ToolTrans.Count>0 && WorkOrderDetailVM.LabTrans.Count > 0 && WorkOrderDetailVM.MaximoWorkOrder.startTimerDate != null)
+            var values = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("startTimerDate", null).ToList();
+            if (values.Count > 0)
+            {
+                if(values.First().wonum == WorkOrderDetailVM.MaximoWorkOrder.wonum)
+                {
+                    return false;
+                }
+            }
+
+            if (WorkOrderDetailVM.ToolTrans.Count>0 && WorkOrderDetailVM.LabTrans.Count > 0)
 			{
 				return true;
 			}

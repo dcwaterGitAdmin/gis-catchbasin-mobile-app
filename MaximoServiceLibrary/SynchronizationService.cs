@@ -32,7 +32,7 @@ namespace MaximoServiceLibrary
 
 		public void logSynchronizationStatus(string status, string substatus)
 		{
-			Console.WriteLine($"syncronization status:{status}, substatus:{substatus}");
+			AppContext.Log.Warn($"syncronization status:{status}, substatus:{substatus}");
 		}
 
 		public void startSyncronizationTimer()
@@ -74,7 +74,7 @@ namespace MaximoServiceLibrary
 				return;
 			}
 			
-			Console.WriteLine("The Elapsed event was raised ");
+			AppContext.Log.Warn("The Elapsed event was raised ");
 
 			synchronizeInBackground();
 		}
@@ -261,11 +261,11 @@ namespace MaximoServiceLibrary
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.StackTrace);
+				AppContext.Log.Warn(ex.StackTrace);
 			}
 			finally
 			{
-				synchronizationDelegate("SYNC_FINISHED", null);
+				synchronizationDelegate("SYNC_FINISHED", "Maximo synchronization complete!");
 
 				isInSynchronization = false;
 				synchronizationTimer.Enabled = true;
@@ -831,7 +831,7 @@ namespace MaximoServiceLibrary
 		}
 
 		// todo : move to userservice
-		public bool login(string username, string password)
+		public string login(string username, string password)
 		{
 
 
@@ -857,7 +857,8 @@ namespace MaximoServiceLibrary
 					{
 						updateLabors();
 						if (AppContext.laborRepository.Find("person[*].personid", mxuser.personId).Count() == 0)
-						{ return false;
+						{
+                            return "You don't have laborcraftrate!";
 						}
 							
 					}
@@ -868,7 +869,7 @@ namespace MaximoServiceLibrary
 
 					if (maximoPersonGroup == null)
 					{
-						return false;
+						return "You don't have crew!";
 					}
 
 					if (maximoPersonGroup.persongroupteam != null)
@@ -881,7 +882,7 @@ namespace MaximoServiceLibrary
 						}
 						else
 						{
-							return false;
+							return "Your Crew has 0 person";
 						}
 						if (maximoPersonGroup.persongroupteam.Count > 1)
 						{
@@ -891,8 +892,8 @@ namespace MaximoServiceLibrary
 					}
 					else
 					{
-						return false;
-					}
+                        return "Your Crew has 0 person";
+                    }
 
 					AppContext.personGroupRepository.removeCollection();
 					AppContext.personGroupRepository.insert(maximoPersonGroup);
@@ -906,18 +907,18 @@ namespace MaximoServiceLibrary
 
 					if (mxuser.persongroup == null)
 					{
-						return false;
-					}
+                        return "You don't have crew!";
+                    }
 
 					mxuser.password = password;
 
 					AppContext.userRepository.upsert(mxuser);
 
-					return true;
+					return "success";
 				}catch(Exception e)
 				{
-					return false;
-				}
+                    return e.ToString();
+                }
 				
 			}
 			else
@@ -927,11 +928,12 @@ namespace MaximoServiceLibrary
 				{
                     mxuser = maximoUser;
 	
-					return true;
-				}
+					return "success";
+
+                }
 				else
 				{
-					return false;
+					return "Password is wrong";
 				}
 			}
 		}
