@@ -35,7 +35,11 @@ namespace MaximoServiceLibrary.model
 	{
 	}
 
-	public class MaximoDocLinksRestResponse : MaximoBaseRestResponse<MaximoDocLinks>
+	public class MaximoDocLinksWrapper : MaximoBaseEntity
+	{
+		public MaximoDocLinks describedBy;
+	}
+	public class MaximoDocLinksRestResponse : MaximoBaseRestResponse<MaximoDocLinksWrapper>
 	{
 	}
 	

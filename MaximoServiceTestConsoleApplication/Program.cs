@@ -15,16 +15,6 @@ namespace MaximoServiceTestConsoleApplication
 	{
 		public static void Main(string[] args)
 		{
-			AppContext.synchronizationService.login("erdem", "password");
-
-			MaximoWorkOrder maximoWorkOrder =  AppContext.workOrderRepository.findOne("20-85254");
-			maximoWorkOrder.syncronizationStatus = SyncronizationStatus.COMPLETED;
-			AppContext.workOrderRepository.upsert(maximoWorkOrder);
-			
-			
-			AppContext.synchronizationService.synchronizeInBackground();
-
-			/*
 			IEnumerable<MaximoWorkOrder> maximoWorkOrdersFromDb = AppContext.workOrderRepository.findAll();
 
 			Console.WriteLine($"fetched : {maximoWorkOrdersFromDb.ToList().Count} workorders from db");
@@ -45,14 +35,10 @@ namespace MaximoServiceTestConsoleApplication
 				MaximoAsset maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
 				maximoWorkOrder.asset = maximoAsset;
 
-				List<MaximoLabTrans> workOrderLabTransList = maximoService.getWorkOrderLabTrans(maximoWorkOrder);
-				maximoWorkOrder.labtrans = workOrderLabTransList;
-
 				List<MaximoDocLinks> workOrderDocLists = maximoService.getWorkOrderDocLinks(maximoWorkOrder);
-				maximoWorkOrder.doclinks = workOrderDocLists;
+				maximoWorkOrder.doclink = workOrderDocLists;
 				Console.WriteLine($"fetched {workOrderDocLists.Count} doclinks");
 			}
-			*/
 
 		}
 	}
