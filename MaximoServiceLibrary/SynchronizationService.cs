@@ -109,8 +109,7 @@ namespace MaximoServiceLibrary
 				{
 					try
 					{
-						MaximoWorkOrder woFromLocal =
-							workOrdersFromLocal.FirstOrDefault(wo => wo.wonum == woFromMaximo.wonum);
+						MaximoWorkOrder woFromLocal = workOrdersFromLocal.FirstOrDefault(wo => wo.wonum == woFromMaximo.wonum);
 
 						synchronizeWorkOrder(woFromMaximo, woFromLocal);
 					}
@@ -119,6 +118,24 @@ namespace MaximoServiceLibrary
 						AppContext.Log.Error(ex.StackTrace);
 					}
 				}
+				
+				// POST CREATED work orders to Maximo
+				workOrdersFromLocal = AppContext.workOrderRepository.findAll();
+				foreach (var woFromLocal in workOrdersFromLocal)
+				{
+					try
+					{
+						if (woFromLocal.completed && woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
+						{
+							postWorkOrderToMaximo(woFromLocal, woFromLocal.workorderspec, woFromLocal.failurereport, woFromLocal.labtrans, woFromLocal.tooltrans);
+						}
+					}
+					catch (Exception ex)
+					{
+						AppContext.Log.Error(ex.StackTrace);
+					}
+				}
+				
 
 			}
 			catch (Exception ex)
@@ -224,6 +241,16 @@ namespace MaximoServiceLibrary
 			woFinalToBeSaved.asset = woAssetFinalToBeSaved;
 
 
+			woFinalToBeSaved = postWorkOrderToMaximo(woFinalToBeSaved, freshWorkOrderSpecList, freshWorkOrderFailureReportList, freshWorkOrderLabTransList, freshWorkOrderToolTransList);
+
+			AppContext.workOrderRepository.upsert(woFinalToBeSaved);
+		}
+
+		private MaximoWorkOrder postWorkOrderToMaximo(MaximoWorkOrder woFinalToBeSaved, List<MaximoWorkOrderSpec> freshWorkOrderSpecList,
+			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList, List<MaximoLabTrans> freshWorkOrderLabTransList, List<MaximoToolTrans> freshWorkOrderToolTransList)
+		{
+			MaximoWorkOrder woFromLocal = woFinalToBeSaved;
+			
 			if (woFinalToBeSaved != null && woFinalToBeSaved.completed)
 			{
 				if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
@@ -259,23 +286,23 @@ namespace MaximoServiceLibrary
 
 					woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
 
-					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFinalToBeSaved);
 
 					woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
 					woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
 					//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
 
-					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
+					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFinalToBeSaved);
 				}
 				else
 				{
-					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFinalToBeSaved);
 
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
 				}
 
 				//post follow up work orders
-				foreach (var followupWorkOrder in woFinalToBeSaved.followups)
+				foreach (var followupWorkOrder in woFromLocal.followups)
 				{
 					followupWorkOrder.origrecordid = woFinalToBeSaved.wonum;
 					AppContext.maximoService.createWorkOrder(followupWorkOrder);
@@ -284,7 +311,7 @@ namespace MaximoServiceLibrary
 				fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
 			}
 
-			AppContext.workOrderRepository.upsert(woFinalToBeSaved);
+			return woFinalToBeSaved;
 		}
 
 
