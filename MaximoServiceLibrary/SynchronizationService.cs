@@ -240,8 +240,11 @@ namespace MaximoServiceLibrary
 
 			woFinalToBeSaved.asset = woAssetFinalToBeSaved;
 
-
-			woFinalToBeSaved = postWorkOrderToMaximo(woFinalToBeSaved, freshWorkOrderSpecList, freshWorkOrderFailureReportList, freshWorkOrderLabTransList, freshWorkOrderToolTransList);
+			if (woFinalToBeSaved.completed)
+			{
+				woFinalToBeSaved = postWorkOrderToMaximo(woFinalToBeSaved, freshWorkOrderSpecList, freshWorkOrderFailureReportList, freshWorkOrderLabTransList, freshWorkOrderToolTransList);
+			}
+			
 
 			AppContext.workOrderRepository.upsert(woFinalToBeSaved);
 		}
@@ -294,7 +297,7 @@ namespace MaximoServiceLibrary
 
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFinalToBeSaved);
 				}
-				else
+				else if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
 				{
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFinalToBeSaved);
 
