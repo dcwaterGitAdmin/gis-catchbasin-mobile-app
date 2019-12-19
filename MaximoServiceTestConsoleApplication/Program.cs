@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using LocalDBLibrary;
 using LocalDBLibrary.model;
 using MaximoServiceLibrary;
@@ -15,6 +16,15 @@ namespace MaximoServiceTestConsoleApplication
 	{
 		public static void Main(string[] args)
 		{
+			Task task = new Task(() =>
+			{
+				Console.WriteLine($" async rnning in thread: {Thread.CurrentThread.ManagedThreadId}");
+			});
+			task.Start();
+			
+			Console.WriteLine($" sync rnning in thread: {Thread.CurrentThread.ManagedThreadId}");
+
+			
 			IEnumerable<MaximoWorkOrder> maximoWorkOrdersFromDb = AppContext.workOrderRepository.findAll();
 
 			Console.WriteLine($"fetched : {maximoWorkOrdersFromDb.ToList().Count} workorders from db");
