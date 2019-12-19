@@ -166,7 +166,7 @@ namespace CatchBasin.ViewModel
                 feature.Attributes["ASSETTAG"] = tag;
                 feature.Attributes["SUBTYPE"] = 0;
                 feature.Attributes["TOPMATRL"] = "C";
-                feature.Attributes["TOPTHICK"] = Convert.ToDouble(4);
+                feature.Attributes["TOPTHICK"] = 4;
                 feature.Attributes["LOCATIONDETAIL"] = "";
                 feature.Attributes["OWNER"] = "WASA";
                 feature.Attributes["CLNRESP"] = "DC WASA";

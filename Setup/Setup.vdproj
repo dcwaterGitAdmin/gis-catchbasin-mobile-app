@@ -915,6 +915,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A539F01D9AF86E5F50D916862E0F1117"
+        "OwnerKey" = "8:_0A4A46AC62F34951A2D8BD737A374762"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A539F01D9AF86E5F50D916862E0F1117"
+        "OwnerKey" = "8:_0AD6556ACC1F5E5B024DFEF081DAADDA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A54A299DBC2343FD8401E9E7A92B71D2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1469,6 +1481,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_185D57E108CEE80A56DB54B2C64DEC12"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A539F01D9AF86E5F50D916862E0F1117"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4543,6 +4561,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A539F01D9AF86E5F50D916862E0F1117"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A539F01D9AF86E5F50D916862E0F1117"
+                    {
+                    "Name" = "8:log4net.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:log4net.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_5D636E417F714C0A94F374684E230664"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A54A299DBC2343FD8401E9E7A92B71D2"
             {
             "SourcePath" = "8:C:\\CatchBasin\\ArcGISRuntime100.6\\resources\\shaders\\sequence_point_sdf_normal_vs.cso"
@@ -6420,22 +6469,22 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Setup"
-        "ProductCode" = "8:{96F7B30D-6704-40F6-B471-73245B6B8B74}"
-        "PackageCode" = "8:{AAF359AD-64DD-4535-9976-A6AFC43623D1}"
+        "ProductName" = "8:Catch Basin Setup"
+        "ProductCode" = "8:{4BB01E2D-186A-426D-8DE5-E8ECC01AB8CF}"
+        "PackageCode" = "8:{4F6C5095-D51E-4FDD-97DA-756525D2AF63}"
         "UpgradeCode" = "8:{E4A39049-F014-4981-8908-C9B74EC7B245}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Default Company Name"
+        "InstallAllUsers" = "11:TRUE"
+        "ProductVersion" = "8:1.0.4"
+        "Manufacturer" = "8:DCWater"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Setup"
+        "Title" = "8:Catch Basin Setup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Default Company Name"
+        "ARPCONTACT" = "8:DCWater"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
