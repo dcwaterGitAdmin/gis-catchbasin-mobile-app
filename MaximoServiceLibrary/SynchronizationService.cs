@@ -1,13 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-using LocalDBLibrary;
 using LocalDBLibrary.model;
 using MaximoServiceLibrary.model;
-using MaximoServiceLibrary.repository;
 
 namespace MaximoServiceLibrary
 {
@@ -338,6 +335,8 @@ namespace MaximoServiceLibrary
 				}
 
 				fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
+				woFinalToBeSaved.completed = false;
+				woFinalToBeSaved.syncronizationStatus = SyncronizationStatus.SYNCED;
 			}
 
 			return woFinalToBeSaved;
