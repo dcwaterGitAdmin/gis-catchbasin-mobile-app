@@ -830,10 +830,7 @@ namespace MaximoServiceLibrary
 			// get domains
 			AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
 
-
-			// get attributes
-
-			AppContext.attributeRepository.upsertList(AppContext.maximoService.getAttributes());
+			
 			// get failurelist
 			// 1283 CatchBasin failurelist id
 			List<FailureList> failureLists = new List<FailureList>();
@@ -850,10 +847,6 @@ namespace MaximoServiceLibrary
 
 
 
-			// get labors
-			
-
-
 
 			// get inventories
 			AppContext.inventoryRepository.upsertList(AppContext.maximoService.getInventory());
@@ -863,7 +856,6 @@ namespace MaximoServiceLibrary
 		public void clearHelperFromLocalDb()
 		{
 			AppContext.domainRepository.removeCollection();
-			AppContext.assetRepository.removeCollection();
 			AppContext.failureListRepository.removeCollection();
 			AppContext.inventoryRepository.removeCollection();
 			

@@ -118,9 +118,6 @@ namespace MaximoServiceLibrary.model
 	public class MaximoDomain : MaximoBaseEntity
 	{
 
-		// Scale
-		public int scale { get; set; } 
-
 		// SYNONYMDOMAIN
 		public List<SYNONYMDOMAIN> synonymdomain { get; set; } 
 
@@ -130,36 +127,12 @@ namespace MaximoServiceLibrary.model
 		// ALNDOMAINVALUE
 		public List<ALNDOMAINVALUE> alndomain { get; set; } 
 
-		// Domain Type
-		public string domaintype { get; set; } 
-
-		// MAXDOMAINID
-		public Int64 maxdomainid { get; set; } 
-
 		// Description
 		public string description { get; set; } 
 
 		// NUMDOMAINVALUE
 		public List<NUMDOMAINVALUE> numericdomain { get; set; } 
 
-		// MAXDOMVALCOND
-		public List<MAXDOMVALCOND> maxdomvalcond { get; set; } 
-
-		// Length
-		public int length { get; set; } 
-
-		// Data Type
-		public string maxtype { get; set; } 
-
-		// Disable Caching
-		public bool nevercache { get; set; } 
-
-		// MAXTABLEDOMAIN
-		public List<MAXTABLEDOMAIN> maxtabledomain { get; set; } 
-
-		// Is Internal
-		//public int internal { get; set; } 
-		// todo: internal is reserved word
 	}
 
 	// MXDOMAIN
@@ -1040,60 +1013,9 @@ namespace MaximoServiceLibrary.model
 
 	public class MaximoInventory : MaximoBaseEntity
 	{
-		public double issue2yrago { get; set; }
-		public string sendersysid { get; set; }
-		public string location { get; set; }
-		public string invcost_collectionref { get; set; }
-		public double curbal { get; set; }
-		public double sstock { get; set; }
-		public string controlacc { get; set; }
-		public string orderunit { get; set; }
-		public double avblbalance { get; set; }
-		public double maxlevel { get; set; }
-		public string _rowstamp { get; set; }
-		public string orgid { get; set; }
-		public double reservedqty { get; set; }
-		public string itemsetid { get; set; }
+		
 		public string itemnum { get; set; }
-		public string siteid { get; set; }
-		public double minlevel { get; set; }
-		public string href { get; set; }
-		public bool @internal { get; set; }
-		public int inventoryid { get; set; }
-		public int ccf { get; set; }
-		public string abctype { get; set; }
-		public string itemtype { get; set; }
-		public bool hardresissue { get; set; }
-		public DateTime statusdate { get; set; }
-		public string status { get; set; }
-		public int deliverytime { get; set; }
-		public string vendor { get; set; }
-		public bool consignment { get; set; }
-		public double issue1yrago { get; set; }
-		public string binnum { get; set; }
-		public bool reorder { get; set; }
-		public string il1 { get; set; }
-		public List<Invcost> invcost { get; set; }
-		public double orderqty { get; set; }
-		public string issueunit { get; set; }
-		public DateTime lastissuedate { get; set; }
-		public double issueytd { get; set; }
-		public bool statusiface { get; set; }
-		public double issue3yrago { get; set; }
-		public string costtype { get; set; }
+		
 	}
 
-	public class Invcost
-	{
-		public string _rowstamp { get; set; }
-		public double stdcost { get; set; }
-		public string orgid { get; set; }
-		public int condrate { get; set; }
-		public double avgcost { get; set; }
-		public string localref { get; set; }
-		public int invcostid { get; set; }
-		public double lastcost { get; set; }
-		public string controlacc { get; set; }
-		public string href { get; set; }
-	}
 }

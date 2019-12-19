@@ -44,9 +44,9 @@ namespace CatchBasin
                 // Initialize the ArcGIS Runtime before any components are created.
                 ArcGISRuntimeEnvironment.Initialize();
 
-                //MaximoServiceLibrary.AppContext.assetRepository.removeCollection();
+                MaximoServiceLibrary.AppContext.assetRepository.removeCollection();
 
-                //MaximoServiceLibrary.AppContext.workOrderRepository.removeCollection();
+                MaximoServiceLibrary.AppContext.workOrderRepository.removeCollection();
 
                 //var mxuser = MaximoServiceLibrary.AppContext.userRepository.findOneIgnoreCase("EDELIOGLU");
                 //mxuser.userPreferences.lastSyncTime = DateTime.MinValue;
