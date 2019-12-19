@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using LocalDBLibrary;
 using LocalDBLibrary.model;
@@ -75,8 +76,13 @@ namespace MaximoServiceLibrary
 			}
 			
 			AppContext.Log.Warn("The Elapsed event was raised ");
+			
+			Task t = new Task(() =>
+			{
+				synchronizeInBackground();
+			});
 
-			synchronizeInBackground();
+			t.Start();
 		}
 		
 		public async void synchronizeInBackground()
