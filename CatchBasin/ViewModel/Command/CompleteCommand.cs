@@ -39,7 +39,7 @@ namespace CatchBasin.ViewModel.Command
             var values = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("startTimerDate", null).ToList();
             if (values.Count > 0)
             {
-                if(values.First().wonum == WorkOrderDetailVM.MaximoWorkOrder.wonum)
+                if(values.First().wonum == WorkOrderDetailVM.MaximoWorkOrder?.wonum)
                 {
                     return false;
                 }

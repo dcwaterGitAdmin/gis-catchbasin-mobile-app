@@ -51,6 +51,10 @@ namespace CatchBasin.ViewModel
 
         public void synchronizationStatus(string status, string substatus)
         {
+            if(status == "SYNC_FINISHED")
+            {
+                WorkOrderListVM.Update();
+            }
             SyncStatus = $"{substatus}";
         }
 

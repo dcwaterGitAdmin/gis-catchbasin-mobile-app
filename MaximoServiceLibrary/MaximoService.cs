@@ -367,7 +367,7 @@ namespace MaximoServiceLibrary
 			request.AddJsonBody(workOrderToBePosted);
 
 			var response = restClient.Execute(request);
-			AppContext.Log.Warn($"/mxwo - update operation response : {response.Content}");
+			
 
 			if (!response.IsSuccessful)
 			{
@@ -375,8 +375,8 @@ namespace MaximoServiceLibrary
                 AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
                 throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
-			
-			return getWorkOrderByHref(maximoWorkOrder.href);
+            AppContext.Log.Info($"/dcw_cb_wo/{maximoWorkOrder.workorderid} - update operation successfull");
+            return getWorkOrderByHref(maximoWorkOrder.href);
 		}
 
 		public MaximoWorkOrder createWorkOrder(MaximoWorkOrder maximoWorkOrder)
@@ -388,7 +388,7 @@ namespace MaximoServiceLibrary
 			request.AddJsonBody(maximoWorkOrder);
 
 			var response = restClient.Execute(request);
-			AppContext.Log.Warn($"/mxwo - update operation response : {response.Content}");
+			
 
 			if (!response.IsSuccessful)
 			{
@@ -407,7 +407,8 @@ namespace MaximoServiceLibrary
 					workOrderHref = responseHeader.Value.ToString();
 				}
 			}
-			return getWorkOrderByHref(workOrderHref);
+            AppContext.Log.Info($"/dcw_cb_wo - create operation successfull : {workOrderHref}");
+            return getWorkOrderByHref(workOrderHref);
 		}
 
 		public MaximoWorkOrder updateWorkOrderActuals(MaximoWorkOrder maximoWorkOrder)
@@ -424,15 +425,15 @@ namespace MaximoServiceLibrary
 			request.AddJsonBody(workOrderToBePosted);
 
 			var response = restClient.Execute(request);
-			AppContext.Log.Warn($"/dcw_cb_wolabtrans - update operation response : {response.Content}");
+			
 			if (!response.IsSuccessful)
 			{
                 AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
                 AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoWorkOrder)}");
                 throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
-
-			return getWorkOrderByHref(maximoWorkOrder.href);
+            AppContext.Log.Info($"/dcw_cb_wo/{maximoWorkOrder.workorderid} - update operation successfull");
+            return getWorkOrderByHref(maximoWorkOrder.href);
 		}
 
 		public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
@@ -514,8 +515,7 @@ namespace MaximoServiceLibrary
 			request.AddJsonBody(maximoAsset);
 
 			var response = restClient.Execute(request);
-			AppContext.Log.Warn($"/mxasset - update operation response : {response.Content}");
-
+			
 			if (!response.IsSuccessful)
 			{
                 AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
@@ -532,7 +532,8 @@ namespace MaximoServiceLibrary
 					assetHref = responseHeader.Value.ToString();
 				}
 			}
-			return getAssetByHref(assetHref);
+            AppContext.Log.Info($"/mxasset - create operation successfull : {assetHref}");
+            return getAssetByHref(assetHref);
 		}
 
 		public MaximoAsset updateAsset(MaximoAsset maximoAsset)
@@ -551,8 +552,8 @@ namespace MaximoServiceLibrary
                 AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
                 throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
-			
-			return getAssetByHref(maximoAsset.href);
+            AppContext.Log.Info($"{maximoAsset.href} - update operation successfull");
+            return getAssetByHref(maximoAsset.href);
 		}
 
 		public List<MaximoAttribute> getAttributes()
