@@ -107,161 +107,23 @@ namespace MaximoServiceLibrary
 				// sync the work orders
 				foreach (var woFromMaximo in workOrdersFromMaximo)
 				{
-					MaximoWorkOrder woFromLocal = workOrdersFromLocal.FirstOrDefault(wo => wo.wonum == woFromMaximo.wonum);
-
-					MaximoWorkOrder woFinalToBeSaved = woFromMaximo;
-					// There exists a Local copy for WorkOrder
-					if (woFromLocal != null)
+					try
 					{
-						//means item is changed in maximo side
-						if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
-						{
-							if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
-							{
-								woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-								woFromMaximo.Id = woFromLocal.Id;
-								//insert into local with all childs
-							}
-							else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
-							         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
-							{
-								woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-								woFinalToBeSaved = woFromLocal;
-							}
-						}
-						//means item is not changed in maximo side
-						else
-						{
-							woFinalToBeSaved = woFromLocal;
-						}
+						MaximoWorkOrder woFromLocal =
+							workOrdersFromLocal.FirstOrDefault(wo => wo.wonum == woFromMaximo.wonum);
 
+						synchronizeWorkOrder(woFromMaximo, woFromLocal);
 					}
-					// There is no Local copy for WorkOrder
-					else
+					catch (Exception ex)
 					{
-						// Insert WorkOrder as SYNCED
-						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+						AppContext.Log.Error(ex.StackTrace);
 					}
-
-					List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
-					List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
-					List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
-					List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
-					//List<MaximoDocLinks> freshWorkOrderDocLinksList = generateFreshWorkOrderDocLinksList(woFromMaximo, woFromLocal);
-
-					woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
-					woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
-					woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
-					woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
-					//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
-					
-					// SYNCH ASSET
-					MaximoAsset woAssetFinalToBeSaved = synchAsset(woFromMaximo, woFromLocal);
-					if (woAssetFinalToBeSaved != null)
-					{
-						List<MaximoAssetSpec> freshAssetSpecList = generateFreshAssetSpecList(woFromMaximo, woFromLocal);
-						woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
-						if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
-						{
-							// Call createAsset
-							woAssetFinalToBeSaved.assetspec = null;
-							woAssetFinalToBeSaved = AppContext.maximoService.createAsset(woAssetFinalToBeSaved);
-
-							// merge asssetspec values to assset fetched from MAximo after creation
-							if (woAssetFinalToBeSaved.assetspec != null)
-							{
-								foreach (var assetSpecFromLocal in freshAssetSpecList)
-								{
-									var assetSpecFromMaximo = woAssetFinalToBeSaved.assetspec.FirstOrDefault(assetSpec => assetSpec.assetattrid == assetSpecFromLocal.assetattrid);
-									if (assetSpecFromMaximo != null)
-									{
-										assetSpecFromMaximo.alnvalue = assetSpecFromLocal.alnvalue;
-										assetSpecFromMaximo.numvalue = assetSpecFromLocal.numvalue;
-									}
-								}
-							}
-							else
-							{
-								woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
-							}
-							
-							woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
-						} 
-						else if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
-						{
-							woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
-						}
-					}
-					woFinalToBeSaved.asset = woAssetFinalToBeSaved;
-					
-					
-					if (woFinalToBeSaved != null && woFinalToBeSaved.completed)
-					{
-						if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
-						{
-							// in the first create call to Maximo, we have to clear the related entities
-							woFinalToBeSaved.workorderspec = null;
-							woFinalToBeSaved.failurereport = null;
-							woFinalToBeSaved.labtrans = null;
-							woFinalToBeSaved.tooltrans = null;
-							woFinalToBeSaved.doclink = null;
-							
-							woFinalToBeSaved = AppContext.maximoService.createWorkOrder(woFinalToBeSaved);
-
-							// in the second  call to Maximo, we have to put the related entities in the request
-							// merge workorderspec values to workorder fetched from Maximo after creation
-							if (woFinalToBeSaved.workorderspec != null)
-							{
-								foreach (var workOrderSpecFromLocal in freshWorkOrderSpecList)
-								{
-									var workorderSpecFromMaximo = woFinalToBeSaved.workorderspec.FirstOrDefault(workorderSpec => workorderSpec.assetattrid == workOrderSpecFromLocal.assetattrid);
-									if (workorderSpecFromMaximo != null)
-									{
-										workorderSpecFromMaximo.alnvalue = workOrderSpecFromLocal.alnvalue;
-										workorderSpecFromMaximo.numvalue = workOrderSpecFromLocal.numvalue;
-									}
-								}
-							}
-							else
-							{
-								woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
-							}
-
-							woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
-							
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
-							
-							woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
-							woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
-							//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
-							
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
-							
-						}
-						else
-						{
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
-							
-							woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
-						}
-						
-						//post follow up work orders
-						foreach (var followupWorkOrder in woFinalToBeSaved.followups)
-						{
-							followupWorkOrder.origrecordid = woFinalToBeSaved.wonum;
-							AppContext.maximoService.createWorkOrder(followupWorkOrder);
-						}
-						
-						fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
-					}
-					
-					AppContext.workOrderRepository.upsert(woFinalToBeSaved);
 				}
 
 			}
 			catch (Exception ex)
 			{
-				AppContext.Log.Warn(ex.StackTrace);
+				AppContext.Log.Error(ex.StackTrace);
 			}
 			finally
 			{
@@ -272,7 +134,160 @@ namespace MaximoServiceLibrary
 			}
 		}
 
-		
+		private void synchronizeWorkOrder(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
+		{
+			MaximoWorkOrder woFinalToBeSaved = woFromMaximo;
+			// There exists a Local copy for WorkOrder
+			if (woFromLocal != null)
+			{
+				//means item is changed in maximo side
+				if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
+				{
+					if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
+					{
+						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+						woFromMaximo.Id = woFromLocal.Id;
+						//insert into local with all childs
+					}
+					else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
+					         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+					{
+						woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
+						woFinalToBeSaved = woFromLocal;
+					}
+				}
+				//means item is not changed in maximo side
+				else
+				{
+					woFinalToBeSaved = woFromLocal;
+				}
+			}
+			// There is no Local copy for WorkOrder
+			else
+			{
+				// Insert WorkOrder as SYNCED
+				woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+			}
+
+			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
+			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList =
+				generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
+			List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
+			List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
+			//List<MaximoDocLinks> freshWorkOrderDocLinksList = generateFreshWorkOrderDocLinksList(woFromMaximo, woFromLocal);
+
+			woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
+			woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
+			woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
+			woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
+			//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
+
+			// SYNCH ASSET
+			MaximoAsset woAssetFinalToBeSaved = synchAsset(woFromMaximo, woFromLocal);
+			if (woAssetFinalToBeSaved != null)
+			{
+				List<MaximoAssetSpec> freshAssetSpecList = generateFreshAssetSpecList(woFromMaximo, woFromLocal);
+				woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
+				if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
+				{
+					// Call createAsset
+					woAssetFinalToBeSaved.assetspec = null;
+					woAssetFinalToBeSaved = AppContext.maximoService.createAsset(woAssetFinalToBeSaved);
+
+					// merge asssetspec values to assset fetched from MAximo after creation
+					if (woAssetFinalToBeSaved.assetspec != null)
+					{
+						foreach (var assetSpecFromLocal in freshAssetSpecList)
+						{
+							var assetSpecFromMaximo = woAssetFinalToBeSaved.assetspec.FirstOrDefault(assetSpec =>
+								assetSpec.assetattrid == assetSpecFromLocal.assetattrid);
+							if (assetSpecFromMaximo != null)
+							{
+								assetSpecFromMaximo.alnvalue = assetSpecFromLocal.alnvalue;
+								assetSpecFromMaximo.numvalue = assetSpecFromLocal.numvalue;
+							}
+						}
+					}
+					else
+					{
+						woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
+					}
+
+					woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
+				}
+				else if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
+				{
+					woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
+				}
+			}
+
+			woFinalToBeSaved.asset = woAssetFinalToBeSaved;
+
+
+			if (woFinalToBeSaved != null && woFinalToBeSaved.completed)
+			{
+				if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
+				{
+					// in the first create call to Maximo, we have to clear the related entities
+					woFinalToBeSaved.workorderspec = null;
+					woFinalToBeSaved.failurereport = null;
+					woFinalToBeSaved.labtrans = null;
+					woFinalToBeSaved.tooltrans = null;
+					woFinalToBeSaved.doclink = null;
+
+					woFinalToBeSaved = AppContext.maximoService.createWorkOrder(woFinalToBeSaved);
+
+					// in the second  call to Maximo, we have to put the related entities in the request
+					// merge workorderspec values to workorder fetched from Maximo after creation
+					if (woFinalToBeSaved.workorderspec != null)
+					{
+						foreach (var workOrderSpecFromLocal in freshWorkOrderSpecList)
+						{
+							var workorderSpecFromMaximo = woFinalToBeSaved.workorderspec.FirstOrDefault(workorderSpec =>
+								workorderSpec.assetattrid == workOrderSpecFromLocal.assetattrid);
+							if (workorderSpecFromMaximo != null)
+							{
+								workorderSpecFromMaximo.alnvalue = workOrderSpecFromLocal.alnvalue;
+								workorderSpecFromMaximo.numvalue = workOrderSpecFromLocal.numvalue;
+							}
+						}
+					}
+					else
+					{
+						woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
+					}
+
+					woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
+
+					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+
+					woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
+					woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
+					//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
+
+					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
+				}
+				else
+				{
+					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFromLocal);
+
+					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
+				}
+
+				//post follow up work orders
+				foreach (var followupWorkOrder in woFinalToBeSaved.followups)
+				{
+					followupWorkOrder.origrecordid = woFinalToBeSaved.wonum;
+					AppContext.maximoService.createWorkOrder(followupWorkOrder);
+				}
+
+				fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
+			}
+
+			AppContext.workOrderRepository.upsert(woFinalToBeSaved);
+		}
+
+
 		public List<MaximoWorkOrderSpec> generateFreshWorkOrderSpecList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
 		{
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = new List<MaximoWorkOrderSpec>();
