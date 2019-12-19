@@ -479,31 +479,16 @@ namespace MaximoServiceLibrary.model
 	public class MaximoAttribute : MaximoBaseEntity
 	{
 
-		// Prefix
-		public string attrdescprefix { get; set; } 
-
 		// Attribute
 		public string assetattrid { get; set; } 
 
-		// ASSETATTRIBUTEID
-		public Int64 assetattributeid { get; set; } 
-
-		// Organization
-		public string orgid { get; set; } 
-
-		// Unit of Measure
-		public string measureunitid { get; set; } 
-
+		
 		// Description
 		public string description { get; set; } 
 
-		// Site
-		public string siteid { get; set; } 
-
+	
 		// Domain
 		public string domainid { get; set; } 
 
-		// Data Type
-		public string datatype { get; set; } 
 	}
 }

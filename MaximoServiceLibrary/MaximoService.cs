@@ -599,7 +599,7 @@ namespace MaximoServiceLibrary
 		public List<MaximoInventory> getInventory()
 		{
 			var request = createRequest("/os/mxinventory");
-			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.select", "itemnum,location,binnum");
 			request.AddQueryParameter("oslc.pageSize", "10");
 			request.AddQueryParameter("pageno", "1");
 			request.AddQueryParameter("oslc.where", "location=\"OSTFLEET\" and binnum=\"CBTRUCKS\"");
@@ -641,7 +641,7 @@ namespace MaximoServiceLibrary
 		public List<MaximoDomain> getDomains()
 		{
 			var request = createRequest("/os/mxdomain");
-			request.AddQueryParameter("oslc.select", "*");
+			request.AddQueryParameter("oslc.select", "synonymdomain,domainid,alndomain,description,numericdomain");
 			request.AddQueryParameter("oslc.pageSize", "10");
 			request.AddQueryParameter("pageno", "1");
 
