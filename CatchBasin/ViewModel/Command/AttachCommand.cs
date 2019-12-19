@@ -48,8 +48,8 @@ namespace CatchBasin.ViewModel.Command
                     maximoDocLinks.ownertable = "WORKORDER";
                     maximoDocLinks.printthrulink = true;
                     maximoDocLinks.description = "CB REPAIR PHOTO";
-                    maximoDocLinks.urltype = "FILE";
-                    maximoDocLinks.doctype = "PHOTOS-A";
+                    maximoDocLinks.urlType = "FILE";
+                    maximoDocLinks.docType = "PHOTOS-A";
 
                     maximoDocLinks.documentdata = DocumentUpload(filename);
 
