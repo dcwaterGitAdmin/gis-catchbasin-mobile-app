@@ -83,7 +83,7 @@ namespace MaximoServiceLibrary
 			});
 
 			t.Start();
-		}
+		}   
 		
 		public async void synchronizeInBackground()
 		{
@@ -293,8 +293,28 @@ namespace MaximoServiceLibrary
 						woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
 					}
 
-					woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
-
+					// merge failurerport entities if returned from Maximo
+					if (woFinalToBeSaved.failurereport != null)
+					{
+						foreach (var failurereportFromLocal in freshWorkOrderFailureReportList)
+						{
+							var failurereportFromMaximo = woFinalToBeSaved.failurereport.FirstOrDefault(failurerport =>
+								failurerport.type == failurereportFromLocal.type);
+							if (failurereportFromMaximo != null)
+							{
+								failurereportFromMaximo.failurecode = failurereportFromLocal.failurecode;
+							}
+							else
+							{
+								woFinalToBeSaved.failurereport.Add(failurereportFromLocal);
+							}
+						}
+					}
+					else
+					{
+						woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
+					}
+					
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFinalToBeSaved);
 
 					woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
