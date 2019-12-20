@@ -145,8 +145,9 @@ namespace CatchBasin.ViewModel
                     var queryLayer = ((FeatureLayer)layer.Layers.FirstOrDefault(sublayer => sublayer.Name == result.LayerContent.Name));
                     if(queryLayer!= null)
                     {
-                        FeatureQueryResult features = await queryLayer.FeatureTable.QueryFeaturesAsync(queryParameters);
-                        queryLayer.SelectFeature(features.FirstOrDefault());
+                     
+                        queryLayer.SelectFeaturesAsync(queryParameters, SelectionMode.New);
+                       
                     }
                     WorkOrderDetailVM.SetAsset(element);
                     break;
@@ -156,6 +157,22 @@ namespace CatchBasin.ViewModel
 
         }
 
+        public async void deleteAssetFromMap(string assettag)
+        {
+            var layer = GetAssetGroupLayer();
+            FeatureLayer featurelayer = (FeatureLayer)layer.Layers.FirstOrDefault(__layer => __layer.Name == "Catch Basin - Cleaned by DC Water");
+            if (featurelayer != null)
+            {
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.WhereClause = $"ASSETTAG='{assettag}'";
+                FeatureQueryResult features = await featurelayer.FeatureTable.QueryFeaturesAsync(queryParameters);
+                if (features.Count() > 0)
+                {
+                    featurelayer.FeatureTable.DeleteFeatureAsync(features.First());
+                }
+
+            }
+        }
         public async void MapTappedForCreateAsset(object sender, GeoViewInputEventArgs e)
         {
             var user = MaximoServiceLibrary.AppContext.synchronizationService.mxuser;
@@ -406,7 +423,7 @@ namespace CatchBasin.ViewModel
             ((FeatureLayer)assetLayer?.Layers?.FirstOrDefault())?.ClearSelection();
             WorkOrderDetailIsVisible = false;
             WorkOrderDetailVM.Clear();
-            WorkOrderListVM.Update();
+          
         }
 
 
@@ -551,7 +568,7 @@ namespace CatchBasin.ViewModel
         public void ShowWorkOrders()
         {
             WorkOrdersIsVisible = !WorkOrdersIsVisible;
-            if (WorkOrdersIsVisible) { WorkOrderListVM.Update(); }
+            
         }
 
 

@@ -129,8 +129,35 @@ namespace CatchBasin.ViewModel
                 MessageBox.Show("Memo is required", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
             WorkOrderDetailVM.SaveWithoutHide();
             MaximoWorkOrder wo = WorkOrderDetailVM.MaximoWorkOrder;
+            // Check time 
+
+            var labors = wo.labtrans.Select(lab => lab.laborcode).Distinct();
+            foreach (var labor in labors)
+            {
+                var labortrans =wo.labtrans.Where(lab => lab.laborcode == labor).OrderBy(lab => lab.startDate).ToList();
+
+                if (labortrans.Count > 1)
+                {
+                    for (int i = 0; i < labortrans.Count-1; i++)
+                    {
+                       if(labortrans[i + 1].startDate < labortrans[i].finishDate)
+                        {
+                            System.Windows.MessageBox.Show($"Detect overlapping periods for {labor}\nPlease Check {labor}'s Labor Duration", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                    }
+                }
+            }
+
+
+
+
+
+
+           
 
             wo.status = NewStatus;
 

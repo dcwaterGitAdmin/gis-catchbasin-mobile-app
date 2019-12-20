@@ -135,7 +135,7 @@ namespace CatchBasin.ViewModel
 			FlashCommand = new Command.FlashCommand(MapVM);
 			FilterList = new List<FilterDomain>();
 			FilterList.Add(new FilterDomain("Work Assigned to My Crew", FilterType.ALLDISPTCHD));
-			FilterList.Add(new FilterDomain("Non Dispatched", FilterType.NODISPTCHD));
+			FilterList.Add(new FilterDomain("Closed Workoder", FilterType.NODISPTCHD));
 			if (((App) Application.Current).AppType == "PM")
 			{
 				
@@ -177,7 +177,7 @@ namespace CatchBasin.ViewModel
 
         public void showWorkOrder(MaximoWorkOrder wo)
         {
-			Update();
+			
 			MapVM.ShowWorkOrderDetail(wo);
 			
 		}

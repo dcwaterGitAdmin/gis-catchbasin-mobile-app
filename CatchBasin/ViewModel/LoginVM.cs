@@ -48,9 +48,6 @@ namespace CatchBasin.ViewModel
 		public LoginVM()
         {
             LoginCommand = new LoginCommand(this);
-			
-			UserName = "EDELIOGLU";
-			Password = "E2019atlas";
 		}
 
 

@@ -23,6 +23,8 @@ namespace CatchBasin
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             log4net.Config.XmlConfigurator.Configure();
+
+          
             try
             {
                 // Deployed applications must be licensed at the Lite level or greater. 

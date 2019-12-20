@@ -365,7 +365,7 @@ namespace CatchBasin.ViewModel.Commands
 					wo.classstructureid = "1356";
 					wo.service = "DSS";
 					wo.siteid = "DWS_DSS";
-                    wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
+                   
 
                     wo.failurereport = new List<MaximoWorkOrderFailureReport>();
 					failureProblemCode = new MaximoWorkOrderFailureReport();

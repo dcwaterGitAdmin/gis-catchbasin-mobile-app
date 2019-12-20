@@ -206,7 +206,7 @@ namespace CatchBasin.ViewModel
             {
                 LeadManIsEnabled = false;
                 SecondManIsEnabled = true;
-            }else if(SecondMan.ToUpper() == MaximoServiceLibrary.AppContext.synchronizationService.mxuser.personId.ToUpper())
+            }else if(SecondMan?.ToUpper() == MaximoServiceLibrary.AppContext.synchronizationService.mxuser.personId.ToUpper())
             {
                 LeadManIsEnabled = true;
                 SecondManIsEnabled = false;
@@ -292,7 +292,7 @@ namespace CatchBasin.ViewModel
 			MaximoServiceLibrary.AppContext.userRepository.upsert(MaximoServiceLibrary.AppContext.synchronizationService.mxuser);
 
 			MapVM.updateDefinitionQuery();
-			MapVM.WorkOrderListVM.Update();
+			
 			MapVM.UpdateUserInfo();
 			Close();
 		}

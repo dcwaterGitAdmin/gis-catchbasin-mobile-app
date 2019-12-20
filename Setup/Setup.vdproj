@@ -267,6 +267,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_300ED6453D954F428A1145A4F9989781"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3125992679A84F968278583325B1328D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -719,12 +725,6 @@
         {
         "MsmKey" = "8:_812ECD9A8F5DAED03C3D023F8C01535D"
         "OwnerKey" = "8:_0A4A46AC62F34951A2D8BD737A374762"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_81ADD391AD4A4019BE3F68A787D3C8F3"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1779,7 +1779,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MaximoServiceLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:MaximoServiceLibrary, Version=1.0.91.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0AD6556ACC1F5E5B024DFEF081DAADDA"
@@ -2010,7 +2010,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:LocalDBLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:LocalDBLibrary, Version=1.0.91.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_185D57E108CEE80A56DB54B2C64DEC12"
@@ -2443,6 +2443,26 @@
             "TargetName" = "8:vector_tiles_sdf_ps.cso"
             "Tag" = "8:"
             "Folder" = "8:_1AB05D89096C4B97816551678AA1BDBF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_300ED6453D954F428A1145A4F9989781"
+            {
+            "SourcePath" = "8:..\\CatchBasin\\Resources\\Images\\interactive_maps.ico"
+            "TargetName" = "8:interactive_maps.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_5D636E417F714C0A94F374684E230664"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -3928,26 +3948,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81ADD391AD4A4019BE3F68A787D3C8F3"
-            {
-            "SourcePath" = "8:..\\CatchBasin\\bin\\Debug\\lite.db"
-            "TargetName" = "8:lite.db"
-            "Tag" = "8:"
-            "Folder" = "8:_5D636E417F714C0A94F374684E230664"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_81DE8EB6960E438EA35769FD8F18A9E8"
@@ -6470,15 +6470,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Catch Basin Setup"
-        "ProductCode" = "8:{4BB01E2D-186A-426D-8DE5-E8ECC01AB8CF}"
-        "PackageCode" = "8:{4F6C5095-D51E-4FDD-97DA-756525D2AF63}"
+        "ProductCode" = "8:{66FD1010-573E-4602-B2E3-CCEFEA3D040A}"
+        "PackageCode" = "8:{B7E9D3DA-906F-470C-8176-CE918AED7BE7}"
         "UpgradeCode" = "8:{E4A39049-F014-4981-8908-C9B74EC7B245}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.4"
+        "ProductVersion" = "8:1.0.92"
         "Manufacturer" = "8:DCWater"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -6488,7 +6488,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_300ED6453D954F428A1145A4F9989781"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -7006,7 +7006,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0A4A46AC62F34951A2D8BD737A374762"
             {
-            "SourcePath" = "8:..\\CatchBasin\\obj\\Release\\CatchBasin.exe"
+            "SourcePath" = "8:..\\CatchBasin\\obj\\Debug\\CatchBasin.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5D636E417F714C0A94F374684E230664"

@@ -358,6 +358,7 @@ namespace MaximoServiceLibrary
 			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
             workOrderToBePosted.status = maximoWorkOrder.status;
             workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
+            workOrderToBePosted.assetnum = maximoWorkOrder.assetnum;
 
             workOrderToBePosted.np_statusmemo = maximoWorkOrder.np_statusmemo;
            
@@ -429,7 +430,7 @@ namespace MaximoServiceLibrary
 			if (!response.IsSuccessful)
 			{
                 AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
-                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoWorkOrder)}");
+                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
                 throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
             AppContext.Log.Info($"/dcw_cb_wo/{maximoWorkOrder.workorderid} - update operation successfull");

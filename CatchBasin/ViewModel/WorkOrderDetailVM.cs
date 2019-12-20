@@ -201,6 +201,12 @@ namespace CatchBasin.ViewModel
 		{
 			var asset = new MaximoAsset();
 
+
+            if(MaximoWorkOrder.asset != null && MaximoWorkOrder.asset.assettag.First() == 'N')
+            {
+                mapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
+            }
+
 			asset.assetnum = (string)geoElement.Attributes["MXASSETNUM"];
 
             if (String.IsNullOrEmpty(asset.assetnum))
@@ -334,8 +340,8 @@ namespace CatchBasin.ViewModel
 
 			MaximoWorkOrder.asset = asset;
 			AssetTag = asset.assettag;
-            SaveWithoutHide();
-			NeedAssetHelper = false;
+            
+			
 
 
 		}
@@ -1813,6 +1819,9 @@ namespace CatchBasin.ViewModel
 
         public void Cancel()
         {
+
+            
+
             if (isDirty)
             {
                 MessageBoxResult messageBoxResult = MessageBox.Show("Workorder was modified. Save Changes?",
@@ -1824,6 +1833,22 @@ namespace CatchBasin.ViewModel
                 }
                 else if (messageBoxResult == MessageBoxResult.No)
                 {
+                    if (MaximoWorkOrder.Id > 0)
+                    {
+                        var _wo = MaximoServiceLibrary.AppContext.workOrderRepository.findById(MaximoWorkOrder.Id);
+
+                        if (_wo.asset == null && MaximoWorkOrder.asset != null && MaximoWorkOrder.asset?.assettag?.First() == 'N')
+                        {
+                            MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
+                        }
+                    }
+                    else
+                    {
+                        if (MaximoWorkOrder.asset != null && MaximoWorkOrder.asset?.assettag?.First() == 'N')
+                        {
+                            MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
+                        }
+                    }
                     MapVM.HideWorkOrderDetail();
                 }
             }

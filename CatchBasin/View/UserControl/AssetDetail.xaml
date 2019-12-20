@@ -62,13 +62,13 @@
                     <ComboBox ItemsSource="{Binding OwnerList}"
                             DisplayMemberPath="description"
                             SelectedValuePath="value"
-                             SelectedValue="{Binding CleaningResponsibility, Mode=TwoWay}"/>
+                             SelectedValue="{Binding Owner, Mode=TwoWay}"/>
 
                     <Label Content="Cleaning Responsibility" FontWeight="Bold"/>
                     <ComboBox ItemsSource="{Binding CleaningResponsibilityList}"
                             DisplayMemberPath="description"
                             SelectedValuePath="value"
-                             SelectedValue="{Binding Owner, Mode=TwoWay}"/>
+                             SelectedValue="{Binding CleaningResponsibility, Mode=TwoWay}"/>
 
                     <CheckBox IsChecked="{Binding WaterQuality, Mode=TwoWay}" VerticalAlignment="Center" FontWeight="Bold" >
                         Is Water Quality?
