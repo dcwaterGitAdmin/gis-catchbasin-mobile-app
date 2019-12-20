@@ -15,13 +15,13 @@ using System.Net;
 
 namespace MaximoServiceLibrary
 {
-	public class MaximoService
-	{
-		private static readonly string BASE_HOST = "http://localhost:8080";
-		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+    public class MaximoService
+    {
+        public string BASE_HOST { get; set; } = "http://localhost:8080";
+        //public static string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
-		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
-		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
+        private string BASE_CONTEXT_PATH { get; set; } = "/maxrest/oslc";
+        private string BASE_URL { get {return BASE_HOST + BASE_CONTEXT_PATH; } }
 
 		private static readonly string _ltpatoken2_Cookie_Name = "LtpaToken2";
 		private static readonly string _jsessionid_Cookie_Name = "JSESSIONID";
