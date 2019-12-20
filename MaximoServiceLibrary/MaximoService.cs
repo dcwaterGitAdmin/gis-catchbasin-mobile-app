@@ -11,13 +11,14 @@ using MaximoServiceLibrary.model;
 using MaximoServiceLibrary.repository;
 using RestSharp.Serializers;
 using System.IO;
+using System.Net;
 
 namespace MaximoServiceLibrary
 {
 	public class MaximoService
 	{
-		//private static readonly string BASE_HOST = "http://localhost:8080";
-		private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+		private static readonly string BASE_HOST = "http://localhost:8080";
+		//private static readonly string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
 		private static readonly string BASE_CONTEXT_PATH = "/maxrest/oslc";
 		private static readonly string BASE_URL = BASE_HOST + BASE_CONTEXT_PATH;
@@ -91,6 +92,15 @@ namespace MaximoServiceLibrary
 			var response = restClient.Execute(request);
 
 			this.isOnline = (response.ResponseStatus == ResponseStatus.Completed);
+
+			if (isOnline)
+			{
+				//reconnect if the session is expired
+				if (response.StatusCode == HttpStatusCode.BadRequest)
+				{
+					this.login(username, password);
+				}
+			}
 
 			if (!previousIsOnline && isOnline)
 			{
