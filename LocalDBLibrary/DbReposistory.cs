@@ -113,6 +113,12 @@ namespace LocalDBLibrary
 			return t;
 		}
 
+		public bool delete(T t)
+		{
+			var collection = dbConnection.db.GetCollection<T>(tableName());
+			return collection.Delete(new BsonValue(t.Id));
+		}
+		
 		public IEnumerable<T> findNot(string field, object value)
 		{
 			var collection = dbConnection.db.GetCollection<T>(tableName());
