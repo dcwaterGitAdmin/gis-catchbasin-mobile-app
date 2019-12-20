@@ -537,22 +537,30 @@ namespace MaximoServiceLibrary.model
 	
 	public class MaximoDocLinks : MaximoBaseEntity
 	{
-
+        public int docinfoid { get; set; }
         public string document { get; set; }
         public string documentdata { get; set; }
         public string urlname { get; set; }
         public string ownertable { get; set; }
         public bool printthrulink { get; set; }
         public string description { get; set; }
-        public string urlType { get; set; }
-        public string docType { get; set; }
+        public string urltype { get; set; }
+        public string doctype { get; set; }
 
         [LiteDB.BsonIgnore]
+        [JsonIgnore]
         public virtual BitmapImage BitmapImage
         {
             get
             {
-                return new BitmapImage(new Uri(urlname));
+                try
+                {
+                    return new BitmapImage(new Uri(urlname));
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
             }
         }
     }

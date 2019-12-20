@@ -23,6 +23,9 @@ namespace CatchBasin
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             log4net.Config.XmlConfigurator.Configure();
+
+            MaximoServiceLibrary.AppContext.maximoService.BASE_HOST = System.Configuration.ConfigurationManager.AppSettings["MaximoBaseUrl"];
+            MaximoServiceLibrary.AppContext.Log.Info($"BASE_HOST : { MaximoServiceLibrary.AppContext.maximoService.BASE_HOST}");
             try
             {
                 // Deployed applications must be licensed at the Lite level or greater. 

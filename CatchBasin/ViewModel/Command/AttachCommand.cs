@@ -48,12 +48,16 @@ namespace CatchBasin.ViewModel.Command
                     maximoDocLinks.ownertable = "WORKORDER";
                     maximoDocLinks.printthrulink = true;
                     maximoDocLinks.description = "CB REPAIR PHOTO";
-                    maximoDocLinks.urlType = "FILE";
-                    maximoDocLinks.docType = "PHOTOS-A";
+                    maximoDocLinks.urltype = "FILE";
+                    maximoDocLinks.doctype = "PHOTOS-A";
 
                     maximoDocLinks.documentdata = DocumentUpload(filename);
 
-                    maximoDocLinks.document = System.IO.Path.GetFileName(filename); ;
+                    maximoDocLinks.document = System.IO.Path.GetFileName(filename);
+                    if (maximoDocLinks.document.Length > 20)
+                    {
+                        maximoDocLinks.document = maximoDocLinks.document.Substring(0, 20);
+                    }
                     maximoDocLinks.urlname = filename; ;
                     WorkOrderDetailVM.Attachments.Add(maximoDocLinks);
                 }

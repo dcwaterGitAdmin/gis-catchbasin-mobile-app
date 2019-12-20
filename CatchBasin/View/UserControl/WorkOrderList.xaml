@@ -8,6 +8,9 @@
              mc:Ignorable="d" 
 			 x:Name="woList"
              d:DesignHeight="450" d:DesignWidth="350">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+    </UserControl.Resources>
 	<Grid >
         
         <DockPanel>
@@ -38,12 +41,21 @@
 								<Setter Property="Background" Value="Blue" />
 							</MultiTrigger>
 							<DataTrigger Binding="{Binding worktype}"  Value="INV">
-								<Setter Property="Background" Value="Green"></Setter>
+                                <Setter Property="Background" Value="#b1a701"></Setter>
 							</DataTrigger>
 							<DataTrigger Binding="{Binding worktype}"  Value="EMERG">
-								<Setter Property="Background" Value="Red"></Setter>
+                                <Setter Property="Background" Value="#fe583f"></Setter>
 							</DataTrigger>
-						</Style.Triggers>
+                            <DataTrigger Binding="{Binding worktype}"  Value="PM">
+                                <Setter Property="Background" Value="#fed3a2"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding worktype}"  Value="CM">
+                                <Setter Property="Background" Value="#fed3a2"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding worktype}"  Value="INSP">
+                                <Setter Property="Background" Value="#fed3a2"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
 					</Style>
 
 				</ListView.Resources>
@@ -60,14 +72,14 @@
 										<MenuItem Header="Pan To" Command="{Binding Source={x:Reference Name=woList}, Path=DataContext.PanToCommand}" CommandParameter="{Binding}" Background="WhiteSmoke" />
 									</ContextMenu>
 								</StackPanel.ContextMenu>
-							<Grid Height="90" Width="350">
+							<Grid Height="100" Width="350">
 								
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="2*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
-
-                            </Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="*"/>
@@ -84,7 +96,11 @@
 
                             <TextBlock Margin="3"  Text="{Binding status}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
                             <TextBlock Margin="3"  Text="{Binding locationdetails}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>
-							<Button Command="{Binding ElementName=woList, Path=DataContext.StartStopTimerCommand}" CommandParameter="{Binding}"  Margin="3"  Grid.RowSpan="4" Grid.Row="0" Grid.Column="4" Background="Transparent" BorderThickness="0">
+
+                            <TextBlock Margin="3"  Text="{Binding syncronizationStatus}"   Visibility="{Binding completed, Converter={StaticResource booleanToVisibilityConverter}}"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
+
+
+                                    <Button Command="{Binding ElementName=woList, Path=DataContext.StartStopTimerCommand}" CommandParameter="{Binding}"  Margin="3"  Grid.RowSpan="4" Grid.Row="0" Grid.Column="4" Background="Transparent" BorderThickness="0">
                                 <Image Source="{Binding timerImage}" VerticalAlignment="Center" />
                             </Button>
 

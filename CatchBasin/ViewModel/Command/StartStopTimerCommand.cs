@@ -79,10 +79,10 @@ namespace CatchBasin.ViewModel.Command
 				MaximoLabTrans secondlabTrans = new MaximoLabTrans();
 
 
-				labTrans.startdateentered = startTimerDate;
+				labTrans.startdateentered = startTimerDate - startTimerDate.TimeOfDay;
 				labTrans.starttimeentered = new DateTime(1900, 1, 1) + startTimerDate.TimeOfDay;
-				labTrans.finishdateentered = stopTimerDate;
-				labTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
+				labTrans.finishdateentered = stopTimerDate - stopTimerDate.TimeOfDay;
+                labTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
 				labTrans.transdate = DateTime.Now;
 
 				if(wo.worktype =="EM" || wo.worktype == "INV" || wo.worktype == "EMERG"){
@@ -119,10 +119,10 @@ namespace CatchBasin.ViewModel.Command
 				if (((App)Application.Current).AppType == "PM")
 				{
 					
-					secondlabTrans.startdateentered = startTimerDate;
-					secondlabTrans.starttimeentered = new DateTime(1900, 1, 1) + startTimerDate.TimeOfDay;
-					secondlabTrans.finishdateentered = stopTimerDate;
-					secondlabTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
+					secondlabTrans.startdateentered = startTimerDate - startTimerDate.TimeOfDay;
+                    secondlabTrans.starttimeentered = new DateTime(1900, 1, 1) + startTimerDate.TimeOfDay;
+					secondlabTrans.finishdateentered = stopTimerDate - stopTimerDate.TimeOfDay;
+                    secondlabTrans.finishtimeentered = new DateTime(1900, 1, 1) + stopTimerDate.TimeOfDay;
 					secondlabTrans.transdate = DateTime.Now;
 					if (wo.worktype == "EM" || wo.worktype == "INV" || wo.worktype == "EMERG")
 					{

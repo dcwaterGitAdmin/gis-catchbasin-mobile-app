@@ -40,11 +40,18 @@ namespace CatchBasin.ViewModel.Command
         {
 
 			
-			Labor Tool = new Labor();
-			Tool.DataContext = new LaborVM(WorkOrderDetailVM,(MaximoLabTrans)parameter);
-			Tool.ShowInTaskbar = false;
-			//Tool.Owner = ((App)Application.Current).MainWindow;
-			Tool.ShowDialog();
+			Labor Labor = new Labor();
+            Labor.DataContext = new LaborVM(WorkOrderDetailVM,(MaximoLabTrans)parameter);
+            Labor.ShowInTaskbar = false;
+            try
+            {
+                Labor.Owner = ((App)Application.Current).MainWindow;
+            }
+            catch(Exception e)
+            {
+
+            }
+            Labor.ShowDialog();
 		}
 
     }
