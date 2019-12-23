@@ -146,6 +146,23 @@ namespace MaximoServiceLibrary
 					}
 				}
 				
+				// DELETE local work orders which are not received from Maximo
+				workOrdersFromLocal = AppContext.workOrderRepository.findAll();
+				foreach (var woFromLocal in workOrdersFromLocal)
+				{
+					try
+					{
+						MaximoWorkOrder woFromMaximo = workOrdersFromMaximo.FirstOrDefault(wo => wo.wonum == woFromLocal.wonum);
+						if (woFromMaximo == null && woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
+						{
+							AppContext.workOrderRepository.delete(woFromLocal);
+						}
+					}
+					catch (Exception ex)
+					{
+						AppContext.Log.Error(ex.StackTrace);
+					}
+				}
 
 			}
 			catch (Exception ex)
