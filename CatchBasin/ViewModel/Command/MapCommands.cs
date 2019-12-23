@@ -196,6 +196,7 @@ namespace CatchBasin.ViewModel.Commands
 		public override void Execute(object parameter)
 		{
 			var wo = new MaximoWorkOrder();
+            wo.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 			MaximoWorkOrderFailureReport failureProblemCode;
 			MaximoWorkOrderFailureReport failureCause;
 			MaximoWorkOrderFailureReport failureRemedy;
@@ -236,8 +237,9 @@ namespace CatchBasin.ViewModel.Commands
                     failureRemedy.type = "REMEDY";
                     failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 					wo.failurereport.Add(failureRemedy);
+                    
 
-					MapVM.ShowWorkOrderDetail(wo);
+                    
 					break;
 				case LocalWorkOrderType.NEWLYDISCOVERED:
 					wo.status = "DISPTCHD";
@@ -273,8 +275,7 @@ namespace CatchBasin.ViewModel.Commands
                     failureRemedy.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 					wo.failurereport.Add(failureRemedy);
 					
-
-					MapVM.ShowWorkOrderDetail(wo);
+                    
 					break;
 				case LocalWorkOrderType.EXISTING:
 
@@ -303,8 +304,7 @@ namespace CatchBasin.ViewModel.Commands
 					wo.failurereport.Add(failureProblemCode);
 
 					wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
-
-					MapVM.ShowWorkOrderDetail(wo);
+                    
 					break;
 				case LocalWorkOrderType.NOTININVENTORY:
 
@@ -344,8 +344,7 @@ namespace CatchBasin.ViewModel.Commands
 					wo.failurereport.Add(failureRemedy);
 
 					wo.parent = MapVM.WorkOrderDetailVM.MaximoWorkOrder.wonum;
-
-					MapVM.ShowWorkOrderDetail(wo);
+                    
 					break;
 				case LocalWorkOrderType.INSPECTNEWLYDISCOVERED :
 					
@@ -385,12 +384,24 @@ namespace CatchBasin.ViewModel.Commands
 					wo.failurereport.Add(failureRemedy);
 
 					
-
-					MapVM.ShowWorkOrderDetail(wo);
 					
 					break;
 			}
-		}
+            wo = MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
+            MapVM.WorkOrderListVM.Update();
+            var nwo =MapVM.WorkOrderListVM.WorkOrders.FirstOrDefault(_wo => _wo.Id == wo.Id);
+            if(nwo == null)
+            {
+                MapVM.ShowWorkOrderDetail(wo);
+            }
+            else
+            {
+                MapVM.ShowWorkOrderDetail(nwo);
+            }
+
+            MapVM.WorkOrderListVM.Update();
+
+        }
 
 	}
 

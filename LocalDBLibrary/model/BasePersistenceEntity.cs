@@ -31,10 +31,11 @@ namespace LocalDBLibrary.model
 
     public enum SyncronizationStatus
     {
-	    SYNCED = 0,
+	    SYNCED = 6,
 	    MODIFIED = 1,
 	    CREATED = 2,
 	    CONFLICTED = 3,
 	    COMPLETED = 4,
+        FAILURE =5
     }
 }

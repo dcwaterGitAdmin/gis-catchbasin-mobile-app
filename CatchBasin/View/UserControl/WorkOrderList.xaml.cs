@@ -29,5 +29,10 @@ namespace CatchBasin.View.UserControl
 		{
 			e.Handled = true;
 		}
-	}
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+    }
 }

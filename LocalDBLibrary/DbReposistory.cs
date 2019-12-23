@@ -118,5 +118,11 @@ namespace LocalDBLibrary
 			var collection = dbConnection.db.GetCollection<T>(tableName());
 			return collection.Find(Query.Not(field, new BsonValue(value)));
 		}
-	}
+
+        public void delete(object id)
+        {
+            var collection = dbConnection.db.GetCollection<T>(tableName());
+             collection.Delete(new BsonValue(id));
+        }
+    }
 }

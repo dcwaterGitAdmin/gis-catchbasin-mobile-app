@@ -34,15 +34,15 @@ namespace MaximoServiceLibrary.model
 		public List<MaximoToolTrans> tooltrans { get; set; }
 	}
 
-	
-	
-	// MXWO
-	public class MaximoWorkOrder : MaximoBaseEntity
-	{
+
+
+    // MXWO
+    public class MaximoWorkOrder : MaximoBaseEntity
+    {
         [JsonIgnore]
-		public bool completed { get; set; }
-		
-		[JsonIgnore]
+        public bool completed { get; set; }
+
+        [JsonIgnore]
 		public List<MaximoWorkOrder> followups { get; set; }
 
 		public MaximoAsset asset { get; set; }

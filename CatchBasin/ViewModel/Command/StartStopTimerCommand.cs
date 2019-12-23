@@ -36,6 +36,7 @@ namespace CatchBasin.ViewModel.Command
 		public bool CanExecute(object parameter)
 		{
 			if (parameter == null) return false;
+            if(((MaximoWorkOrder)parameter).status != "DISPTCHD") { return false; }
 			var values = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("startTimerDate", null).ToList();
 			if(values.Count > 0)
 			{

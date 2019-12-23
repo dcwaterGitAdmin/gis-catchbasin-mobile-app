@@ -118,7 +118,8 @@ namespace MaximoServiceLibrary
 					}
 					catch (Exception ex)
 					{
-						AppContext.Log.Error(ex.StackTrace);
+                       
+                        AppContext.Log.Error(ex.StackTrace);
 					}
 				}
 				
@@ -130,12 +131,18 @@ namespace MaximoServiceLibrary
 					{
 						if (woFromLocal.completed && woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
 						{
-							postWorkOrderToMaximo(woFromLocal, woFromLocal.workorderspec, woFromLocal.failurereport, woFromLocal.labtrans, woFromLocal.tooltrans);
-						}
+							var postedWo = postWorkOrderToMaximo(woFromLocal, woFromLocal.workorderspec, woFromLocal.failurereport, woFromLocal.labtrans, woFromLocal.tooltrans);
+
+                            // todo review
+                            postedWo.Id = woFromLocal.Id;
+                            AppContext.workOrderRepository.upsert(postedWo);
+                        }
 					}
 					catch (Exception ex)
 					{
-						AppContext.Log.Error(ex.StackTrace);
+                        woFromLocal.syncronizationStatus = SyncronizationStatus.FAILURE;
+                        AppContext.workOrderRepository.upsert(woFromLocal);
+                        AppContext.Log.Error(ex.StackTrace);
 					}
 				}
 				
@@ -156,12 +163,15 @@ namespace MaximoServiceLibrary
 
 		private void synchronizeWorkOrder(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
 		{
-			MaximoWorkOrder woFinalToBeSaved = woFromMaximo;
+
+           
+            MaximoWorkOrder woFinalToBeSaved = woFromMaximo;
 			// There exists a Local copy for WorkOrder
 			if (woFromLocal != null)
 			{
-				//means item is changed in maximo side
-				if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
+              
+                //means item is changed in maximo side
+                if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
 				{
 					if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
 					{
@@ -246,10 +256,17 @@ namespace MaximoServiceLibrary
 			if (woFinalToBeSaved.completed)
 			{
 				woFinalToBeSaved = postWorkOrderToMaximo(woFinalToBeSaved, freshWorkOrderSpecList, freshWorkOrderFailureReportList, freshWorkOrderLabTransList, freshWorkOrderToolTransList);
-			}
-			
 
-			AppContext.workOrderRepository.upsert(woFinalToBeSaved);
+            }
+            // todo review
+            if(woFromLocal != null)
+            {
+                woFinalToBeSaved.Id = woFromLocal.Id;
+            }
+            
+
+
+            AppContext.workOrderRepository.upsert(woFinalToBeSaved);
 		}
 
 		private MaximoWorkOrder postWorkOrderToMaximo(MaximoWorkOrder woFinalToBeSaved, List<MaximoWorkOrderSpec> freshWorkOrderSpecList,

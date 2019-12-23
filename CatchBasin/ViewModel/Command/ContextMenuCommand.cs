@@ -79,4 +79,28 @@ namespace CatchBasin.ViewModel.Command
 			MapVM.PanToWoAsync(wo);
 		}
 	}
+    class DeleteLocalWoCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+
+        MapVM MapVM;
+        public DeleteLocalWoCommand(MapVM mapVM)
+        {
+            MapVM = mapVM;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            MaximoWorkOrder wo = (MaximoWorkOrder)parameter;
+            return (wo.status == "DISPTCHD" && wo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED);
+        }
+
+        public void Execute(object parameter)
+        {
+            MaximoWorkOrder wo = (MaximoWorkOrder)parameter;
+
+            MaximoServiceLibrary.AppContext.workOrderRepository.delete(wo.Id);
+            MapVM.WorkOrderListVM.Update();
+        }
+    }
 }

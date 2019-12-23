@@ -45,8 +45,8 @@
 				</xctk:TimePicker>
 				<Label  Margin="0 3 0 3"  Content="Type" FontWeight="Bold"/>
 				<StackPanel Orientation="Horizontal" >
-					<RadioButton  Margin="0 3 10 3"  GroupName="Type" IsChecked="{Binding Type, ConverterParameter=WORK, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Work" />
-					<RadioButton  Margin="0 3 0 3"  GroupName="Type" IsChecked="{Binding Type, ConverterParameter=TRAV, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Travel"/>
+					<RadioButton  Margin="0 3 10 3"  GroupName="Type_" IsChecked="{Binding Type, ConverterParameter=WORK, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Work" />
+					<RadioButton  Margin="0 3 0 3"  GroupName="Type_" IsChecked="{Binding Type, ConverterParameter=TRAV, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="Travel"/>
 				</StackPanel>
 
 				<CheckBox IsChecked="{Binding IsDriver, Mode=TwoWay}"  Margin="0 3 0 3" VerticalAlignment="Center" FontWeight="Bold" Content="Driver?" />

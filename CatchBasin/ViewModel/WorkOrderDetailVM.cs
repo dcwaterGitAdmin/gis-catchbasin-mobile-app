@@ -1813,6 +1813,11 @@ namespace CatchBasin.ViewModel
 
         public void Save()
         {
+            if(MaximoWorkOrder.status != "DISPTCHD")
+            {
+                MessageBox.Show("Workorder's changes not saved because work order status should be to DISPATCHED");
+                return;
+            }
             SaveWithoutHide();
             MapVM.HideWorkOrderDetail();
         }
@@ -1840,6 +1845,8 @@ namespace CatchBasin.ViewModel
                         if (_wo.asset == null && MaximoWorkOrder.asset != null && MaximoWorkOrder.asset?.assettag?.First() == 'N')
                         {
                             MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
+                            MaximoWorkOrder.asset = null;
+                           
                         }
                     }
                     else
@@ -1847,6 +1854,7 @@ namespace CatchBasin.ViewModel
                         if (MaximoWorkOrder.asset != null && MaximoWorkOrder.asset?.assettag?.First() == 'N')
                         {
                             MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
+                            MaximoWorkOrder.asset = null;
                         }
                     }
                     MapVM.HideWorkOrderDetail();
@@ -2015,7 +2023,7 @@ namespace CatchBasin.ViewModel
             if (MaximoWorkOrder != null && MaximoWorkOrder.asset != null)
             {
                
-                MapVM.ShowAssetDetail(MaximoWorkOrder.asset);
+                MapVM.ShowAssetDetail(MaximoWorkOrder);
             }
             else
             {

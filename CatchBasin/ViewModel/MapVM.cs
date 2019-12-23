@@ -422,6 +422,8 @@ namespace CatchBasin.ViewModel
             var assetLayer = GetAssetGroupLayer();
             ((FeatureLayer)assetLayer?.Layers?.FirstOrDefault())?.ClearSelection();
             WorkOrderDetailIsVisible = false;
+
+            WorkOrderListVM.SelectedIndex = -1;
             WorkOrderDetailVM.Clear();
           
         }
@@ -443,10 +445,10 @@ namespace CatchBasin.ViewModel
             set { assetDetailIsVisible = value; OnPropertyChanged("AssetDetailIsVisible"); }
         }
 
-        public void ShowAssetDetail(MaximoAsset asset)
+        public void ShowAssetDetail(MaximoWorkOrder wo)
         {
 
-            AssetDetailVM.Update(asset);
+            AssetDetailVM.Update(wo);
             AssetDetailIsVisible = true;
         }
 
@@ -467,6 +469,7 @@ namespace CatchBasin.ViewModel
         public void ShowIdentify()
         {
             IdentifyIsVisible = !IdentifyIsVisible;
+            WorkOrderListVM.Update();
         }
 
         private bool measureIsVisible;

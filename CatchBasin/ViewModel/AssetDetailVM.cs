@@ -218,7 +218,7 @@ namespace CatchBasin.ViewModel
 
 		private bool isDirty;
         MaximoAsset Asset;
-
+        MaximoWorkOrder WorkOrder;
         public AssetDetailVM(WorkOrderDetailVM _workOrderDetailVM)
         {
             PropertyChanged += AssetDetailVM_PropertyChanged;
@@ -247,9 +247,10 @@ namespace CatchBasin.ViewModel
             isDirty = true;
         }
 
-        public void Update(MaximoAsset asset)
+        public void Update(MaximoWorkOrder wo)
         {
-            Asset = asset;
+            WorkOrder = wo;
+            Asset = wo.asset;
 			
 
 			AssetTag = Asset.assettag;
@@ -454,23 +455,21 @@ namespace CatchBasin.ViewModel
 
 			Asset.changedate = DateTime.Now;
 			Asset.changeby = MaximoServiceLibrary.AppContext.synchronizationService?.mxuser.personId;
-			// asset maybe choosed or created on map!
-            if (Asset.Id > 0){
-                var asset = MaximoServiceLibrary.AppContext.assetRepository.update(Asset);
-                Asset = asset;
+            // asset maybe choosed or created on map!
+
+            if (!String.IsNullOrEmpty(Asset.assetnum))
+            {
+                Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
             }
             else
             {
-				if(!String.IsNullOrEmpty(Asset.assetnum))
-				{
-					Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
-				}
-				else
-				{
-					Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
-				}
-
-				MaximoServiceLibrary.AppContext.assetRepository.upsert(Asset);
+                Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+            }
+            WorkOrder.asset = Asset;
+           
+            workOrderDetailVM.MaximoWorkOrder.asset = Asset;
+            if (WorkOrder.Id > 0){
+                MaximoServiceLibrary.AppContext.workOrderRepository.update(WorkOrder);
             }
             isDirty = false;
             WorkOrderDetailVM.HideAssetDetail();

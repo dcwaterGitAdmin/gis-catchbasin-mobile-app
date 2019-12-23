@@ -33,7 +33,7 @@ namespace CatchBasin.ViewModel
 		public string Type
 		{
 			get { return type; }
-			set { type = value; }
+			set { type = value; OnPropertyChanged("Type"); }
 		}
 
 

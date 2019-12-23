@@ -28,7 +28,7 @@
 
 
 
-			<ListView x:Name="listView" ItemsSource="{Binding WorkOrders}" SelectedIndex="{Binding SelectedIndex}" SelectionMode="Single" PreviewMouseRightButtonDown="ListView_PreviewMouseRightButtonDown">
+            <ListView x:Name="listView" ItemsSource="{Binding WorkOrders}" SelectionChanged="ListView_SelectionChanged" SelectedIndex="{Binding SelectedIndex}" SelectionMode="Single" PreviewMouseRightButtonDown="ListView_PreviewMouseRightButtonDown">
 				<ListView.Resources>
 					<Style TargetType="{x:Type ListViewItem}">
 						<Style.Triggers>
@@ -36,8 +36,8 @@
 								<MultiTrigger.Conditions>
 									<Condition Property="IsSelected" Value="true" />
 									<Condition Property="Selector.IsSelectionActive" Value="true" />
-
-								</MultiTrigger.Conditions>
+                                   
+                                </MultiTrigger.Conditions>
 								<Setter Property="Background" Value="Blue" />
 							</MultiTrigger>
 							<DataTrigger Binding="{Binding worktype}"  Value="INV">
@@ -55,6 +55,7 @@
                             <DataTrigger Binding="{Binding worktype}"  Value="INSP">
                                 <Setter Property="Background" Value="#fed3a2"></Setter>
                             </DataTrigger>
+
                         </Style.Triggers>
 					</Style>
 

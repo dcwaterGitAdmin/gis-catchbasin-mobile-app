@@ -65,9 +65,16 @@ namespace CatchBasin.ViewModel
 			set { panToCommand = value; OnPropertyChanged("PanToCommand"); }
 		}
 
+        private Command.DeleteLocalWoCommand deleteLocalWoCommand;
+
+        public Command.DeleteLocalWoCommand DeleteLocalWoCommand
+        {
+            get { return deleteLocalWoCommand; }
+            set { deleteLocalWoCommand = value; OnPropertyChanged("DeleteLocalWoCommand"); }
+        }
 
 
-		private List<OrderDomain> orderList;
+        private List<OrderDomain> orderList;
 
 		public List<OrderDomain> OrderList
 		{
@@ -133,7 +140,8 @@ namespace CatchBasin.ViewModel
 			ZoomToCommand = new Command.ZoomToCommand(MapVM);
 			PanToCommand = new Command.PanToCommand(MapVM);
 			FlashCommand = new Command.FlashCommand(MapVM);
-			FilterList = new List<FilterDomain>();
+            DeleteLocalWoCommand = new Command.DeleteLocalWoCommand(MapVM);
+            FilterList = new List<FilterDomain>();
 			FilterList.Add(new FilterDomain("Work Assigned to My Crew", FilterType.ALLDISPTCHD));
 			FilterList.Add(new FilterDomain("Closed Workoder", FilterType.NODISPTCHD));
 			if (((App) Application.Current).AppType == "PM")
@@ -156,18 +164,42 @@ namespace CatchBasin.ViewModel
 			PropertyChanged += SelectedIndexChanged;
         }
 
-	
-	
+
+       
 
 		public void SelectedIndexChanged(object sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == "SelectedIndex")
             {
-				if (this.SelectedIndex > -1)
-				{
-					var wo = WorkOrders[this.SelectedIndex];
-					showWorkOrder(wo);
-				}
+               
+                if (this.SelectedIndex > -1)
+                {
+                    var wo = WorkOrders[this.SelectedIndex];
+                    if (MapVM.WorkOrderDetailIsVisible)
+                    {
+                        if (!(wo?.Id == MapVM.WorkOrderDetailVM?.MaximoWorkOrder?.Id)) {
+                            showWorkOrder(wo);
+                        }
+                    }
+                    else
+                    {
+                        showWorkOrder(wo);
+                    }
+                   
+
+
+                }
+                else
+                {
+                    if (MapVM.WorkOrderDetailIsVisible)
+                    {
+                        var index = WorkOrders.Select(wo => wo.Id).ToList().IndexOf(MapVM.WorkOrderDetailVM.MaximoWorkOrder.Id);
+                        if (index >= 0)
+                        {
+                            SelectedIndex = index;
+                        }
+                    }
+                }
                
             }else if (e.PropertyName == "Filter" || e.PropertyName == "Order")
             {
@@ -243,7 +275,21 @@ namespace CatchBasin.ViewModel
 					break;
 			}
 
-			WorkOrders = wos.ToList();
+          
+
+            WorkOrders = wos.ToList();
+
+            SelectedIndex = -1;
+            if (MapVM.WorkOrderDetailIsVisible)
+            {
+                var index =WorkOrders.Select(wo=> wo.Id).ToList().IndexOf(MapVM.WorkOrderDetailVM.MaximoWorkOrder.Id);
+                if (index >= 0)
+                {
+                  
+                    SelectedIndex = index;
+                    
+                }
+            }
 		}
 
         public int getOrderValue(string worktype)
