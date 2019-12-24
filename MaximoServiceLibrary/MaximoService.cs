@@ -17,8 +17,8 @@ namespace MaximoServiceLibrary
 {
     public class MaximoService
     {
-        public string BASE_HOST { get; set; } = "http://localhost:8080";
-        //public static string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+        //public string BASE_HOST { get; set; } = "http://localhost:8080";
+        public string BASE_HOST = "https://bpl-max-test.dcwasa.com";
 
         private string BASE_CONTEXT_PATH { get; set; } = "/maxrest/oslc";
         private string BASE_URL { get {return BASE_HOST + BASE_CONTEXT_PATH; } }
@@ -357,13 +357,15 @@ namespace MaximoServiceLibrary
 		
 		public MaximoWorkOrder updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
-			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
+            AppContext.Log.Info($"[MX] update work order : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
+
+            var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
 
 			// create an empty workorder
 			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
 
-			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc; workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
+			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
 			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
             workOrderToBePosted.status = maximoWorkOrder.status;
@@ -373,26 +375,31 @@ namespace MaximoServiceLibrary
             workOrderToBePosted.np_statusmemo = maximoWorkOrder.np_statusmemo;
            
             workOrderToBePosted.statusdate = maximoWorkOrder.statusdate;
+            workOrderToBePosted.problemcode = maximoWorkOrder.problemcode;
 
-           
-			request.AddJsonBody(workOrderToBePosted);
+            request.AddJsonBody(workOrderToBePosted);
 
 			var response = restClient.Execute(request);
 			
 
 			if (!response.IsSuccessful)
 			{
-                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
-                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
-                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                AppContext.Log.Error($"[MX] - update work order Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"[MX] - update work order Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
+                AppContext.Log.Error($"[MX] - update work order operation response : [{response.StatusCode}] - [{response.Content}]");
+
+                throw new Exception("update-work-order-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
-            AppContext.Log.Info($"/dcw_cb_wo/{maximoWorkOrder.workorderid} - update operation successfull");
+
+            AppContext.Log.Info($"[MX] successfully updated work order : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
             return getWorkOrderByHref(maximoWorkOrder.href);
 		}
 
 		public MaximoWorkOrder createWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
-			var request = createRequest("/os/dcw_cb_wo", false, Method.POST);
+            AppContext.Log.Info($"[MX] create work order : [{maximoWorkOrder.Id}] - [{maximoWorkOrder.workorderid}]");
+
+            var request = createRequest("/os/dcw_cb_wo", false, Method.POST);
 			request.AddHeader("x-method-override", "POST");
 			
 			
@@ -403,10 +410,11 @@ namespace MaximoServiceLibrary
 
 			if (!response.IsSuccessful)
 			{
-                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
-                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoWorkOrder)}");
+                AppContext.Log.Error($"[MX] - create work order Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"[MX] - create work order Error request body : {request.JsonSerializer.Serialize(maximoWorkOrder)}");
+                AppContext.Log.Error($"[MX] - create work order operation response : [{response.StatusCode}] - [{response.Content}]");
 
-                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                throw new Exception("create-work-order-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 
 			string workOrderHref = null;
@@ -418,13 +426,16 @@ namespace MaximoServiceLibrary
 					workOrderHref = responseHeader.Value.ToString();
 				}
 			}
-            AppContext.Log.Info($"/dcw_cb_wo - create operation successfull : {workOrderHref}");
+            AppContext.Log.Info($"[MX] successfully created work order : [{workOrderHref}]");
+
             return getWorkOrderByHref(workOrderHref);
 		}
 
 		public MaximoWorkOrder updateWorkOrderActuals(MaximoWorkOrder maximoWorkOrder)
 		{
-			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
+            AppContext.Log.Info($"[MX] update work order actuals : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
+
+            var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
 			request.AddHeader("x-method-override", "PATCH");
 			
 			// create an empty workorder
@@ -439,11 +450,15 @@ namespace MaximoServiceLibrary
 			
 			if (!response.IsSuccessful)
 			{
-                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
-                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
-                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                AppContext.Log.Error($"[MX] - update work order actuals Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"[MX] - update work order actuals Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
+                AppContext.Log.Error($"[MX] - update work order actuals operation response : [{response.StatusCode}] - [{response.Content}]");
+
+                throw new Exception("update-work-order-error : " + response.StatusCode + " - [" + response.Content + "]");
+
 			}
-            AppContext.Log.Info($"/dcw_cb_wo/{maximoWorkOrder.workorderid} - update operation successfull");
+            AppContext.Log.Info($"[MX] successfully updated work order actuals : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
+
             return getWorkOrderByHref(maximoWorkOrder.href);
 		}
 
@@ -520,7 +535,9 @@ namespace MaximoServiceLibrary
 
 		public MaximoAsset createAsset(MaximoAsset maximoAsset)
 		{
-			var request = createRequest("/os/mxasset", false, Method.POST);
+            AppContext.Log.Info($"[MX] create asset : [{maximoAsset.Id}]");
+
+            var request = createRequest("/os/mxasset", false, Method.POST);
 			request.AddHeader("x-method-override", "POST");
 			
 			request.AddJsonBody(maximoAsset);
@@ -529,9 +546,11 @@ namespace MaximoServiceLibrary
 			
 			if (!response.IsSuccessful)
 			{
-                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
-                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
-                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                AppContext.Log.Error($"[MX] - create asset Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"[MX] - create asset Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
+                AppContext.Log.Error($"[MX] - create asset operation response : [{response.StatusCode}] - [{response.Content}]");
+
+                throw new Exception("create-asset-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
 
 			string assetHref = null;
@@ -543,27 +562,33 @@ namespace MaximoServiceLibrary
 					assetHref = responseHeader.Value.ToString();
 				}
 			}
-            AppContext.Log.Info($"/mxasset - create operation successfull : {assetHref}");
+
+            AppContext.Log.Info($"[MX] successfully created asset : [{assetHref}]");
+
             return getAssetByHref(assetHref);
 		}
 
 		public MaximoAsset updateAsset(MaximoAsset maximoAsset)
 		{
-			var request = createRequest(maximoAsset.href, true, Method.POST);
-			request.AddHeader("x-method-override", "PATCH");
+            AppContext.Log.Info($"[MX] update asset : [{maximoAsset.assetnum}] - [{maximoAsset.href}]");
 
+            var request = createRequest(maximoAsset.href, true, Method.POST);
+			request.AddHeader("x-method-override", "PATCH");
 
 			request.AddJsonBody(maximoAsset);
 
 			var response = restClient.Execute(request);
-			AppContext.Log.Warn($"/mxasset - update operation response : {response.Content}");
+
 			if (!response.IsSuccessful)
 			{
-                AppContext.Log.Error($"Error url : {response.ResponseUri.ToString()}");
-                AppContext.Log.Error($"Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
-                throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+                AppContext.Log.Error($"[MX] - update asset Error url : {response.ResponseUri.ToString()}");
+                AppContext.Log.Error($"[MX] - update asset Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
+                AppContext.Log.Error($"[MX] - update asset operation response : [{response.StatusCode}] - [{response.Content}]");
+
+                throw new Exception("update-asset-error : " + response.StatusCode + " - [" + response.Content + "]");
 			}
-            AppContext.Log.Info($"{maximoAsset.href} - update operation successfull");
+
+            AppContext.Log.Info($"[MX] successfully updated asset : [{maximoAsset.assetnum}] - [{maximoAsset.href}]");
             return getAssetByHref(maximoAsset.href);
 		}
 

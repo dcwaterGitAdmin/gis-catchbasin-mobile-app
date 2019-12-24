@@ -188,33 +188,41 @@ namespace MaximoServiceLibrary
 			// There exists a Local copy for WorkOrder
 			if (woFromLocal != null)
 			{
-              
+                AppContext.Log.Debug($"[MX] local work order Id : [{woFromLocal.Id}], IsCompleted : [{woFromLocal.completed}], status : [{woFromLocal.syncronizationStatus}] ");
+                
                 //means item is changed in maximo side
                 if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
 				{
-					if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
+                    AppContext.Log.Debug($"[MX] work order is changed in Maximo. wonum : [{woFromMaximo.wonum}], local status : [{woFromLocal.syncronizationStatus}]");
+
+                    if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
 					{
-						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+                        AppContext.Log.Debug($"[MX] work order from Maximo is going to be overwritten to local. wonum : [{woFromMaximo.wonum}], local status : [{woFromLocal.syncronizationStatus}]");
+
+                        woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 						woFromMaximo.Id = woFromLocal.Id;
 						//insert into local with all childs
 					}
 					else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
 					         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
 					{
-						woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
+                        AppContext.Log.Warn($"[MX] CONFLICT!! work order is changed both in Maximo and in local db. wonum : [{woFromMaximo.wonum}], local status : [{woFromLocal.syncronizationStatus}]");
+
+                        woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
 						woFinalToBeSaved = woFromLocal;
 					}
 				}
 				//means item is not changed in maximo side
 				else
 				{
-					woFinalToBeSaved = woFromLocal;
+                    AppContext.Log.Debug($"[MX] work order is not changed in Maximo, keep local version. wonum : [{woFromMaximo.wonum}], local status : [{woFromLocal.syncronizationStatus}]");
+                    woFinalToBeSaved = woFromLocal;
 				}
 			}
 			// There is no Local copy for WorkOrder
 			else
 			{
-                AppContext.Log.Debug($"[MX] No local copy found for work order : {woFromMaximo.wonum}. will persist in DB");
+                AppContext.Log.Debug($"[MX] No local copy found for work order : {woFromMaximo.wonum}. will persist in local DB");
 
                 // Insert WorkOrder as SYNCED
                 woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;

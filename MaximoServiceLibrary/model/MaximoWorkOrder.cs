@@ -9,7 +9,9 @@ namespace MaximoServiceLibrary.model
 	{
 		public string remarkdesc { get; set; } 
 
-		public List<MaximoWorkOrderSpec> workorderspec { get; set; }
+        public string problemcode { get; set; }
+
+        public List<MaximoWorkOrderSpec> workorderspec { get; set; }
 		
 		public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
         public DateTime statusdate { get; set; }
