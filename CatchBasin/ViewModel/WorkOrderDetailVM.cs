@@ -1847,6 +1847,9 @@ namespace CatchBasin.ViewModel
                             MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
                             MaximoWorkOrder.asset = null;
                            
+                        } else if(_wo.asset == null && MaximoWorkOrder.asset != null)
+                        {
+                            MaximoWorkOrder.asset = null;
                         }
                     }
                     else
@@ -1854,6 +1857,10 @@ namespace CatchBasin.ViewModel
                         if (MaximoWorkOrder.asset != null && MaximoWorkOrder.asset?.assettag?.First() == 'N')
                         {
                             MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
+                            MaximoWorkOrder.asset = null;
+                        }
+                        else if (MaximoWorkOrder.asset != null)
+                        {
                             MaximoWorkOrder.asset = null;
                         }
                     }

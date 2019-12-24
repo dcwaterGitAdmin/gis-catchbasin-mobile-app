@@ -1779,7 +1779,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MaximoServiceLibrary, Version=1.0.91.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:MaximoServiceLibrary, Version=1.0.92.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0AD6556ACC1F5E5B024DFEF081DAADDA"
@@ -2010,7 +2010,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:LocalDBLibrary, Version=1.0.91.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:LocalDBLibrary, Version=1.0.92.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_185D57E108CEE80A56DB54B2C64DEC12"
@@ -6470,15 +6470,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Catch Basin Setup"
-        "ProductCode" = "8:{66FD1010-573E-4602-B2E3-CCEFEA3D040A}"
-        "PackageCode" = "8:{B7E9D3DA-906F-470C-8176-CE918AED7BE7}"
+        "ProductCode" = "8:{F5C18DB2-D113-4C1C-858F-08341F6532F8}"
+        "PackageCode" = "8:{07406B08-9A5A-4875-93DA-77A19BFEC4D7}"
         "UpgradeCode" = "8:{E4A39049-F014-4981-8908-C9B74EC7B245}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.92"
+        "ProductVersion" = "8:1.0.93"
         "Manufacturer" = "8:DCWater"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

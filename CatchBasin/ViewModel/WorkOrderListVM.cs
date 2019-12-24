@@ -143,7 +143,7 @@ namespace CatchBasin.ViewModel
             DeleteLocalWoCommand = new Command.DeleteLocalWoCommand(MapVM);
             FilterList = new List<FilterDomain>();
 			FilterList.Add(new FilterDomain("Work Assigned to My Crew", FilterType.ALLDISPTCHD));
-			FilterList.Add(new FilterDomain("Closed Workoder", FilterType.NODISPTCHD));
+			FilterList.Add(new FilterDomain("Closed Workorder", FilterType.NODISPTCHD));
 			if (((App) Application.Current).AppType == "PM")
 			{
 				
