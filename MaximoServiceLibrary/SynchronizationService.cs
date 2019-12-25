@@ -394,25 +394,47 @@ namespace MaximoServiceLibrary
 			// }
 		}
 
+		private void postWorkOrderAssetToMaximo(MaximoWorkOrder woFromLocal)
+		{
+			MaximoAsset assetFromLocal = woFromLocal.asset;
+			if ((assetFromLocal == null) || (assetFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED))
+			{
+				return;
+			}
+
+			AppContext.Log.Info($"[MX] post asset changes to Maximo. assetnum: {assetFromLocal.assetnum}, syncronizationStatus: {assetFromLocal.syncronizationStatus}");
+			
+			if (assetFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
+			{
+				// todo come back here :)
+			} 
+			else if (assetFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
+			{
+				MaximoAsset assetFreshFromMaximo = AppContext.maximoService.updateAsset(assetFromLocal);
+				woFromLocal.asset = assetFreshFromMaximo;
+				AppContext.workOrderRepository.upsert(woFromLocal);
+			}
+		}
+		
 		private void postWorkOrderToMaximo(MaximoWorkOrder woFromLocal)
 		{
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = woFromLocal.workorderspec;
 			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = woFromLocal.failurereport;
 			List<MaximoLabTrans> freshWorkOrderLabTransList = woFromLocal.labtrans;
 			List<MaximoToolTrans> freshWorkOrderToolTransList = woFromLocal.tooltrans;
-
-			AppContext.Log.Info($"[MX] Entered postWorkOrderToMaximo. wonum: {woFromLocal.wonum}, completed: {woFromLocal.completed}, syncronizationStatus: {woFromLocal.syncronizationStatus}, retryCount: {woFromLocal.retryCount}");
-
+			
 			if (woFromLocal.completed)
 			{
 				if (woFromLocal.retryCount > 3)
 				{
-					AppContext.Log.Error($"Work order retry count reached maximum, give up synchronization: {woFromLocal.wonum}");
+					AppContext.Log.Error($"Work order retry count reached maximum, give up synchronization: {woFromLocal.wonum}, retryCount: {woFromLocal.retryCount}");
 					return;
 				}
 
 				woFromLocal.retryCount = woFromLocal.retryCount + 1;
 				AppContext.workOrderRepository.upsert(woFromLocal);
+				
+				postWorkOrderAssetToMaximo(woFromLocal);
 				
 				if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
 				{
