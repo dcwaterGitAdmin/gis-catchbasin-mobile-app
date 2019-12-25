@@ -38,6 +38,7 @@ namespace LocalDBLibrary.model
 	    MODIFIED = 1,
 	    CREATED = 2,
 	    CONFLICTED = 3,
-	    COMPLETED = 4
+	    COMPLETED = 4,
+	    DELETED = 5
     }
 }
