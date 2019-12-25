@@ -85,7 +85,6 @@ namespace MaximoServiceLibrary
 		public async void synchronizeInBackground()
 		{
 			synchronizationDelegate("SYNC_STARTED", "started synchronization in background");
-
 			try
 			{
 				isInSynchronization = true;			
@@ -108,6 +107,7 @@ namespace MaximoServiceLibrary
 				synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromLocal.Count() + " workorders from Local");
 
 				// sync the work orders
+				AppContext.Log.Debug($"[MX] BEGIN to synchronize workOrdersFromMaximo.");
 				foreach (var woFromMaximo in workOrdersFromMaximo)
 				{
 					try
@@ -125,40 +125,53 @@ namespace MaximoServiceLibrary
                         AppContext.Log.Error($"[MX] FAILED to synchronize work order {woFromMaximo.wonum} : {ex.ToString()}");
 					}
 				}
+				AppContext.Log.Debug($"[MX] END to synchronize workOrdersFromMaximo.");
 				
 				// POST CREATED work orders to Maximo
+				AppContext.Log.Debug($"[MX] BEGIN to synchronize workOrdersFromLocal.");
 				workOrdersFromLocal = AppContext.workOrderRepository.findAll();
 				foreach (var woFromLocal in workOrdersFromLocal)
 				{
 					try
 					{
+						AppContext.Log.Debug($"[MX] woFromLocal.wonum: {woFromLocal.wonum}, woFromLocal.completed: {woFromLocal.completed}, woFromLocal.syncronizationStatus: {woFromLocal.syncronizationStatus}.");
+						
 						if (woFromLocal.completed && woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
 						{
+							AppContext.Log.Debug($"[MX] woFromLocal is completed and CREATED so postWorkOrderToMaximo wonum: {woFromLocal.wonum}.");
 							var postedWo = postWorkOrderToMaximo(woFromLocal, woFromLocal.workorderspec, woFromLocal.failurereport, woFromLocal.labtrans, woFromLocal.tooltrans);
 
                             // todo review
                             postedWo.Id = woFromLocal.Id;
                             AppContext.workOrderRepository.upsert(postedWo);
+                            AppContext.Log.Debug($"[MX] upserted woFromLocal. wonum: {woFromLocal.wonum}.");
                         }
 					}
 					catch (Exception ex)
 					{
+						AppContext.Log.Error($"[MX] FAILED to synchronize woFromLocal {woFromLocal.wonum} : {ex.ToString()}");
+						AppContext.Log.Error(ex.StackTrace);
+						// TODO remove failure sync status
                         woFromLocal.syncronizationStatus = SyncronizationStatus.FAILURE;
                         AppContext.workOrderRepository.upsert(woFromLocal);
-                        AppContext.Log.Error(ex.StackTrace);
 					}
 				}
+				AppContext.Log.Debug($"[MX] END to synchronize workOrdersFromLocal.");
 				
 				// DELETE local work orders which are not received from Maximo
+				AppContext.Log.Debug($"[MX] BEGIN to delete local work orders that are  not received from Maximo.");
 				workOrdersFromLocal = AppContext.workOrderRepository.findAll();
 				foreach (var woFromLocal in workOrdersFromLocal)
 				{
 					try
 					{
+						AppContext.Log.Debug($"[MX] woFromLocal.wonum: {woFromLocal.wonum}, woFromLocal.completed: {woFromLocal.completed}, woFromLocal.syncronizationStatus: {woFromLocal.syncronizationStatus}.");
+						
 						MaximoWorkOrder woFromMaximo = workOrdersFromMaximo.FirstOrDefault(wo => wo.wonum == woFromLocal.wonum);
 						if (woFromMaximo == null && woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
 						{
 							AppContext.workOrderRepository.delete(woFromLocal);
+							AppContext.Log.Debug($"[MX] deleted woFromLocal. wonum: {woFromLocal.wonum}.");
 						}
 					}
 					catch (Exception ex)
@@ -166,6 +179,7 @@ namespace MaximoServiceLibrary
 						AppContext.Log.Error(ex.StackTrace);
 					}
 				}
+				AppContext.Log.Debug($"[MX] END to delete local work orders that are  not received from Maximo.");
 
 			}
 			catch (Exception ex)
@@ -278,6 +292,7 @@ namespace MaximoServiceLibrary
 		{
 			MaximoWorkOrder woFromLocal = woFinalToBeSaved;
 			
+			AppContext.Log.Debug($"[MX] Entered postWorkOrderToMaximo. woFinalToBeSaved.wonum: {woFinalToBeSaved.wonum}, woFinalToBeSaved.completed: {woFinalToBeSaved.completed}, woFinalToBeSaved.completed: {woFinalToBeSaved.syncronizationStatus}");
 			if (woFinalToBeSaved != null && woFinalToBeSaved.completed)
 			{
 				if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
@@ -359,25 +374,44 @@ namespace MaximoServiceLibrary
 				}
 				else if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
 				{
-					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder because WO is completed and SYNC status is MODIFIED( all childs are fresh). wonum: {woFinalToBeSaved.wonum}");
+					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder because WO is completed and SYNC status is MODIFIED (all childs are fresh). wonum: {woFinalToBeSaved.wonum}");
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFinalToBeSaved);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrder and WO re-fetched. wonum: {woFinalToBeSaved.wonum}");
 
+					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderActuals (all childs are fresh). wonum: {woFinalToBeSaved.wonum}");
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
+					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFinalToBeSaved.wonum}");
 				}
 
 				//post follow up work orders
-				foreach (var followupWorkOrder in woFromLocal.followups)
+				if (woFromLocal.followups != null)
 				{
-					followupWorkOrder.origrecordid = woFinalToBeSaved.wonum;
-					AppContext.maximoService.createWorkOrder(followupWorkOrder);
+					AppContext.Log.Debug($"[MX] WO has { woFromLocal.followups.Count()} followups. wonum: {woFinalToBeSaved.wonum}");
+					List<MaximoWorkOrder> freshFollowup = new List<MaximoWorkOrder>();
+					foreach (var followupWorkOrder in woFromLocal.followups)
+					{
+						followupWorkOrder.origrecordid = woFinalToBeSaved.wonum;
+						AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder for followupWorkOrder. wonum: {woFinalToBeSaved.wonum}, followupWorkOrder.Id: {followupWorkOrder.Id}");
+						MaximoWorkOrder fetchedFollowupWO = AppContext.maximoService.createWorkOrder(followupWorkOrder);
+						AppContext.Log.Debug($"[MX] Called maximoService.createWorkOrder for followupWorkOrder. wonum: {woFinalToBeSaved.wonum}, followupWorkOrder.Id: {followupWorkOrder.Id}");
+						freshFollowup.Add(fetchedFollowupWO);
+					}
+					AppContext.Log.Debug($"[MX] freshFollowup list set to woFinalToBeSaved.followups. wonum: {woFinalToBeSaved.wonum}");
+					woFinalToBeSaved.followups = freshFollowup;
 				}
-
+				else
+				{
+					AppContext.Log.Debug($"[MX] WO has no followups. wonum: {woFinalToBeSaved.wonum}");
+				}
+				
+				
 				fetchWorkOrderDetailsFromMaximo(woFinalToBeSaved);
 				woFinalToBeSaved.completed = false;
 				woFinalToBeSaved.syncronizationStatus = SyncronizationStatus.SYNCED;
+				
+				AppContext.Log.Debug($"[MX] WO ehnaced. woFinalToBeSaved.copmleted=false and woFinalToBeSaved.syncronizationStatus=SYNCED. wonum: {woFinalToBeSaved.wonum}");
 			}
-
+			AppContext.Log.Debug($"[MX] Returning from  postWorkOrderToMaximo. wonum: {woFinalToBeSaved.wonum}");
 			return woFinalToBeSaved;
 		}
 
@@ -909,8 +943,13 @@ namespace MaximoServiceLibrary
 		private void fetchWorkOrderDetailsFromMaximo(MaximoWorkOrder maximoWorkOrder)
 		{
 				// labTrans, toolTrans, workOrderSpec, workOrderFailureReport are coming from getWorkOrders
+				AppContext.Log.Debug($"[MX] Calling maximoService.getAsset. wonum: {maximoWorkOrder.wonum}");
 				maximoWorkOrder.asset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
+				AppContext.Log.Debug($"[MX] Called maximoService.getAsset. wonum: {maximoWorkOrder.wonum}");
+				
+				AppContext.Log.Debug($"[MX] Calling maximoService.getWorkOrderDocLinks. wonum: {maximoWorkOrder.wonum}");
 				maximoWorkOrder.doclink = AppContext.maximoService.getWorkOrderDocLinks(maximoWorkOrder);
+				AppContext.Log.Debug($"[MX] Called maximoService.getWorkOrderDocLinks. wonum: {maximoWorkOrder.wonum}");
 		}
 
 		public void clearWorkOrderCompositeFromLocalDb()
