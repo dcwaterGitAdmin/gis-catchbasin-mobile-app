@@ -369,11 +369,6 @@ namespace MaximoServiceLibrary
 
 			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
-            if (workOrderToBePosted.workorderspec != null)
-            {
-                workOrderToBePosted.workorderspec.ForEach(wospec => wospec._rowstamp = null);
-            }
-
             workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
             workOrderToBePosted.status = maximoWorkOrder.status;
             workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
@@ -383,6 +378,16 @@ namespace MaximoServiceLibrary
            
             workOrderToBePosted.statusdate = maximoWorkOrder.statusdate;
             workOrderToBePosted.problemcode = maximoWorkOrder.problemcode;
+            
+            // In order to not get error from maximo side in case of failed synchronization
+            if (workOrderToBePosted.workorderspec != null)
+            {
+	            workOrderToBePosted.workorderspec.ForEach(child => child._rowstamp = null);
+            }
+            if (workOrderToBePosted.failurereport != null)
+            {
+	            workOrderToBePosted.failurereport.ForEach(child => child._rowstamp = null);
+            }
 
             request.AddJsonBody(workOrderToBePosted);
 
@@ -450,6 +455,17 @@ namespace MaximoServiceLibrary
 
 			workOrderToBePosted.labtrans = maximoWorkOrder.labtrans;
             workOrderToBePosted.tooltrans = maximoWorkOrder.tooltrans;
+            
+            // In order to not get error from maximo side in case of failed synchronization
+            if (workOrderToBePosted.labtrans != null)
+            {
+	            workOrderToBePosted.labtrans.ForEach(child => child._rowstamp = null);
+            }
+            if (workOrderToBePosted.tooltrans != null)
+            {
+	            workOrderToBePosted.tooltrans.ForEach(child => child._rowstamp = null);
+            }
+            
             request.JsonSerializer = new RestSharpJsonNetSerializer();
 			request.AddJsonBody(workOrderToBePosted);
 

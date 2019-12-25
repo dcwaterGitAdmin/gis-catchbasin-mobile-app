@@ -259,6 +259,14 @@ namespace MaximoServiceLibrary
 				}
 			}
 
+			if (updatedByUs)
+			{
+				updateRowstampsForChilds(woFromMaximo, woFromLocal);
+			}
+		}
+
+		private static void updateRowstampsForChilds(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
+		{
 			if (woFromMaximo.workorderspec != null && woFromLocal.workorderspec != null)
 			{
 				foreach (var woSpecFromMaximo in woFromMaximo.workorderspec)
@@ -270,6 +278,58 @@ namespace MaximoServiceLibrary
 					}
 				}
 			}
+
+			if (woFromMaximo.failurereport != null && woFromLocal.failurereport != null)
+			{
+				foreach (var woFailureReportFromMaximo in woFromMaximo.failurereport)
+				{
+					MaximoWorkOrderFailureReport woFailureReportFromLocal =
+						woFromLocal.failurereport.FirstOrDefault(wofr => wofr.failurereportid == woFailureReportFromMaximo.failurereportid);
+					if (woFailureReportFromLocal != null)
+					{
+						woFailureReportFromLocal._rowstamp = woFailureReportFromMaximo._rowstamp;
+					}
+				}
+			}
+
+			if (woFromMaximo.labtrans != null && woFromLocal.labtrans != null)
+			{
+				foreach (var woLabTransFromMaximo in woFromMaximo.labtrans)
+				{
+					MaximoLabTrans woLabTransFromLocal =
+						woFromLocal.labtrans.FirstOrDefault(wolt => wolt.labtransid == woLabTransFromMaximo.labtransid);
+					if (woLabTransFromLocal != null)
+					{
+						woLabTransFromLocal._rowstamp = woLabTransFromMaximo._rowstamp;
+					}
+				}
+			}
+
+			if (woFromMaximo.tooltrans != null && woFromLocal.tooltrans != null)
+			{
+				foreach (var woToolTransFromMaximo in woFromMaximo.tooltrans)
+				{
+					MaximoToolTrans woToolTransFromLocal =
+						woFromLocal.tooltrans.FirstOrDefault(wott => wott.tooltransid == woToolTransFromMaximo.tooltransid);
+					if (woToolTransFromLocal != null)
+					{
+						woToolTransFromLocal._rowstamp = woToolTransFromMaximo._rowstamp;
+					}
+				}
+			}
+
+			// TODO implement doclink trace
+			// if (woFromMaximo.doclink != null && woFromLocal.doclink != null)
+			// {
+			// 	foreach (var woDoclinkFromMaximo in woFromMaximo.doclink)
+			// 	{
+			// 		MaximoDocLinks woDocklinksFromLocal = woFromLocal.doclink.FirstOrDefault(wodl => wodl.iddd == woDoclinkFromMaximo.iddd);
+			// 		if (woDocklinksFromLocal != null)
+			// 		{
+			// 			woDocklinksFromLocal._rowstamp = woDoclinkFromMaximo._rowstamp;
+			// 		}
+			// 	}
+			// }
 		}
 
 		private void postWorkOrderToMaximo(MaximoWorkOrder woFromLocal)
@@ -345,19 +405,14 @@ namespace MaximoServiceLibrary
 				if (woFromLocal.followups != null && woFromLocal.followups.Count > 0)
 				{
 					AppContext.Log.Info($"[MX] WO has {woFromLocal.followups.Count()} followups. wonum: {woFromLocal.wonum}");
-					List<MaximoWorkOrder> freshFollowup = new List<MaximoWorkOrder>();
-					foreach (var followupWorkOrder in woFromLocal.followups)
-					{
-						followupWorkOrder.origrecordid = woFromLocal.wonum;
-						AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder for followupWorkOrder. wonum: {woFromLocal.wonum}, followupWorkOrder.Id: {followupWorkOrder.Id}");
-						MaximoWorkOrder fetchedFollowupWO = AppContext.maximoService.createWorkOrder(followupWorkOrder);
-						AppContext.Log.Debug($"[MX] Called maximoService.createWorkOrder for followupWorkOrder. wonum: {woFromLocal.wonum}, followupWorkOrder.Id: {followupWorkOrder.Id}");
-						freshFollowup.Add(fetchedFollowupWO);
-					}
-
-					AppContext.Log.Debug($"[MX] freshFollowup list set to woFinalToBeSaved.followups. wonum: {woFromLocal.wonum}");
-					woFromLocal.followups = freshFollowup;
+					bool anyExceptionOccuredInCreateFollowup = postFollowupsToMaximoAndRefreshLocalWorkOrder(woFromLocal);
 					AppContext.workOrderRepository.upsert(woFromLocal);
+					
+					// We have stop flow in order to process failed followups in the next synchronization
+					if (anyExceptionOccuredInCreateFollowup)
+					{
+						return;
+					}
 				}
 
 				woFromLocal.completed = false;
@@ -365,6 +420,39 @@ namespace MaximoServiceLibrary
 				woFromLocal.syncronizationStatus = SyncronizationStatus.SYNCED;
 				AppContext.workOrderRepository.upsert(woFromLocal);
 			}
+		}
+
+		private bool postFollowupsToMaximoAndRefreshLocalWorkOrder(MaximoWorkOrder woFromLocal)
+		{
+			List<MaximoWorkOrder> freshFollowupList = new List<MaximoWorkOrder>();
+			bool anyExceptionOccured = false;
+			
+			foreach (var followupWorkOrder in woFromLocal.followups)
+			{
+				try
+				{
+					if (followupWorkOrder.syncronizationStatus == null || followupWorkOrder.syncronizationStatus != SyncronizationStatus.SYNCED)
+					{
+						followupWorkOrder.origrecordid = woFromLocal.wonum;
+						AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder for followupWorkOrder. wonum: {woFromLocal.wonum}, followupWorkOrder.Id: {followupWorkOrder.Id}");
+						MaximoWorkOrder fetchedFollowupWO = AppContext.maximoService.createWorkOrder(followupWorkOrder);
+						fetchedFollowupWO.syncronizationStatus = SyncronizationStatus.SYNCED;
+						AppContext.Log.Debug($"[MX] Called maximoService.createWorkOrder for followupWorkOrder. wonum: {woFromLocal.wonum}, followupWorkOrder.Id: {followupWorkOrder.Id}");
+						freshFollowupList.Add(fetchedFollowupWO);
+					}
+				}
+				catch (Exception ex)
+				{
+					AppContext.Log.Error($"[MX] FAILED to create followup work order. followupWorkOrder.Id:  {followupWorkOrder.Id} : {ex.ToString()}");
+					anyExceptionOccured = true;
+					followupWorkOrder.failed = true;
+					freshFollowupList.Add(followupWorkOrder);
+				}
+
+				woFromLocal.followups = freshFollowupList;
+
+			}
+			return anyExceptionOccured;
 		}
 
 		private void mergeMaximoWorkOrderFailureReportsToLocalWorkOrder(MaximoWorkOrder woFromLocal, List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList, MaximoWorkOrder woFreshFromMaximo)
@@ -472,7 +560,6 @@ namespace MaximoServiceLibrary
 							freshWorkOrderSpecList.Add(woSpecFromLocal);
 						}
 
-						woFromLocal.workorderspec.Remove(woSpecFromLocal);
 					}
 					//Local copy not found
 					else
@@ -513,8 +600,7 @@ namespace MaximoServiceLibrary
 					MaximoWorkOrderFailureReport woFailureReportFromLocal = null;
 					if (woFromLocal != null)
 					{
-						woFailureReportFromLocal = woFromLocal.failurereport.Find(wosfr =>
-							wosfr.failurereportid == woFailureReportFromMaximo.failurereportid);
+						woFailureReportFromLocal = woFromLocal.failurereport.Find(wosfr => wosfr.failurereportid == woFailureReportFromMaximo.failurereportid);
 					}
 
 					// Local copy found
@@ -542,7 +628,6 @@ namespace MaximoServiceLibrary
 							freshWorkOrderFailureReportList.Add(woFailureReportFromLocal);
 						}
 
-						woFromLocal.failurereport.Remove(woFailureReportFromLocal);
 					}
 					//Local copy not found
 					else
@@ -582,12 +667,11 @@ namespace MaximoServiceLibrary
 					MaximoLabTrans woLabTransFromLocal = null;
 					if (woFromLocal != null)
 					{
-						woLabTransFromLocal =
-							woFromLocal.labtrans.Find(woslt => woslt.labtransid == woLabTransFromMaximo.labtransid);
+						woLabTransFromLocal = woFromLocal.labtrans.Find(woslt => woslt.labtransid == woLabTransFromMaximo.labtransid);
 					}
 
 					// Local copy found
-					if (woLabTransFromLocal != null)
+					if (woLabTransFromLocal != null && woLabTransFromLocal.syncronizationStatus != null)
 					{
 						//means item is changed in maximo side
 						if (woLabTransFromMaximo._rowstamp != woLabTransFromLocal._rowstamp)
@@ -603,15 +687,15 @@ namespace MaximoServiceLibrary
 								woLabTransFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
 								freshWorkOrderLabTransList.Add(woLabTransFromLocal);
 							}
+							// DELETED status records will not enter to the fresh list, as a result will be deleted from both maximo and local
 						}
 						//means item is not changed in maximo side
 						else
 						{
-							// Add to fresh list, localCopies irregardless of SyncronizationStatus
+							// Add localCopies to fresh list irregardless of SyncronizationStatus
 							freshWorkOrderLabTransList.Add(woLabTransFromLocal);
 						}
 
-						woFromLocal.labtrans.Remove(woLabTransFromLocal);
 					}
 					//Local copy not found
 					else
@@ -672,6 +756,7 @@ namespace MaximoServiceLibrary
 								woToolTransFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
 								freshWorkOrderToolTransList.Add(woToolTransFromLocal);
 							}
+							// DELETED status records will not enter to the fresh list, as a result will be deleted from both maximo and local
 						}
 						//means item is not changed in maximo side
 						else
@@ -680,7 +765,6 @@ namespace MaximoServiceLibrary
 							freshWorkOrderToolTransList.Add(woToolTransFromLocal);
 						}
 
-						woFromLocal.tooltrans.Remove(woToolTransFromLocal);
 					}
 					//Local copy not found
 					else
