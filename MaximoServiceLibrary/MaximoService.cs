@@ -777,6 +777,29 @@ namespace MaximoServiceLibrary
 			return maximoAsset;
 		}
 
+		public MaximoAsset getAssetByAssetnum(String assetnum)
+		{
+			var request = createRequest("/os/dcw_cbasset", false);
+			request.AddParameter("oslc.where", $"assetnum=\"{assetnum}\"");
+			request.AddParameter("oslc.select", "*");
+			request.AddParameter("oslc.pageSize", "1");
+			
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				throw new Exception("getAssetByAssetnum-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			MaximoAssetRestResponse maximoAssetRestResponse = JsonConvert.DeserializeObject<MaximoAssetRestResponse>(response.Content);
+
+			if (maximoAssetRestResponse.member.Count == 0)
+				return null;
+
+			MaximoAsset maximoAsset = maximoAssetRestResponse.member[0];
+			return maximoAsset;
+		}
+		
 
 		public List<MaximoLabor> getLabors(string laborcraft)
 		{

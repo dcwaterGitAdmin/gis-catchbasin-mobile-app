@@ -410,6 +410,34 @@ namespace MaximoServiceLibrary
 			} 
 			else if (assetFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
 			{
+				if (assetFromLocal.href == null)
+				{
+					MaximoAsset assetFromMaximo = AppContext.maximoService.getAssetByAssetnum(assetFromLocal.assetnum);
+					if (assetFromMaximo == null)
+					{
+						throw new Exception($"Failed to fetch asset entity by assetnum: [{assetFromLocal.assetnum}] from Maximo");
+					}
+
+					assetFromMaximo.eq3 = assetFromLocal.eq3;
+					if (assetFromMaximo.assetspec != null && assetFromLocal.assetspec != null)
+					{
+						foreach (var assetSpecFromMaximo in assetFromMaximo.assetspec)
+						{
+							MaximoAssetSpec assetSpecFromLocal = assetFromLocal.assetspec.FirstOrDefault(assetspec => assetspec.assetattrid == assetSpecFromMaximo.assetattrid);
+							if (assetSpecFromLocal != null)
+							{
+								assetSpecFromMaximo.alnvalue = assetSpecFromLocal.alnvalue;
+								assetSpecFromMaximo.numvalue = assetSpecFromLocal.numvalue;
+							}
+
+						}
+					}
+
+					assetFromLocal = assetFromMaximo;
+					woFromLocal.asset = assetFromMaximo;
+					woFromLocal.assetnum = assetFromMaximo.assetnum;
+				}	
+				
 				MaximoAsset assetFreshFromMaximo = AppContext.maximoService.updateAsset(assetFromLocal);
 				woFromLocal.asset = assetFreshFromMaximo;
 				AppContext.workOrderRepository.upsert(woFromLocal);
