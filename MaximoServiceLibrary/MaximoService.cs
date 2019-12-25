@@ -255,7 +255,7 @@ namespace MaximoServiceLibrary
 			string where = "failurecode=\"CATCHBASIN\"" +
 						   " and siteid=\"DWS_DSS\"" +
 						   " and service=\"DSS\"" +
-						   " and historyflag=0" +
+						   //" and historyflag=0" +
 						   " and status=\"DISPTCHD\"" +
 						   " and worktype in [\"INV\",\"EMERG\",\"PM\",\"INSP\"]" +
 						   $" and persongroup in [\"{persongroup}\",\"CB00\"]";
@@ -311,8 +311,8 @@ namespace MaximoServiceLibrary
 			if (!response.IsSuccessful)
 			{
 				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-				return new List<MaximoWorkOrder>();
-			}
+				throw new Exception("rest-service-error fetch work orders: " + response.StatusCode + " - [" + response.Content + "]");
+            }
 
 			List<MaximoWorkOrder> maximoWorkOrderList = new List<MaximoWorkOrder>();
 
@@ -330,11 +330,10 @@ namespace MaximoServiceLibrary
 				if (!response.IsSuccessful)
 				{
 					AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
-					// todo - throw exception here?
-					return maximoWorkOrderList;
-				}
+                    throw new Exception("rest-service-error fetch work orders: " + response.StatusCode + " - [" + response.Content + "]");
+                }
 
-				mxwoPageableRestResponse =
+                mxwoPageableRestResponse =
 					JsonConvert.DeserializeObject<MaximoWorkOrderPageableRestResponse>(response.Content);
 				maximoWorkOrderList.AddRange(mxwoPageableRestResponse.member);
 			}
