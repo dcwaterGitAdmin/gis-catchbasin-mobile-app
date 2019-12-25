@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using System.Timers;
 using LocalDBLibrary.model;
@@ -282,6 +283,15 @@ namespace MaximoServiceLibrary
 
 			if (woFromLocal.completed)
 			{
+				if (woFromLocal.retryCount > 3)
+				{
+					AppContext.Log.Error($"Work order retry count reached maximum, give up synchronization: {woFromLocal.wonum}");
+					return;
+				}
+
+				woFromLocal.retryCount = woFromLocal.retryCount + 1;
+				AppContext.workOrderRepository.upsert(woFromLocal);
+				
 				if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder. db Id: {woFromLocal.Id}");
@@ -316,7 +326,7 @@ namespace MaximoServiceLibrary
 					AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFromLocal.wonum}");
 				}
-				else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
+				else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED || woFromLocal.syncronizationStatus == SyncronizationStatus.FAILURE)
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder because WO is completed and SYNC status is MODIFIED (all childs are fresh). wonum: {woFromLocal.wonum}");
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.updateWorkOrder(woFromLocal);

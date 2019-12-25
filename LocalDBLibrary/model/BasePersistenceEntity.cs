@@ -11,6 +11,8 @@ namespace LocalDBLibrary.model
         // it use by LiteDB.
 		[JsonIgnore]
         public int Id { get; set; }
+        
+        public int retryCount { get; set; }
 
         [JsonIgnore]
         private SyncronizationStatus syncStatus = SyncronizationStatus.SYNCED;
