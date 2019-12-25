@@ -122,7 +122,6 @@ namespace MaximoServiceLibrary
                     }
                     catch (Exception ex)
 					{
-                       
                         AppContext.Log.Error($"[MX] FAILED to synchronize work order {woFromMaximo.wonum} : {ex.ToString()}");
 					}
 				}
@@ -188,12 +187,14 @@ namespace MaximoServiceLibrary
 			// There exists a Local copy for WorkOrder
 			if (woFromLocal != null)
 			{
-              
+				AppContext.Log.Debug($"[MX] Local copy found for work order : {woFromMaximo.wonum}.");
                 //means item is changed in maximo side
                 if (woFromMaximo._rowstamp != woFromLocal._rowstamp)
 				{
+					AppContext.Log.Debug($"[MX] Remote copy of work order changed: {woFromMaximo.wonum}.");
 					if (woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
 					{
+						AppContext.Log.Debug($"[MX] Remote copy of work order will be overwritten : {woFromMaximo.wonum}.");
 						woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 						woFromMaximo.Id = woFromLocal.Id;
 						//insert into local with all childs
@@ -201,6 +202,7 @@ namespace MaximoServiceLibrary
 					else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
 					         woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
 					{
+						AppContext.Log.Debug($"[MX] Both remote and local copy of work order changed. WO will be marked as CONFLICTED : {woFromMaximo.wonum}.");
 						woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
 						woFinalToBeSaved = woFromLocal;
 					}
@@ -208,23 +210,32 @@ namespace MaximoServiceLibrary
 				//means item is not changed in maximo side
 				else
 				{
+					AppContext.Log.Debug($"[MX] Remote copy of work order not changed so local copy will be protected: {woFromMaximo.wonum}.");
 					woFinalToBeSaved = woFromLocal;
 				}
 			}
 			// There is no Local copy for WorkOrder
 			else
 			{
-                AppContext.Log.Debug($"[MX] No local copy found for work order : {woFromMaximo.wonum}. will persist in DB");
+                AppContext.Log.Debug($"[MX] No local copy found for work order : {woFromMaximo.wonum}. will persist in Local DB");
 
                 // Insert WorkOrder as SYNCED
                 woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
 			}
 
+			AppContext.Log.Debug($"[MX] Generating fresh work WorkOrderSpecList for wonum: {woFromMaximo.wonum}");
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
-			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList =
-				generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
+			
+			AppContext.Log.Debug($"[MX] Generating fresh work WorkOrderFailureReportList for wonum: {woFromMaximo.wonum}");
+			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
+			
+			AppContext.Log.Debug($"[MX] Generating fresh work WorkOrderLabTransList for wonum: {woFromMaximo.wonum}");
 			List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
+			
+			AppContext.Log.Debug($"[MX] Generating fresh work WorkOrderToolTransList for wonum: {woFromMaximo.wonum}");
 			List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
+			
+			//AppContext.Log.Debug($"[MX] Generating fresh work WorkOrderDocLinksList for wonum: {woFromMaximo.wonum}");
 			//List<MaximoDocLinks> freshWorkOrderDocLinksList = generateFreshWorkOrderDocLinksList(woFromMaximo, woFromLocal);
 
 			woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
@@ -234,12 +245,15 @@ namespace MaximoServiceLibrary
 			//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
 
 			// SYNCH ASSET
+			AppContext.Log.Debug($"[MX] Started to synch Assets for wonum: {woFromMaximo.wonum}");
 			MaximoAsset woAssetFinalToBeSaved = synchAsset(woFromMaximo, woFromLocal);
+			AppContext.Log.Debug($"[MX] Finished synch Assets for wonum: {woFromMaximo.wonum}");
 
 			woFinalToBeSaved.asset = woAssetFinalToBeSaved;
 
 			if (woFinalToBeSaved.completed)
 			{
+				AppContext.Log.Debug($"[MX] woFinalToBeSaved is in completed state so will be posted to Maximo. wonum: {woFromMaximo.wonum}");
 				woFinalToBeSaved = postWorkOrderToMaximo(woFinalToBeSaved, freshWorkOrderSpecList, freshWorkOrderFailureReportList, freshWorkOrderLabTransList, freshWorkOrderToolTransList);
 
             }
@@ -264,6 +278,7 @@ namespace MaximoServiceLibrary
 			{
 				if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
 				{
+					AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder because WO is completed and SYNC status is CREATED( all childs set to NULL). wonum: {woFinalToBeSaved.wonum}");
 					// in the first create call to Maximo, we have to clear the related entities
 					woFinalToBeSaved.workorderspec = null;
 					woFinalToBeSaved.failurereport = null;
@@ -272,60 +287,77 @@ namespace MaximoServiceLibrary
 					woFinalToBeSaved.doclink = null;
 
 					woFinalToBeSaved = AppContext.maximoService.createWorkOrder(woFinalToBeSaved);
+					AppContext.Log.Debug($"[MX] Called maximoService.createWorkOrder and WO re-fetched: {woFinalToBeSaved.wonum}");
 
 					// in the second  call to Maximo, we have to put the related entities in the request
 					// merge workorderspec values to workorder fetched from Maximo after creation
 					if (woFinalToBeSaved.workorderspec != null)
 					{
+						AppContext.Log.Debug($"[MX] Re-fetched WO has woSpecs. wonum: {woFinalToBeSaved.wonum}");
 						foreach (var workOrderSpecFromLocal in freshWorkOrderSpecList)
 						{
-							var workorderSpecFromMaximo = woFinalToBeSaved.workorderspec.FirstOrDefault(workorderSpec =>
-								workorderSpec.assetattrid == workOrderSpecFromLocal.assetattrid);
+							var workorderSpecFromMaximo = woFinalToBeSaved.workorderspec.FirstOrDefault(workorderSpec => workorderSpec.assetattrid == workOrderSpecFromLocal.assetattrid);
 							if (workorderSpecFromMaximo != null)
 							{
+								AppContext.Log.Debug($"[MX] woSpec found locally, alnvalue and numvalue are set to final woSpec. wonum : {woFinalToBeSaved.wonum}, woSpec.assetattrid : {workOrderSpecFromLocal.assetattrid}");
 								workorderSpecFromMaximo.alnvalue = workOrderSpecFromLocal.alnvalue;
 								workorderSpecFromMaximo.numvalue = workOrderSpecFromLocal.numvalue;
+							}
+							else
+							{
+								AppContext.Log.Debug($"[MX] Local woSpec not exist in re-fetched WO, so added to final woSpec list. wonum : {woFinalToBeSaved.wonum}, woSpec.assetattrid : {workOrderSpecFromLocal.assetattrid}");
+								woFinalToBeSaved.workorderspec.Add(workOrderSpecFromLocal);
 							}
 						}
 					}
 					else
 					{
+						AppContext.Log.Debug($"[MX] Re-fetched WO has no woSpec so freshWorkOrderSpecList set to final woSpec list of WO. wonum: {woFinalToBeSaved.wonum}");
 						woFinalToBeSaved.workorderspec = freshWorkOrderSpecList;
 					}
 
 					// merge failurerport entities if returned from Maximo
 					if (woFinalToBeSaved.failurereport != null)
 					{
+						AppContext.Log.Debug($"[MX] Re-fetched WO has failureReport. wonum: {woFinalToBeSaved.wonum}");
 						foreach (var failurereportFromLocal in freshWorkOrderFailureReportList)
 						{
-							var failurereportFromMaximo = woFinalToBeSaved.failurereport.FirstOrDefault(failurerport =>
-								failurerport.type == failurereportFromLocal.type);
+							var failurereportFromMaximo = woFinalToBeSaved.failurereport.FirstOrDefault(failurerport => failurerport.type == failurereportFromLocal.type);
 							if (failurereportFromMaximo != null)
 							{
+								AppContext.Log.Debug($"[MX] woFailureReport found locally, failurecode set to final failureReport. wonum : {woFinalToBeSaved.wonum}, failureReport.type : {failurereportFromLocal.type}");
 								failurereportFromMaximo.failurecode = failurereportFromLocal.failurecode;
 							}
 							else
 							{
+								AppContext.Log.Debug($"[MX] Local woFailureReport not exist in re-fetched WO, so added to final failureReport list. wonum : {woFinalToBeSaved.wonum}, failureReport.type : {failurereportFromLocal.type}");
 								woFinalToBeSaved.failurereport.Add(failurereportFromLocal);
 							}
 						}
 					}
 					else
 					{
+						AppContext.Log.Debug($"[MX] Re-fetched work order has no failureReport so freshWorkOrderFailureReportList set to final failureReport list of WO. wonum: {woFinalToBeSaved.wonum}");
 						woFinalToBeSaved.failurereport = freshWorkOrderFailureReportList;
 					}
 					
+					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder with enhanced woSpec and failureReport lists. wonum: {woFinalToBeSaved.wonum}");
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFinalToBeSaved);
+					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrder and WO re-fetched. wonum: {woFinalToBeSaved.wonum}");
 
 					woFinalToBeSaved.labtrans = freshWorkOrderLabTransList;
 					woFinalToBeSaved.tooltrans = freshWorkOrderToolTransList;
 					//woFinalToBeSaved.doclink = freshWorkOrderDocLinksList;
 
+					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderActuals with enhanced freshWorkOrderLabTransList and freshWorkOrderToolTransList. wonum: {woFinalToBeSaved.wonum}");
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFinalToBeSaved);
+					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFinalToBeSaved.wonum}");
 				}
 				else if (woFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
 				{
+					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder because WO is completed and SYNC status is MODIFIED( all childs are fresh). wonum: {woFinalToBeSaved.wonum}");
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrder(woFinalToBeSaved);
+					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrder and WO re-fetched. wonum: {woFinalToBeSaved.wonum}");
 
 					woFinalToBeSaved = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
 				}
