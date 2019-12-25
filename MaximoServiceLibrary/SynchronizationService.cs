@@ -250,8 +250,10 @@ namespace MaximoServiceLibrary
 				if ((assetFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED) || updatedByUs)
 				{
 					AppContext.Log.Debug($"[MX] asset from Maximo is going to be overwritten to local. assetnum : [{woFromMaximo.assetnum}], local status : [{assetFromLocal.syncronizationStatus}]");
-					
+
+                    assetFromLocal._rowstamp = assetFromMaximo._rowstamp;
 					assetFromLocal.assetnum = assetFromMaximo.assetnum;
+                    assetFromLocal.description = assetFromMaximo.description;
 					assetFromLocal.eq3 = assetFromMaximo.eq3;
 					assetFromLocal.assettag = assetFromMaximo.assettag;
 					assetFromLocal.siteid = assetFromMaximo.siteid;
@@ -931,8 +933,7 @@ namespace MaximoServiceLibrary
 					MaximoAssetSpec woAssetSpecFromLocal = null;
 					if (woFromLocal != null && woFromLocal.asset != null)
 					{
-						woAssetSpecFromLocal = woFromLocal.asset.assetspec.Find(woas =>
-							woas.assetspecid == woAssetSpecFromMaximo.assetspecid);
+						woAssetSpecFromLocal = woFromLocal.asset.assetspec.Find(woas => woas.assetattrid == woAssetSpecFromMaximo.assetattrid);
 					}
 
 					// Local copy found
