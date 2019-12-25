@@ -672,7 +672,7 @@ namespace MaximoServiceLibrary
 					}
 
 					// Local copy found
-					if (woLabTransFromLocal != null && woLabTransFromLocal.syncronizationStatus != null)
+					if (woLabTransFromLocal != null)
 					{
 						//means item is changed in maximo side
 						if (woLabTransFromMaximo._rowstamp != woLabTransFromLocal._rowstamp)
