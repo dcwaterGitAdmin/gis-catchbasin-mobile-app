@@ -38,7 +38,6 @@ namespace LocalDBLibrary.model
 	    MODIFIED = 1,
 	    CREATED = 2,
 	    CONFLICTED = 3,
-	    COMPLETED = 4,
-        FAILURE =5
+	    COMPLETED = 4
     }
 }
