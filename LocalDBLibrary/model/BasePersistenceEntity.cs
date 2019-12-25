@@ -11,7 +11,8 @@ namespace LocalDBLibrary.model
         // it use by LiteDB.
 		[JsonIgnore]
         public int Id { get; set; }
-        
+
+        [JsonIgnore]
         public int retryCount { get; set; }
 
         [JsonIgnore]

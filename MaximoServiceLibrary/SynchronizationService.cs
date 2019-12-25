@@ -95,8 +95,8 @@ namespace MaximoServiceLibrary
 				}
 
 				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Maximo...");
-				//List<MaximoWorkOrder> workOrdersFromMaximo = fetchAllWorkOrdersFromMaximo();
-                List<MaximoWorkOrder> workOrdersFromMaximo = new List<MaximoWorkOrder>();
+				List<MaximoWorkOrder> workOrdersFromMaximo = fetchAllWorkOrdersFromMaximo();
+                //List<MaximoWorkOrder> workOrdersFromMaximo = new List<MaximoWorkOrder>();
                 synchronizationDelegate("SYNC_IN_PROGRESS", "fetched " + workOrdersFromMaximo.Count + " workorders from Maximo");
 
 				synchronizationDelegate("SYNC_IN_PROGRESS", "fetching all work orders from Local...");
@@ -279,7 +279,7 @@ namespace MaximoServiceLibrary
 			List<MaximoLabTrans> freshWorkOrderLabTransList = woFromLocal.labtrans;
 			List<MaximoToolTrans> freshWorkOrderToolTransList = woFromLocal.tooltrans;
 
-			AppContext.Log.Info($"[MX] Entered postWorkOrderToMaximo. wonum: {woFromLocal.wonum}, completed: {woFromLocal.completed}, completed: {woFromLocal.syncronizationStatus}");
+			AppContext.Log.Info($"[MX] Entered postWorkOrderToMaximo. wonum: {woFromLocal.wonum}, completed: {woFromLocal.completed}, syncronizationStatus: {woFromLocal.syncronizationStatus}, retryCount: {woFromLocal.retryCount}");
 
 			if (woFromLocal.completed)
 			{

@@ -18,7 +18,9 @@ namespace MaximoServiceLibrary
     public class MaximoService
     {
         //public string BASE_HOST { get; set; } = "http://localhost:8080";
-        public string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+        //public string BASE_HOST = "https://bpl-max-test.dcwasa.com";
+        public string BASE_HOST = "https://assetmgmt.dcwasa.com";
+
 
         private string BASE_CONTEXT_PATH { get; set; } = "/maxrest/oslc";
         private string BASE_URL { get {return BASE_HOST + BASE_CONTEXT_PATH; } }
@@ -367,7 +369,12 @@ namespace MaximoServiceLibrary
 
 			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
-			workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
+            if (workOrderToBePosted.workorderspec != null)
+            {
+                workOrderToBePosted.workorderspec.ForEach(wospec => wospec._rowstamp = null);
+            }
+
+            workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
             workOrderToBePosted.status = maximoWorkOrder.status;
             workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
             workOrderToBePosted.assetnum = maximoWorkOrder.assetnum;
