@@ -213,7 +213,6 @@ namespace MaximoServiceLibrary
 			mergeWorkOrderFromMaximoToLocal(woFromMaximo, woFromLocal, false);
 
 			// merge work order child entities between Maximo and Local work orders
-			// todo DELETED sync status
 			// todo doclinks
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
 			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
@@ -225,9 +224,69 @@ namespace MaximoServiceLibrary
 			woFromLocal.labtrans = freshWorkOrderLabTransList;
 			woFromLocal.tooltrans = freshWorkOrderToolTransList;
 
+			synchronizeWorkOrderAsset(woFromMaximo, woFromLocal, false);
+			
 			AppContext.workOrderRepository.upsert(woFromLocal);
 		}
 
+		private void synchronizeWorkOrderAsset(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal, bool updatedByUs)
+		{
+			MaximoAsset assetFromMaximo = woFromMaximo.asset;
+			MaximoAsset assetFromLocal = woFromLocal.asset;
+
+			if (assetFromLocal == null)
+			{
+				woFromLocal.asset = assetFromMaximo;
+				return;
+			}
+
+			if (assetFromMaximo == null)
+			{
+				return;
+			}
+
+			if (assetFromMaximo._rowstamp != assetFromLocal._rowstamp)
+			{
+				if ((assetFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED) || updatedByUs)
+				{
+					AppContext.Log.Debug($"[MX] asset from Maximo is going to be overwritten to local. assetnum : [{woFromMaximo.assetnum}], local status : [{assetFromLocal.syncronizationStatus}]");
+					
+					assetFromLocal.assetnum = assetFromMaximo.assetnum;
+					assetFromLocal.eq3 = assetFromMaximo.eq3;
+					assetFromLocal.assettag = assetFromMaximo.assettag;
+					assetFromLocal.siteid = assetFromMaximo.siteid;
+				} 
+				else if (assetFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
+				         assetFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+				{
+					// todo - check how to solve CONFLICT case!!!
+					AppContext.Log.Warn($"[MX] CONFLICT!! asset is changed both in Maximo and in local db. assetnum : [{woFromMaximo.assetnum}], ocal status : [{assetFromLocal.syncronizationStatus}]");
+
+					assetFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
+				}
+			}
+
+			List<MaximoAssetSpec> freshAssetSpecList = generateFreshAssetSpecList(woFromMaximo, woFromLocal);
+			assetFromLocal.assetspec = freshAssetSpecList;
+
+			if (updatedByUs)
+			{
+				if (assetFromMaximo.assetspec != null && assetFromLocal.assetspec != null)
+				{
+					foreach (var assetSpecFromMaximo in assetFromMaximo.assetspec)
+					{
+						MaximoAssetSpec assetSpecFromLocal = assetFromLocal.assetspec.FirstOrDefault(assetSpec => assetSpec.assetattrid == assetSpecFromMaximo.assetattrid);
+						if (assetSpecFromLocal != null)
+						{
+							assetSpecFromLocal._rowstamp = assetFromMaximo._rowstamp;
+						}
+					}
+				}
+				
+			}
+			
+		}
+		
 		private void mergeWorkOrderFromMaximoToLocal(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal, bool updatedByUs)
 		{
 			//means item is changed in maximo side
@@ -861,10 +920,8 @@ namespace MaximoServiceLibrary
 			return freshWorkOrderDocLinksList;
 		}
 
-		public List<MaximoAssetSpec> generateFreshAssetSpecList(MaximoWorkOrder woFromMaximo,
-			MaximoWorkOrder woFromLocal)
+		public List<MaximoAssetSpec> generateFreshAssetSpecList(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
 		{
-			//MaximoAsset freshWorkOrderAsset = new MaximoAsset();
 			List<MaximoAssetSpec> freshAssetSpecList = new List<MaximoAssetSpec>();
 
 			if (woFromMaximo.asset != null && woFromMaximo.asset.assetspec != null)
@@ -902,8 +959,6 @@ namespace MaximoServiceLibrary
 							// Add to fresh list, localCopies irregardless of SyncronizationStatus
 							freshAssetSpecList.Add(woAssetSpecFromLocal);
 						}
-
-						woFromLocal.asset.assetspec.Remove(woAssetSpecFromLocal);
 					}
 					//Local copy not found
 					else
@@ -930,112 +985,7 @@ namespace MaximoServiceLibrary
 
 			return freshAssetSpecList;
 		}
-
-
-		public MaximoAsset synchAsset(MaximoWorkOrder woFromMaximo, MaximoWorkOrder woFromLocal)
-		{
-			MaximoAsset woAssetFromMaximo = woFromMaximo.asset;
-			MaximoAsset woAssetFromLocal = null;
-			if (woFromLocal != null)
-			{
-				woAssetFromLocal = woFromLocal.asset;
-			}
-
-			MaximoAsset woAssetFinalToBeSaved = woAssetFromMaximo;
-
-			// There exists a remote copy for woAsset
-			if (woAssetFromMaximo != null)
-			{
-				// There exists a Local copy for woAsset
-				if (woAssetFromLocal != null)
-				{
-					// means item is changed in maximo side
-					if (woAssetFromMaximo._rowstamp != woAssetFromMaximo._rowstamp)
-					{
-						if (woAssetFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
-						{
-							woAssetFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-							woAssetFromMaximo.Id = woAssetFromLocal.Id;
-						}
-						else if (woAssetFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED ||
-						         woAssetFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
-						{
-							woAssetFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-							woAssetFinalToBeSaved = woAssetFromLocal;
-						}
-					}
-					//means item is not changed in maximo side
-					else
-					{
-						woAssetFinalToBeSaved = woAssetFromLocal;
-					}
-				}
-				// There is no Local copy for woAsset
-				else
-				{
-					woAssetFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
-				}
-			}
-			// There is no woAsset in remote
-			else
-			{
-				// There exists a Local copy for woAsset
-				if (woAssetFromLocal != null)
-				{
-					//todo EG - check this line
-					woAssetFinalToBeSaved = woAssetFromLocal;
-
-					if (woAssetFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
-					{
-						// woAssetFinalToBeSaved is already set to woAssetFromMaximo and it is null;
-					}
-					else if (woAssetFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
-					{
-						woAssetFinalToBeSaved = woAssetFromLocal;
-					}
-				}
-			}
-
-			if (woAssetFinalToBeSaved != null)
-			{
-				List<MaximoAssetSpec> freshAssetSpecList = generateFreshAssetSpecList(woFromMaximo, woFromLocal);
-				woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
-				if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.CREATED)
-				{
-					// Call createAsset
-					woAssetFinalToBeSaved.assetspec = null;
-					woAssetFinalToBeSaved = AppContext.maximoService.createAsset(woAssetFinalToBeSaved);
-
-					// merge asssetspec values to assset fetched from MAximo after creation
-					if (woAssetFinalToBeSaved.assetspec != null)
-					{
-						foreach (var assetSpecFromLocal in freshAssetSpecList)
-						{
-							var assetSpecFromMaximo = woAssetFinalToBeSaved.assetspec.FirstOrDefault(assetSpec =>
-								assetSpec.assetattrid == assetSpecFromLocal.assetattrid);
-							if (assetSpecFromMaximo != null)
-							{
-								assetSpecFromMaximo.alnvalue = assetSpecFromLocal.alnvalue;
-								assetSpecFromMaximo.numvalue = assetSpecFromLocal.numvalue;
-							}
-						}
-					}
-					else
-					{
-						woAssetFinalToBeSaved.assetspec = freshAssetSpecList;
-					}
-
-					woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
-				}
-				else if (woAssetFinalToBeSaved.syncronizationStatus == SyncronizationStatus.MODIFIED)
-				{
-					woAssetFinalToBeSaved = AppContext.maximoService.updateAsset(woAssetFinalToBeSaved);
-				}
-			}
-
-			return woAssetFinalToBeSaved;
-		}
-
+		
 
 		private List<MaximoWorkOrder> fetchAllWorkOrdersFromMaximo()
 		{
