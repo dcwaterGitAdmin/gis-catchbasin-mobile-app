@@ -150,7 +150,7 @@ namespace MaximoServiceLibrary
 						AppContext.Log.Error($"[MX] FAILED to synchronize woFromLocal {woFromLocal.wonum} : {ex.ToString()}");
 						AppContext.Log.Error(ex.StackTrace);
 						// TODO remove failure sync status
-						woFromLocal.syncronizationStatus = SyncronizationStatus.FAILURE;
+						woFromLocal.failed = true;
 						AppContext.workOrderRepository.upsert(woFromLocal);
 					}
 				}
@@ -327,7 +327,7 @@ namespace MaximoServiceLibrary
 					AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFromLocal.wonum}");
 				}
-				else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED || woFromLocal.syncronizationStatus == SyncronizationStatus.FAILURE)
+				else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder because WO is completed and SYNC status is MODIFIED (all childs are fresh). wonum: {woFromLocal.wonum}");
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.updateWorkOrder(woFromLocal);
@@ -362,6 +362,7 @@ namespace MaximoServiceLibrary
 				}
 
 				woFromLocal.completed = false;
+				woFromLocal.failed = false;
 				woFromLocal.syncronizationStatus = SyncronizationStatus.SYNCED;
 				AppContext.workOrderRepository.upsert(woFromLocal);
 			}

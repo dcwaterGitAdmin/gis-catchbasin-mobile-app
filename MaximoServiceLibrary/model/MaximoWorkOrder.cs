@@ -43,6 +43,9 @@ namespace MaximoServiceLibrary.model
     {
         [JsonIgnore]
         public bool completed { get; set; }
+        
+        [JsonIgnore]
+        public bool failed { get; set; }
 
         [JsonIgnore]
 		public List<MaximoWorkOrder> followups { get; set; }
