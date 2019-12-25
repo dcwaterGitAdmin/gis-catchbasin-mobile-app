@@ -453,7 +453,7 @@ namespace MaximoServiceLibrary
 			
 			if (woFromLocal.completed)
 			{
-				if (woFromLocal.retryCount > 3)
+				if (woFromLocal.retryCount > 10)
 				{
 					AppContext.Log.Error($"Work order retry count reached maximum, give up synchronization: {woFromLocal.wonum}, retryCount: {woFromLocal.retryCount}");
 					return;

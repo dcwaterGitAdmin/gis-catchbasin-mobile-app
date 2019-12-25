@@ -505,10 +505,19 @@ namespace MaximoServiceLibrary
 			}
             AppContext.Log.Info($"[MX] successfully updated work order actuals : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
 
-            return getWorkOrderByHref(maximoWorkOrder.href);
-		}
+            MaximoWorkOrder freshWorkOrder = null;
+            if (maximoWorkOrder.href != null)
+            {
+                freshWorkOrder = getWorkOrderByHref(maximoWorkOrder.href);
+            }
+            else if (maximoWorkOrder.workorderid != null && maximoWorkOrder.workorderid != 0)
+            {
+                freshWorkOrder = getWorkOrderByWorkorderid(maximoWorkOrder.workorderid);
+            }
+            return freshWorkOrder;
+        }
 
-		public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
+        public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid + "/doclinks", false);
 			var response = restClient.Execute(request);
