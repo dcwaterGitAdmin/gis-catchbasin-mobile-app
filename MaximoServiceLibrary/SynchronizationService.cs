@@ -180,14 +180,15 @@ namespace MaximoServiceLibrary
 				}
 
 				AppContext.Log.Debug($"[MX] END to delete local work orders that are  not received from Maximo.");
-			}
-			catch (Exception ex)
+                synchronizationDelegate("SYNC_FINISHED", "Maximo synchronization complete!");
+            }
+            catch (Exception ex)
 			{
 				AppContext.Log.Error(ex.StackTrace);
-			}
-			finally
+                synchronizationDelegate("SYNC_ERROR", $"Maximo synchronization failed : [{ex.Message}]");
+            }
+            finally
 			{
-				synchronizationDelegate("SYNC_FINISHED", "Maximo synchronization complete!");
 
 				isInSynchronization = false;
 				synchronizationTimer.Enabled = true;
@@ -1057,7 +1058,7 @@ namespace MaximoServiceLibrary
 						updateLabors();
 						if (AppContext.laborRepository.Find("person[*].personid", mxuser.personId).Count() == 0)
 						{
-							return "You don't have laborcraftrate!";
+							//return "You don't have laborcraftrate!";
 						}
 					}
 
