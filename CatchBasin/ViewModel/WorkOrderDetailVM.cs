@@ -212,6 +212,7 @@ namespace CatchBasin.ViewModel
             if (String.IsNullOrEmpty(asset.assetnum))
             {
                 asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
+                asset.classstructureid = "1033";
             }
             else
             {
@@ -339,6 +340,7 @@ namespace CatchBasin.ViewModel
 			asset.assetspec.Add(HASWATERSEAL);
 
 			MaximoWorkOrder.asset = asset;
+            MaximoWorkOrder.assetnum = asset.assetnum;
 			AssetTag = asset.assettag;
             
 			
@@ -1846,10 +1848,12 @@ namespace CatchBasin.ViewModel
                         {
                             MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
                             MaximoWorkOrder.asset = null;
-                           
+                            MaximoWorkOrder.assetnum = null;
+
                         } else if(_wo.asset == null && MaximoWorkOrder.asset != null)
                         {
                             MaximoWorkOrder.asset = null;
+                            MaximoWorkOrder.assetnum = null;
                         }
                     }
                     else
@@ -1858,10 +1862,12 @@ namespace CatchBasin.ViewModel
                         {
                             MapVM.deleteAssetFromMap(MaximoWorkOrder.asset.assettag);
                             MaximoWorkOrder.asset = null;
+                            MaximoWorkOrder.assetnum = null;
                         }
                         else if (MaximoWorkOrder.asset != null)
                         {
                             MaximoWorkOrder.asset = null;
+                            MaximoWorkOrder.assetnum = null;
                         }
                     }
                     MapVM.HideWorkOrderDetail();
