@@ -464,7 +464,7 @@ namespace MaximoServiceLibrary
 				
 				postWorkOrderAssetToMaximo(woFromLocal);
 				
-				if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
+				if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED && (woFromLocal.workorderid == null || woFromLocal.workorderid == 0))
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder. db Id: {woFromLocal.Id}");
 					// in the first create call to Maximo, we have to clear the related entities
@@ -485,22 +485,10 @@ namespace MaximoServiceLibrary
 					AppContext.workOrderRepository.upsert(woFromLocal);
 
 
-					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder with enhanced woSpec and failureReport lists. wonum: {woFromLocal.wonum}");
-					woFreshFromMaximo = AppContext.maximoService.updateWorkOrder(woFromLocal);
-					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
-					AppContext.workOrderRepository.upsert(woFromLocal);
-					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrder and WO re-fetched. wonum: {woFromLocal.wonum}");
-
-
-					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderActuals with enhanced freshWorkOrderLabTransList and freshWorkOrderToolTransList. wonum: {woFromLocal.wonum}");
-					woFreshFromMaximo = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
-					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
-					AppContext.workOrderRepository.upsert(woFromLocal);
-					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFromLocal.wonum}");
 				}
-				else if (woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
+				if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED || woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
 				{
-					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder because WO is completed and SYNC status is MODIFIED (all childs are fresh). wonum: {woFromLocal.wonum}");
+					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder . wonum: {woFromLocal.wonum}");
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.updateWorkOrder(woFromLocal);
 					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
 					AppContext.workOrderRepository.upsert(woFromLocal);
@@ -511,6 +499,7 @@ namespace MaximoServiceLibrary
 					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
 					AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFromLocal.wonum}");
+
 				}
 
 				//post follow up work orders

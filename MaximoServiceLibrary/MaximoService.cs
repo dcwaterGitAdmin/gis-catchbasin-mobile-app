@@ -355,6 +355,21 @@ namespace MaximoServiceLibrary
 			MaximoWorkOrder maximoWorkOrder = JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
 			return maximoWorkOrder;
 		}
+
+		public MaximoWorkOrder getWorkOrderByWorkorderid(long workorderid)
+		{
+			var request = createRequest("/os/dcw_cb_wo/" + workorderid, false);
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+			
+			MaximoWorkOrder maximoWorkOrder = JsonConvert.DeserializeObject<MaximoWorkOrder>(response.Content);
+			return maximoWorkOrder;
+		}
 		
 		public MaximoWorkOrder updateWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
@@ -403,7 +418,16 @@ namespace MaximoServiceLibrary
 			}
 
             AppContext.Log.Info($"[MX] successfully updated work order : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
-            return getWorkOrderByHref(maximoWorkOrder.href);
+            MaximoWorkOrder freshWorkOrder = null;
+            if (maximoWorkOrder.href != null)
+            {
+	            freshWorkOrder = getWorkOrderByHref(maximoWorkOrder.href);
+            }
+            else if (maximoWorkOrder.workorderid != null && maximoWorkOrder.workorderid != 0)
+            {
+	            freshWorkOrder = getWorkOrderByWorkorderid(maximoWorkOrder.workorderid);
+            }
+            return freshWorkOrder;
 		}
 
 		public MaximoWorkOrder createWorkOrder(MaximoWorkOrder maximoWorkOrder)
