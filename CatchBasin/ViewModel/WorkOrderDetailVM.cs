@@ -1886,7 +1886,27 @@ namespace CatchBasin.ViewModel
             LabTrans.Clear();
             ToolTrans.Clear();
             Actuals.Clear();
-			try
+
+            DumpEst = 0;
+            BrokenTop = false;
+            CCTV = false;
+            FlushAlleyGrate = false;
+            JettingBlown = false;
+            ManualCleaning = false;
+            MissingLid = false;
+            NeedsCheckBlock = false;
+            NeedsMasonry = false;
+            OilSpill = false;
+            TopNeedsReset = false;
+            TreeRoots = false;
+            Vacuuming = false;
+            WallsNeedRepair = false;
+            PlacedSticker = false;
+            DebrisCondition = null;
+            DebrisConditionPC = null;
+            DebrisConditionAC = null;
+
+            try
 			{
 				MapVM.MapView.GeoViewTapped -= MapVM.MapTappedForSelectAsset;
 			}catch(Exception e)
