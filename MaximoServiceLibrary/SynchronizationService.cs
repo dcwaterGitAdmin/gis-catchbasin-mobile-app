@@ -406,7 +406,36 @@ namespace MaximoServiceLibrary
 			
 			if (assetFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
 			{
-				// todo come back here :)
+				
+				if (assetFromLocal.href == null)
+				{
+					MaximoAsset assetFromMaximo = AppContext.maximoService.createAsset(assetFromLocal);
+
+					if (assetFromMaximo.assetspec != null && assetFromLocal.assetspec != null)
+					{
+						foreach (var assetSpecFromMaximo in assetFromMaximo.assetspec)
+						{
+							MaximoAssetSpec assetSpecFromLocal = assetFromLocal.assetspec.FirstOrDefault(assetspec => assetspec.assetattrid == assetSpecFromMaximo.assetattrid);
+							if (assetSpecFromLocal != null)
+							{
+								assetSpecFromMaximo.alnvalue = assetSpecFromLocal.alnvalue;
+								assetSpecFromMaximo.numvalue = assetSpecFromLocal.numvalue;
+							}
+
+						}
+					}
+
+					assetFromLocal = assetFromMaximo;
+					woFromLocal.asset = assetFromMaximo;
+					woFromLocal.assetnum = assetFromMaximo.assetnum;
+				}
+
+				AppContext.workOrderRepository.upsert(woFromLocal);
+				
+				MaximoAsset assetFreshFromMaximo = AppContext.maximoService.updateAsset(assetFromLocal);
+				woFromLocal.asset = assetFreshFromMaximo;
+				AppContext.workOrderRepository.upsert(woFromLocal);
+
 			} 
 			else if (assetFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
 			{

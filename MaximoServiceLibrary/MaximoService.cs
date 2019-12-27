@@ -590,12 +590,18 @@ namespace MaximoServiceLibrary
 
 		public MaximoAsset createAsset(MaximoAsset maximoAsset)
 		{
-            AppContext.Log.Info($"[MX] create asset : [{maximoAsset.Id}]");
-
-            var request = createRequest("/os/mxasset", false, Method.POST);
+			AppContext.Log.Info($"[MX] create asset : [{maximoAsset.assettag}] - [{maximoAsset.Id}]");
+			
+            var request = createRequest("/os/dcw_cbasset", false, Method.POST);
 			request.AddHeader("x-method-override", "POST");
 			
-			request.AddJsonBody(maximoAsset);
+			MaximoAssetForCreation maximoAssetForCreation = new MaximoAssetForCreation();
+			maximoAssetForCreation.assettag = maximoAsset.assettag;
+			maximoAssetForCreation.eq3 = maximoAsset.eq3;
+			maximoAssetForCreation.classstructureid = maximoAsset.classstructureid;
+			maximoAssetForCreation.siteid = maximoAsset.siteid;
+			
+			request.AddJsonBody(maximoAssetForCreation);
 
 			var response = restClient.Execute(request);
 			
@@ -622,7 +628,8 @@ namespace MaximoServiceLibrary
 
             return getAssetByHref(assetHref);
 		}
-
+		
+		
 		public MaximoAsset updateAsset(MaximoAsset maximoAsset)
 		{
             AppContext.Log.Info($"[MX] update asset : [{maximoAsset.assetnum}] - [{maximoAsset.href}]");

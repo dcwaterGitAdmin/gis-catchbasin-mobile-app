@@ -4,6 +4,16 @@ using System.Collections.Generic;
 namespace MaximoServiceLibrary.model
 {
 // MXASSET
+	public class MaximoAssetForCreation
+	{
+
+		public string assettag { get; set; }
+		public string eq3 { get; set; }
+		public string siteid { get; set; }
+		public string classstructureid { get; set; }
+		
+	}
+	
 	public class MaximoAsset : MaximoBaseEntity
 	{
         public string classstructureid { get; set; }
