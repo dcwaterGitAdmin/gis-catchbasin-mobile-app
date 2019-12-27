@@ -1075,7 +1075,7 @@ namespace MaximoServiceLibrary
 		{
 			// labTrans, toolTrans, workOrderSpec, workOrderFailureReport are coming from getWorkOrders
 			AppContext.Log.Debug($"[MX] Calling maximoService.getAsset. wonum: {maximoWorkOrder.wonum}");
-			maximoWorkOrder.asset = AppContext.maximoService.getAsset(maximoWorkOrder.assetnum);
+			maximoWorkOrder.asset = AppContext.maximoService.getAssetByAssetnum(maximoWorkOrder.assetnum);
 			AppContext.Log.Debug($"[MX] Called maximoService.getAsset. wonum: {maximoWorkOrder.wonum}");
 
 			AppContext.Log.Debug($"[MX] Calling maximoService.getWorkOrderDocLinks. wonum: {maximoWorkOrder.wonum}");

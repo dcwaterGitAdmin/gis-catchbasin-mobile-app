@@ -42,7 +42,7 @@ namespace MaximoServiceTestConsoleApplication
 
 			foreach (var maximoWorkOrder in maximoWorkOrders)
 			{
-				MaximoAsset maximoAsset = maximoService.getAsset(maximoWorkOrder.assetnum);
+				MaximoAsset maximoAsset = maximoService.getAssetByAssetnum(maximoWorkOrder.assetnum);
 				maximoWorkOrder.asset = maximoAsset;
 
 				List<MaximoDocLinks> workOrderDocLists = maximoService.getWorkOrderDocLinks(maximoWorkOrder);

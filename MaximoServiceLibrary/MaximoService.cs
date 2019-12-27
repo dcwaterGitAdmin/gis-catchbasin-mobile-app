@@ -608,7 +608,7 @@ namespace MaximoServiceLibrary
 			if (!response.IsSuccessful)
 			{
                 AppContext.Log.Error($"[MX] - create asset Error url : {response.ResponseUri.ToString()}");
-                AppContext.Log.Error($"[MX] - create asset Error request body : {request.JsonSerializer.Serialize(maximoAsset)}");
+                AppContext.Log.Error($"[MX] - create asset Error request body : {request.JsonSerializer.Serialize(maximoAssetForCreation)}");
                 AppContext.Log.Error($"[MX] - create asset operation response : [{response.StatusCode}] - [{response.Content}]");
 
                 throw new Exception("create-asset-error : " + response.StatusCode + " - [" + response.Content + "]");
@@ -778,28 +778,6 @@ namespace MaximoServiceLibrary
 
 			return maximoDomains;
 
-		}
-
-		public MaximoAsset getAsset(string assetnum)
-		{
-			if (assetnum == null) return null;
-			var request = createRequest("/os/mxasset");
-			request.AddQueryParameter("oslc.where", "assetnum=" + assetnum);
-			request.AddQueryParameter("oslc.select", "href,assetid,assetspec{numvalue,alnvalue,assetattrid,assetnum},description_longdescription,changeby,changedate,assetnum,assettag,eq3");
-			request.AddQueryParameter("oslc.pageSize", "1");
-
-			var response = restClient.Execute(request);
-			MaximoAssetRestResponse mxAssetRestResponse =
-				JsonConvert.DeserializeObject<MaximoAssetRestResponse>(response.Content);
-
-			if (mxAssetRestResponse.member.Count > 0)
-			{
-				return mxAssetRestResponse.member[0];
-			}
-			else
-			{
-				return null;
-			}
 		}
 		
 		public MaximoAsset getAssetByHref(String assetHref)
