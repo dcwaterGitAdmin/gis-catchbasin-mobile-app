@@ -49,6 +49,7 @@ namespace CatchBasin
 
               
                 MaximoServiceLibrary.AppContext.workOrderRepository.removeCollection();
+                MaximoServiceLibrary.AppContext.laborRepository.removeCollection();
 
                 //var mxuser = MaximoServiceLibrary.AppContext.userRepository.findOneIgnoreCase("EDELIOGLU");
                 //mxuser.userPreferences.lastSyncTime = DateTime.MinValue;

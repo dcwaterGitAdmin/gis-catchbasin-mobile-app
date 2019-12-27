@@ -255,7 +255,7 @@ namespace MaximoServiceLibrary
 			string where = "failurecode=\"CATCHBASIN\"" +
 						   " and siteid=\"DWS_DSS\"" +
 						   " and service=\"DSS\"" +
-						   //" and historyflag=0" +
+						   " and historyflag=0" +
 						   " and status=\"DISPTCHD\"" +
 						   " and worktype in [\"INV\",\"EMERG\",\"PM\",\"INSP\"]" +
 						   $" and persongroup in [\"{persongroup}\",\"CB00\"]";

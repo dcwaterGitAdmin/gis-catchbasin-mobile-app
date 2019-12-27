@@ -1162,7 +1162,7 @@ namespace MaximoServiceLibrary
 						updateLabors();
 						if (AppContext.laborRepository.Find("person[*].personid", mxuser.personId).Count() == 0)
 						{
-							//return "You don't have laborcraftrate!";
+							return "You don't have laborcraftrate!";
 						}
 					}
 

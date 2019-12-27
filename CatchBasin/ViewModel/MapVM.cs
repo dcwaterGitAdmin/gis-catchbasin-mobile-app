@@ -425,7 +425,7 @@ namespace CatchBasin.ViewModel
 
             WorkOrderListVM.SelectedIndex = -1;
             WorkOrderDetailVM.Clear();
-          
+            WorkOrderListVM.Update();
         }
 
 

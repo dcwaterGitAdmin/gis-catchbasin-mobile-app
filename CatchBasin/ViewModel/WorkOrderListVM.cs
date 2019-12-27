@@ -211,7 +211,7 @@ namespace CatchBasin.ViewModel
         {
 			
 			MapVM.ShowWorkOrderDetail(wo);
-			
+          
 		}
 
 		public void Update()
