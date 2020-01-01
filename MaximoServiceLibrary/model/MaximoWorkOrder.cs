@@ -46,6 +46,10 @@ namespace MaximoServiceLibrary.model
         
         [JsonIgnore]
         public bool failed { get; set; }
+        
+        [JsonIgnore]
+        public DateTime synchronizationTime { get; set; }
+        
 
         [JsonIgnore]
 		public List<MaximoWorkOrder> followups { get; set; }

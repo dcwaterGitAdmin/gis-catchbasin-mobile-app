@@ -169,8 +169,14 @@ namespace MaximoServiceLibrary
 						MaximoWorkOrder woFromMaximo = workOrdersFromMaximo.FirstOrDefault(wo => wo.wonum == woFromLocal.wonum);
 						if (woFromMaximo == null && woFromLocal.syncronizationStatus == SyncronizationStatus.SYNCED)
 						{
-							AppContext.workOrderRepository.delete(woFromLocal);
-							AppContext.Log.Debug($"[MX] deleted woFromLocal. wonum: {woFromLocal.wonum}.");
+							// check if the work order is posted to Maximo yesterday or before. do not delete the posted workflows if still today.
+							// DateTime.Now.Date refers to today's Date at 00:00 (midnight)
+							// woFromLocal.synchronizationTime is set at the end of postWorkOrderToMaximo() method
+							if (woFromLocal.synchronizationTime == null || DateTime.Now.Date.CompareTo(woFromLocal.synchronizationTime) == 1)
+							{
+								AppContext.workOrderRepository.delete(woFromLocal);
+								AppContext.Log.Debug($"[MX] deleted woFromLocal. wonum: {woFromLocal.wonum}.");
+							}
 						}
 					}
 					catch (Exception ex)
@@ -548,6 +554,7 @@ namespace MaximoServiceLibrary
 				woFromLocal.completed = false;
 				woFromLocal.failed = false;
 				woFromLocal.syncronizationStatus = SyncronizationStatus.SYNCED;
+				woFromLocal.synchronizationTime = DateTime.Now;
 				AppContext.workOrderRepository.upsert(woFromLocal);
 			}
 		}
