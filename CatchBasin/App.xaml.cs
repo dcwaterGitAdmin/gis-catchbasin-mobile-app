@@ -48,7 +48,7 @@ namespace CatchBasin
                 ArcGISRuntimeEnvironment.Initialize();
 
               
-                MaximoServiceLibrary.AppContext.workOrderRepository.removeCollection();
+                //MaximoServiceLibrary.AppContext.workOrderRepository.removeCollection();
                 //MaximoServiceLibrary.AppContext.laborRepository.removeCollection();
 
                 //var mxuser = MaximoServiceLibrary.AppContext.userRepository.findOneIgnoreCase("EDELIOGLU");
