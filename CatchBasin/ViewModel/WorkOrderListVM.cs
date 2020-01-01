@@ -259,7 +259,10 @@ namespace CatchBasin.ViewModel
 					case FilterType.NODISPTCHD:
 						wos = wos.Where(wo => wo.status != "DISPTCHD");
 						break;
-				}
+                    default:
+                        wos = wos.Where(wo => wo.status == "DISPTCHD");
+                        break;
+                }
 			}
 
 			switch (Order)

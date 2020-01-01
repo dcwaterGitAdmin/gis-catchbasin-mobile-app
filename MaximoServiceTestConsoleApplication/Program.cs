@@ -16,7 +16,7 @@ namespace MaximoServiceTestConsoleApplication
 	{
 		public static void Main(string[] args)
 		{
-			Task task = new Task(() =>
+            Task task = new Task(() =>
 			{
 				Console.WriteLine($" async rnning in thread: {Thread.CurrentThread.ManagedThreadId}");
 			});

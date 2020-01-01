@@ -182,7 +182,9 @@ namespace CatchBasin.ViewModel.Command
 
 					}
 					WorkOrderListVM.MapVM.WorkOrderDetailVM.ToolTrans.Add(tool);
-				}
+                    WorkOrderListVM.MapVM.WorkOrderDetailVM.MaximoWorkOrder.startTimerDate = null;
+                    WorkOrderListVM.MapVM.WorkOrderDetailVM.MaximoWorkOrder.timerImageUri = "pack://application:,,,/CatchBasin;component/Resources/Images/stopWatch.png";
+                }
 				else
 				{
 					if(wo.labtrans == null)

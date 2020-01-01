@@ -601,6 +601,11 @@ namespace MaximoServiceLibrary
 			maximoAssetForCreation.classstructureid = maximoAsset.classstructureid;
 			maximoAssetForCreation.siteid = maximoAsset.siteid;
 			
+            if (maximoAssetForCreation.siteid == null)
+            {
+                maximoAssetForCreation.siteid = "DWS_DSS";
+            }
+
 			request.AddJsonBody(maximoAssetForCreation);
 
 			var response = restClient.Execute(request);
@@ -797,6 +802,7 @@ namespace MaximoServiceLibrary
 
 		public MaximoAsset getAssetByAssetnum(String assetnum)
 		{
+            if (String.IsNullOrEmpty(assetnum)) { return null; }
 			var request = createRequest("/os/dcw_cbasset", false);
 			request.AddParameter("oslc.where", $"assetnum=\"{assetnum}\"");
 			request.AddParameter("oslc.select", "*");
