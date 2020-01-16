@@ -1820,14 +1820,23 @@ namespace CatchBasin.ViewModel
                 MessageBox.Show("Workorder's changes not saved because work order status should be to DISPATCHED");
                 return;
             }
+
+            if (MapVM.AssetDetailIsVisible)
+            {
+                MapVM.AssetDetailVM.Cancel();
+            }
+
             SaveWithoutHide();
             MapVM.HideWorkOrderDetail();
         }
 
         public void Cancel()
         {
+            if (MapVM.AssetDetailIsVisible)
+            {
+                MapVM.AssetDetailVM.Cancel();
+            }
 
-            
 
             if (isDirty)
             {

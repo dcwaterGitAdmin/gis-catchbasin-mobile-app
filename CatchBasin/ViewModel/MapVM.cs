@@ -739,31 +739,32 @@ namespace CatchBasin.ViewModel
             Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             List<LayerDescription> layerDescriptions = new List<LayerDescription>();
-            layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
-
+            //layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
+            
+            var dquery = $"SCHEDSTART < DATE '{DateTime.Now.AddDays(1).ToShortDateString()}' AND (PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00')";
             if (((App)Application.Current).AppType == "PM")
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBWorkorders.geodatabase", new string[] { "" }, new string[] { "Catch Basin Workorder" }));
-
+                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBWorkorders.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                //
             }
             else
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBInsp.geodatabase", new string[] { "" }, new string[] { "" }));
+                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBInsp.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
 
             }
 
 
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
+            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
+            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
+            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
+            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
+            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
 
             // todo:  set SyncDirection.Bidirectional
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
+            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
 
 
-            layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
+            //layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
 
             layerDescriptions.Reverse();
 
@@ -794,16 +795,7 @@ namespace CatchBasin.ViewModel
 
         }
 
-        public void updateDefinitionQuery()
-        {
-            FeatureLayer layer = GetWorkorderLayer();
-            if (layer != null)
-            {
-                layer.DefinitionExpression = $"PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00'";
-
-            }
-
-        }
+       
 
         public async Task GISLayerToOffline(string url, string layername, string[] expression, string[] sublayers, Envelope envelope, string path)
         {
@@ -913,10 +905,7 @@ namespace CatchBasin.ViewModel
 
             }
 
-            if (layername == "Open Workorders")
-            {
-                updateDefinitionQuery();
-            }
+           
             return groupLayer;
         }
 

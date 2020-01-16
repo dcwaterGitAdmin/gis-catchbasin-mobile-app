@@ -387,6 +387,7 @@ namespace CatchBasin.ViewModel.Commands
 					
 					break;
 			}
+            wo.createdTime = DateTime.Now;
             wo = MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
             MapVM.WorkOrderListVM.Update();
             var nwo =MapVM.WorkOrderListVM.WorkOrders.FirstOrDefault(_wo => _wo.Id == wo.Id);

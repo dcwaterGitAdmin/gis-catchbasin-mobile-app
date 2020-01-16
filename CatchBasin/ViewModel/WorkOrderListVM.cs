@@ -268,20 +268,20 @@ namespace CatchBasin.ViewModel
 			switch (Order)
 			{
 				case OrderType.SCHEDSTART:
-					wos = wos.OrderBy(wo => getOrderValue(wo.worktype)).ThenBy(wo => wo.schedstart);
+					wos = wos.OrderBy(wo => getOrderBySyncStatus(wo.syncronizationStatus)).ThenBy(wo => wo.createdTime).ThenBy(wo => getOrderByWorktype(wo.worktype)).ThenBy(wo => wo.schedstart);
 					break;
 				case OrderType.STATUS:
-					wos = wos.OrderBy(wo => wo.status);
+					wos = wos.OrderBy(wo => getOrderBySyncStatus(wo.syncronizationStatus)).ThenBy(wo => wo.createdTime).ThenBy(wo => wo.status);
 					break;
 				case OrderType.WORKTYPE:
-					wos = wos.OrderBy(wo => getOrderValue(wo.worktype));
+					wos = wos.OrderBy(wo => getOrderBySyncStatus(wo.syncronizationStatus)).ThenBy(wo => wo.createdTime).ThenBy(wo => getOrderByWorktype(wo.worktype));
 					break;
 			}
 
           
 
             WorkOrders = wos.ToList();
-
+            WorkOrders.Count.ToString();
             SelectedIndex = -1;
             if (MapVM.WorkOrderDetailIsVisible)
             {
@@ -295,7 +295,7 @@ namespace CatchBasin.ViewModel
             }
 		}
 
-        public int getOrderValue(string worktype)
+        public int getOrderByWorktype(string worktype)
         {
             if(worktype == "CM")
             {
@@ -319,6 +319,21 @@ namespace CatchBasin.ViewModel
             else
             {
                 return 6;
+            }
+        }
+
+
+        public int getOrderBySyncStatus(LocalDBLibrary.model.SyncronizationStatus syncronizationStatus)
+        {
+            switch (syncronizationStatus)
+            {
+                case LocalDBLibrary.model.SyncronizationStatus.CREATED:
+                    return 2;
+                    break;
+                default:
+                    return 1;
+                    break;
+
             }
         }
     }

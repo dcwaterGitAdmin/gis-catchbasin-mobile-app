@@ -201,8 +201,26 @@ namespace CatchBasin.ViewModel
 					LabTrans.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
 				}
 				WorkOrderDetailVM.LabTrans[index] = LabTrans;
-				
-			}
+
+                var otherLabor =WorkOrderDetailVM.LabTrans.FirstOrDefault(lbtrns => lbtrns.startdateentered == LabTrans.startdateentered &&
+                lbtrns.starttimeentered == LabTrans.starttimeentered &&
+                lbtrns.finishdateentered == LabTrans.finishdateentered &&
+                lbtrns.finishtimeentered == LabTrans.finishtimeentered &&
+                lbtrns.laborcode != LabTrans.laborcode);
+
+                if(otherLabor != null)
+                {
+                    var otherIndex = WorkOrderDetailVM.LabTrans.IndexOf(otherLabor);
+                    otherLabor.transtype = Type;
+                    if (otherLabor.syncronizationStatus != LocalDBLibrary.model.SyncronizationStatus.CREATED)
+                    {
+                        otherLabor.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.MODIFIED;
+                    }
+                    WorkOrderDetailVM.LabTrans[otherIndex] = otherLabor;
+                }
+
+
+            }
 
 			Close();
 		}

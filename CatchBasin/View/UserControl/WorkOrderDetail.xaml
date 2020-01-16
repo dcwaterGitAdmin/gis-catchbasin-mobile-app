@@ -6,10 +6,12 @@
              xmlns:local="clr-namespace:CatchBasin.View.UserControl"
 			 xmlns:model="clr-namespace:MaximoServiceLibrary.model;assembly=MaximoServiceLibrary"
              mc:Ignorable="d" 
+             xmlns:helper="clr-namespace:CatchBasin.ViewModel.Helper"
 	        x:Name="WoDetail"
              d:DesignHeight="1300" d:DesignWidth="320">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+        <helper:EnumMatchToBooleanConverter x:Key="enumConverter" />
     </UserControl.Resources>
     <Grid Width="320">
         <DockPanel LastChildFill="True">
@@ -108,26 +110,48 @@
                     
                     <StackPanel Visibility="{Binding DebrisConditionIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Label Content="Debris Condition" FontWeight="Bold"/>
-                        <ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
+                        <!--<ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
                                   DisplayMemberPath="description"
                                   SelectedValuePath="code"
-                                  SelectedValue="{Binding DebrisCondition}"/>
+                                  SelectedValue="{Binding DebrisCondition}"/>-->
+                        <StackPanel Orientation="Horizontal" >
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisCondition" IsChecked="{Binding DebrisCondition, ConverterParameter=100, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="100% Full" />
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisCondition" IsChecked="{Binding DebrisCondition, ConverterParameter=75, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="75%"/>
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisCondition" IsChecked="{Binding DebrisCondition, ConverterParameter=50, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="50%" />
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisCondition" IsChecked="{Binding DebrisCondition, ConverterParameter=25, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="25%"/>
+                            <RadioButton  Margin="0 3 10 3"  GroupName="DebrisCondition" IsChecked="{Binding DebrisCondition, ConverterParameter=0, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="0% Empty" />
+                        </StackPanel>
+
                     </StackPanel>
 
 					<StackPanel Visibility="{Binding DebrisConditionPCIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
 						<Label Content="Debris Condition prior to cleaning" FontWeight="Bold"/>
-						<ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
+						<!--<ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
                                   DisplayMemberPath="description"
                                   SelectedValuePath="code"
-                                  SelectedValue="{Binding DebrisConditionPC}"/>
+                                  SelectedValue="{Binding DebrisConditionPC}"/>-->
+                        <StackPanel Orientation="Horizontal" >
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionPC" IsChecked="{Binding DebrisConditionPC, ConverterParameter=100, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="100% Full" />
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionPC" IsChecked="{Binding DebrisConditionPC, ConverterParameter=75, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="75%"/>
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionPC" IsChecked="{Binding DebrisConditionPC, ConverterParameter=50, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="50%" />
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionPC" IsChecked="{Binding DebrisConditionPC, ConverterParameter=25, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="25%"/>
+                            <RadioButton  Margin="0 3 10 3"  GroupName="DebrisConditionPC" IsChecked="{Binding DebrisConditionPC, ConverterParameter=0, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="0% Empty" />
+                        </StackPanel>
 					</StackPanel>
 
 					<StackPanel Visibility="{Binding DebrisConditionACIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
 						<Label Content="Debris Condition after cleaning" FontWeight="Bold"/>
-						<ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
+						<!--<ComboBox ItemsSource="{Binding DebrisConditionTypeList}"
                                   DisplayMemberPath="description"
                                   SelectedValuePath="code"
-                                  SelectedValue="{Binding DebrisConditionAC}"/>
+                                  SelectedValue="{Binding DebrisConditionAC}"/>-->
+                        <StackPanel Orientation="Horizontal" >
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionAC" IsChecked="{Binding DebrisConditionAC, ConverterParameter=100, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="100% Full" />
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionAC" IsChecked="{Binding DebrisConditionAC, ConverterParameter=75, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="75%"/>
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionAC" IsChecked="{Binding DebrisConditionAC, ConverterParameter=50, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="50%" />
+                            <RadioButton  Margin="0 3 5 3"  GroupName="DebrisConditionAC" IsChecked="{Binding DebrisConditionAC, ConverterParameter=25, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="25%"/>
+                            <RadioButton  Margin="0 3 10 3"  GroupName="DebrisConditionAC" IsChecked="{Binding DebrisConditionAC, ConverterParameter=0, Converter={StaticResource enumConverter}, Mode=TwoWay}" Content="0% Empty" />
+                        </StackPanel>
 					</StackPanel>
 
 
@@ -137,6 +161,7 @@
                         <Label Content="Status" FontWeight="Bold"/>
                         <ComboBox ItemsSource="{Binding StatusList}"
                             DisplayMemberPath="description"
+                                  IsEnabled="False"
                             SelectedValuePath="value"
                              SelectedValue="{Binding Status, Mode=TwoWay}"/>
                     </StackPanel>

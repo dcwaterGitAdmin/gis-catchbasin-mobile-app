@@ -291,7 +291,7 @@ namespace CatchBasin.ViewModel
 			MaximoServiceLibrary.AppContext.personGroupRepository.upsert(MaximoPersonGroup);
 			MaximoServiceLibrary.AppContext.userRepository.upsert(MaximoServiceLibrary.AppContext.synchronizationService.mxuser);
 
-			MapVM.updateDefinitionQuery();
+			
 			
 			MapVM.UpdateUserInfo();
 			Close();
