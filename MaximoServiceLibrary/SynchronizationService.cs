@@ -150,6 +150,7 @@ namespace MaximoServiceLibrary
 						AppContext.Log.Error($"[MX] FAILED to synchronize woFromLocal {woFromLocal.wonum} : {ex.ToString()}");
 						AppContext.Log.Error(ex.StackTrace);
 						// TODO remove failure sync status
+						woFromLocal.syncError = $"[MX] FAILED to synchronize woFromLocal {woFromLocal.wonum} : {ex.ToString()}";
 						woFromLocal.failed = true;
 						AppContext.workOrderRepository.upsert(woFromLocal);
 					}

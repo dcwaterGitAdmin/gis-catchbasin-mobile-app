@@ -41,6 +41,9 @@ namespace MaximoServiceLibrary.model
     // MXWO
     public class MaximoWorkOrder : MaximoBaseEntity
     {
+	    [JsonIgnore]
+	    public string syncError { get; set; }
+	    
         [JsonIgnore]
         public bool completed { get; set; }
         
