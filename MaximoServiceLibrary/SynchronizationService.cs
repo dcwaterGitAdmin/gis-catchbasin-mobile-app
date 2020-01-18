@@ -1152,6 +1152,7 @@ namespace MaximoServiceLibrary
 			{
 				try
 				{
+					string currentPersonGroup = null;
 					MaximoUser mxuserFromMaximo = AppContext.maximoService.whoami();
 					mxuser = AppContext.userRepository.findOneIgnoreCase(username);
 					if (mxuser == null)
@@ -1161,6 +1162,8 @@ namespace MaximoServiceLibrary
 					else
 					{
 						// merge user data returned from Maximo server to local db entity
+						if (mxuser.userPreferences != null)
+							currentPersonGroup = mxuser.userPreferences.selectedPersonGroup;
 						mxuser.mergeFrom(mxuserFromMaximo);
 					}
 
@@ -1208,15 +1211,15 @@ namespace MaximoServiceLibrary
 					AppContext.personGroupRepository.insert(maximoPersonGroup);
 
 					mxuser.userPreferences = new UserPreferences();
-					mxuser.persongroup = maximoPersonGroup.persongroup;
-					mxuser.userPreferences.selectedPersonGroup = mxuser.persongroup;
-
-
-					mxuser.persongroup = maximoPersonGroup.persongroup;
-
-					if (mxuser.persongroup == null)
+					mxuser.userPreferences.selectedPersonGroup = maximoPersonGroup.persongroup;
+					
+					if (mxuser.userPreferences.selectedPersonGroup == null)
 					{
 						return "You don't have crew!";
+					}
+					else if (!mxuser.userPreferences.selectedPersonGroup.Equals(currentPersonGroup))
+					{
+						AppContext.workOrderRepository.removeCollection();
 					}
 
 					mxuser.password = password;
