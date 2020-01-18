@@ -129,9 +129,407 @@ namespace CatchBasin.ViewModel
                 MessageBox.Show("Memo is required", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-
             WorkOrderDetailVM.SaveWithoutHide();
             MaximoWorkOrder wo = WorkOrderDetailVM.MaximoWorkOrder;
+
+            if (((App)Application.Current).AppType == "PM")
+            {
+                if (wo.description == "Newly Discovered Asset cleaned by CB Cleaning Crew"
+                || wo.description == "New Asset cleaned by CB Cleaning Crew"
+                || wo.description == "CB cleaned by CB Cleaning Crew")
+                {
+                    if (wo.asset == null)
+                    {
+                        MessageBox.Show("Asset must be specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                }
+                if (NewStatus != "HOLD" && (!string.IsNullOrEmpty(wo.problemcode) && wo.problemcode != "NOTFOUND") && wo.asset != null)
+                {
+                    if (wo.asset.assetspec == null || wo.asset.assetspec.Count == 0)
+                    {
+                        MessageBox.Show("Asset was not classified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                        return;
+                    }
+                    else
+                    {
+                        MaximoAssetSpec maximoAssetSpec = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "CB_SUBT");
+
+                        if (maximoAssetSpec == null || string.IsNullOrEmpty(maximoAssetSpec.alnvalue) || maximoAssetSpec.alnvalue == "UNKNOWN")
+                        {
+                            MessageBox.Show("Asset subtype is null or unknown", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            switch (maximoAssetSpec.alnvalue)
+                            {
+                                case "DOUBLE":
+                                case "ELONGATE":
+                                case "QUADRUPLE":
+                                case "QUINTUPLE":
+                                case "SINGLE":
+                                case "TRIPLE":
+
+                                    MaximoAssetSpec TOPMATRL = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "TOPMATRL");
+
+                                    if (TOPMATRL == null || string.IsNullOrEmpty(TOPMATRL.alnvalue))
+                                    {
+                                        MessageBox.Show("Top Material type is null", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    MaximoAssetSpec TOPTHICK = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "TOPTHICK");
+
+                                    if (TOPTHICK == null || !TOPTHICK.numvalue.HasValue || TOPTHICK.numvalue.Value <= 0.0)
+                                    {
+                                        MessageBox.Show("Top Thickness is not specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    MaximoAssetSpec NUMCHAMB = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "NUMCHAMB");
+
+                                    if (NUMCHAMB == null || !NUMCHAMB.numvalue.HasValue || NUMCHAMB.numvalue.Value <= 0.0)
+                                    {
+                                        MessageBox.Show("Number of Chambers is not specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    MaximoAssetSpec NUMTHROAT = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "NUMTHROAT");
+
+                                    if (NUMTHROAT == null || !NUMTHROAT.numvalue.HasValue || NUMTHROAT.numvalue.Value <= 0.0)
+                                    {
+                                        MessageBox.Show("Number of Throats is not specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    break;
+                                case "DOUBLE GRATE":
+                                case "FIELD DRAIN":
+                                case "GRATE":
+                                case "TRENCH DRAIN":
+                                case "TRIPLE GRATE":
+
+                                    MaximoAssetSpec GRATETY = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "GRATETY");
+
+                                    if (GRATETY == null || string.IsNullOrEmpty(GRATETY.alnvalue))
+                                    {
+                                        MessageBox.Show("Grate type is nulld", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    break;
+
+                            }
+                        }
+                    }
+
+
+                }
+                if (NewStatus != "HOLD")
+                {
+                    if (wo.failurereport == null || string.IsNullOrEmpty(wo.problemcode))
+                    {
+                        MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+
+                    }
+                    else
+                    {
+
+                        var cause = wo.failurereport.FirstOrDefault(f => f.type == "CAUSE");
+                        var remedy = wo.failurereport.FirstOrDefault(f => f.type == "REMEDY");
+                        if (cause == null)
+                        {
+                            MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        else if (remedy == null && wo.problemcode != "NOTFOUND")
+                        {
+                            try
+                            {
+                                var selectedProblem = MaximoServiceLibrary.AppContext.failureListRepository.Find("failurecode[0].failurecode", wo.problemcode).ToArray()[0];
+
+                                var selectedCause = MaximoServiceLibrary.AppContext.failureListRepository.Find("failurecode[0].failurecode", cause.failurecode).Where(failurelist => failurelist.parent == selectedProblem.failurelist).ToArray()[0];
+
+                                var RemedyList = MaximoServiceLibrary.AppContext.failureListRepository
+                                    .Find("parent", selectedCause?.failurelist).Select(x => x.failurecode[0]).ToList<FailureCode>();
+
+                                if (RemedyList != null && RemedyList.Count > 0)
+                                {
+                                    MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    return;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                        }
+                    }
+                    if (wo.problemcode != null && wo.problemcode != "NOTFOUND")
+                    {
+
+                        if (wo.workorderspec == null && wo.workorderspec.Count == 0)
+                        {
+                            MessageBox.Show("Workorder was not classified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+
+                        }
+
+                        if (wo.worktype == "PM")
+                        {
+                            var CBBCSTATUS = wo.workorderspec.FirstOrDefault(s => s.assetattrid == "CBBCSTATUS");
+                            var CBACSTATUS = wo.workorderspec.FirstOrDefault(s => s.assetattrid == "CBACSTATUS");
+
+                            if (CBBCSTATUS == null || string.IsNullOrEmpty(CBBCSTATUS.alnvalue))
+                            {
+                                MessageBox.Show("Debris Condition prior to cleaning is misssing", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            if (CBACSTATUS == null || string.IsNullOrEmpty(CBACSTATUS.alnvalue))
+                            {
+                                MessageBox.Show("Debris Condition after cleaning is missing", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                        }
+                        
+
+                        if (wo.tooltrans.Count == 0)
+                        {
+                            MessageBox.Show("Tools not entered", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        if (wo.tooltrans.Any(t => string.IsNullOrEmpty(t.itemnum)))
+                        {
+                            MessageBox.Show("Tool record with no Item selected", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        if (wo.labtrans.Count == 0)
+                        {
+                            MessageBox.Show("Labor not entered", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            if (wo.labtrans.Any(l => string.IsNullOrEmpty(l.laborcode)))
+                            {
+                                MessageBox.Show("Labor record with no Person selected", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            if (wo.labtrans.Any(l => l.startDate > DateTime.Now))
+                            {
+                                MessageBox.Show("Labor record start in the future", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            if (wo.labtrans.Any(l => l.finishDate > DateTime.Now))
+                            {
+                                MessageBox.Show("Labor record finish in the future", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(wo.description == "Newly Discovered Asset Inspected by DSS")
+                {
+                    if (wo.asset == null)
+                    {
+                        MessageBox.Show("Asset must be specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                }
+                if(NewStatus != "CAN" && (!string.IsNullOrEmpty(wo.problemcode) && wo.problemcode != "NOTFOUND") && (wo.problemcode == "NOACCESS" && wo.asset != null))
+                {
+                    if ((wo.asset.assetspec == null || wo.asset.assetspec.Count == 0))
+                    {
+                        MessageBox.Show("Asset was not classified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                        return;
+                    }
+                    else
+                    {
+                        MaximoAssetSpec maximoAssetSpec = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "CB_SUBT");
+
+                        if (maximoAssetSpec == null || string.IsNullOrEmpty(maximoAssetSpec.alnvalue) || maximoAssetSpec.alnvalue == "UNKNOWN")
+                        {
+                            MessageBox.Show("Asset subtype is null or unknown", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            switch (maximoAssetSpec.alnvalue)
+                            {
+                                case "DOUBLE":
+                                case "ELONGATE":
+                                case "QUADRUPLE":
+                                case "QUINTUPLE":
+                                case "SINGLE":
+                                case "TRIPLE":
+
+                                    MaximoAssetSpec TOPMATRL = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "TOPMATRL");
+
+                                    if (TOPMATRL == null || string.IsNullOrEmpty(TOPMATRL.alnvalue))
+                                    {
+                                        MessageBox.Show("Top Material type is null", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    MaximoAssetSpec TOPTHICK = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "TOPTHICK");
+
+                                    if (TOPTHICK == null || !TOPTHICK.numvalue.HasValue || TOPTHICK.numvalue.Value <= 0.0)
+                                    {
+                                        MessageBox.Show("Top Thickness is not specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    MaximoAssetSpec NUMCHAMB = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "NUMCHAMB");
+
+                                    if (NUMCHAMB == null || !NUMCHAMB.numvalue.HasValue || NUMCHAMB.numvalue.Value <= 0.0)
+                                    {
+                                        MessageBox.Show("Number of Chambers is not specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    MaximoAssetSpec NUMTHROAT = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "NUMTHROAT");
+
+                                    if (NUMTHROAT == null || !NUMTHROAT.numvalue.HasValue || NUMTHROAT.numvalue.Value <= 0.0)
+                                    {
+                                        MessageBox.Show("Number of Throats is not specified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    break;
+                                case "DOUBLE GRATE":
+                                case "FIELD DRAIN":
+                                case "GRATE":
+                                case "TRENCH DRAIN":
+                                case "TRIPLE GRATE":
+
+                                    MaximoAssetSpec GRATETY = wo.asset.assetspec.FirstOrDefault(s => s.assetattrid == "GRATETY");
+
+                                    if (GRATETY == null || string.IsNullOrEmpty(GRATETY.alnvalue))
+                                    {
+                                        MessageBox.Show("Grate type is nulld", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return;
+
+                                    }
+                                    break;
+
+                            }
+                        }
+                    }
+
+                }
+                if (NewStatus != "CAN") {
+
+                    if (wo.failurereport == null || string.IsNullOrEmpty(wo.problemcode))
+                    {
+                        MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+
+                    }
+                    else
+                    {
+
+                        var cause = wo.failurereport.FirstOrDefault(f => f.type == "CAUSE");
+                        var remedy = wo.failurereport.FirstOrDefault(f => f.type == "REMEDY");
+                        if (cause == null)
+                        {
+                            MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        else if (remedy == null && wo.problemcode != "NOTFOUND")
+                        {
+                            try
+                            {
+                                var selectedProblem = MaximoServiceLibrary.AppContext.failureListRepository.Find("failurecode[0].failurecode", wo.problemcode).ToArray()[0];
+
+                                var selectedCause = MaximoServiceLibrary.AppContext.failureListRepository.Find("failurecode[0].failurecode", cause.failurecode).Where(failurelist => failurelist.parent == selectedProblem.failurelist).ToArray()[0];
+
+                                var RemedyList = MaximoServiceLibrary.AppContext.failureListRepository
+                                    .Find("parent", selectedCause?.failurelist).Select(x => x.failurecode[0]).ToList<FailureCode>();
+
+                                if (RemedyList != null && RemedyList.Count > 0)
+                                {
+                                    MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    return;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show("Missing Problem/Cause/Remedy", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                        }
+                    }
+                    if (wo.problemcode != null && wo.problemcode != "NOTFOUND" && wo.problemcode != "NOACCESS")
+                    {
+
+                        if (wo.workorderspec != null && wo.workorderspec.Count > 0)
+                        {
+                            var CBBCSTATUS = wo.workorderspec.FirstOrDefault(s => s.assetattrid == "CBBCSTATUS");
+                           
+
+                            if (CBBCSTATUS == null || string.IsNullOrEmpty(CBBCSTATUS.alnvalue))
+                            {
+                                MessageBox.Show("Debris Condition prior to cleaning is misssing", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                           
+                        }
+                        else
+                        {
+                            MessageBox.Show("Workorder was not classified", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+
+                        }
+
+                        if (wo.tooltrans.Count == 0)
+                        {
+                            MessageBox.Show("Tools not entered", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        if (wo.tooltrans.Any(t => string.IsNullOrEmpty(t.itemnum)))
+                        {
+                            MessageBox.Show("Tool record with no Item selected", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        if (wo.labtrans.Count == 0)
+                        {
+                            MessageBox.Show("Labor not entered", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            if (wo.labtrans.Any(l => string.IsNullOrEmpty(l.laborcode)))
+                            {
+                                MessageBox.Show("Labor record with no Person selected", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            if (wo.labtrans.Any(l => l.startDate > DateTime.Now))
+                            {
+                                MessageBox.Show("Labor record start in the future", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            if (wo.labtrans.Any(l => l.finishDate > DateTime.Now))
+                            {
+                                MessageBox.Show("Labor record finish in the future", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
             // Check time 
 
             var labors = wo.labtrans.Select(lab => lab.laborcode).Distinct();
@@ -171,13 +569,17 @@ namespace CatchBasin.ViewModel
             var layer = WorkOrderDetailVM.MapVM.GetWorkorderLayer();
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.WhereClause = $"wonum='{wo.wonum}'";
-            var features = await layer.FeatureTable.QueryFeaturesAsync(queryParameters);
-
-            foreach (var feature in features)
+            if(layer != null)
             {
-                feature.Attributes["STATUS"] = NewStatus;
-                layer.FeatureTable.UpdateFeatureAsync(feature);
+                FeatureQueryResult features = await layer?.FeatureTable.QueryFeaturesAsync(queryParameters);
+
+                foreach (var feature in features)
+                {
+                    feature.Attributes["STATUS"] = NewStatus;
+                    layer.FeatureTable.UpdateFeatureAsync(feature);
+                }
             }
+            
 
             wo.completed = true;
 

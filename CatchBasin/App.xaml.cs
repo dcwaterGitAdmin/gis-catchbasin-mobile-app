@@ -1,5 +1,7 @@
-﻿using Esri.ArcGISRuntime;
+﻿
+using Esri.ArcGISRuntime;
 using Esri.ArcGISRuntime.Portal;
+using Esri.ArcGISRuntime.Security;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -28,37 +30,31 @@ namespace CatchBasin
             MaximoServiceLibrary.AppContext.Log.Info($"BASE_HOST : { MaximoServiceLibrary.AppContext.maximoService.BASE_HOST}");
             try
             {
-                // Deployed applications must be licensed at the Lite level or greater. 
-                // See https://developers.arcgis.com/licensing for further details.
+                // Challenge the user for portal credentials (OAuth credential request for arcgis.com)
+
+
                 try
                 {
-                    // License the app using the license info
-                    Esri.ArcGISRuntime.LicenseInfo.FromJson("{\"licenseString\":\"u2D6sG1SE+ty3nv5bhzKOdeQBsBlHqtf9XEnu0ADw0futTsDsH4xC71eM9VT\"}");
+                    //LicenseInfo.FromJson("{\"licenseString\":\"plv1qGVKC+Nq1nPxZhTCMc+I/bhdFqNX7Wkfszv6sjTcoiftoW0c8p0q/6JZ\"}");
+                    var licenseKey = System.Configuration.ConfigurationManager.AppSettings["runtimeLicenseKey"];
+                    ArcGISRuntimeEnvironment.SetLicense(licenseKey);
+
                 }
-                catch (Exception e2)
+                catch(Exception e2)
                 {
-
+                    MaximoServiceLibrary.AppContext.Log.Error(e2.ToString());
                 }
 
-              
 
-               
 
-                // Initialize the ArcGIS Runtime before any components are created.
                 ArcGISRuntimeEnvironment.Initialize();
 
-              
-                //MaximoServiceLibrary.AppContext.workOrderRepository.removeCollection();
-                //MaximoServiceLibrary.AppContext.laborRepository.removeCollection();
 
-                //var mxuser = MaximoServiceLibrary.AppContext.userRepository.findOneIgnoreCase("EDELIOGLU");
-                //mxuser.userPreferences.lastSyncTime = DateTime.MinValue;
-                //MaximoServiceLibrary.AppContext.userRepository.upsert(mxuser);
             }
 			catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), "ArcGIS Runtime initialization failed.",MessageBoxButton.OK);
-
+                MaximoServiceLibrary.AppContext.Log.Error(ex.ToString());
                 // Exit application
                 this.Shutdown();
             }

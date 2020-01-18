@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using log4net;
 
+
 namespace CatchBasin.ViewModel
 {
     class LoginVM : BaseVM
@@ -48,8 +49,9 @@ namespace CatchBasin.ViewModel
 		public LoginVM()
         {
             LoginCommand = new LoginCommand(this);
-		}
 
+
+        }
 
         public void DoLogin(Window window)
         {

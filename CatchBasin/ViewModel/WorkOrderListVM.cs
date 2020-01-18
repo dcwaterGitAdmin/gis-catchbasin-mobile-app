@@ -209,6 +209,11 @@ namespace CatchBasin.ViewModel
 
         public void showWorkOrder(MaximoWorkOrder wo)
         {
+
+            if (!String.IsNullOrEmpty(wo.syncError))
+            {
+                MessageBox.Show(wo.syncError, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 			
 			MapVM.ShowWorkOrderDetail(wo);
           

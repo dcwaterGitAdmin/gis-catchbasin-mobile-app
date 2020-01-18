@@ -45,7 +45,7 @@ namespace CatchBasin.ViewModel.Command
                 }
             }
 
-            if (WorkOrderDetailVM.ToolTrans.Count > 0 && WorkOrderDetailVM.LabTrans.Count > 0 && ( (WorkOrderDetailVM.MaximoWorkOrder.worktype == "CM") || (!String.IsNullOrEmpty(WorkOrderDetailVM.DebrisCondition)) || (!String.IsNullOrEmpty(WorkOrderDetailVM.DebrisConditionAC) && !String.IsNullOrEmpty(WorkOrderDetailVM.DebrisConditionPC))))
+            if (WorkOrderDetailVM.ToolTrans.Count > 0 && WorkOrderDetailVM.LabTrans.Count > 0)
 			{
 				return true;
 			}

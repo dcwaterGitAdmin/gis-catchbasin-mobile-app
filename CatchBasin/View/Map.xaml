@@ -134,6 +134,12 @@
                         <RibbonButton Command="{Binding TOCCommand}"  Style="{DynamicResource TOCStyle}"  LargeImageSource="/CatchBasin;component/Resources/Images/tableOfContent.png" Label="Table of Content"  />
                         <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding SketchCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Sketch.png" Label="Create Sketch"  />
                         <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomToFullExtentCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomToFullExtent.png" Label="Zoom to Full Extent"  />
+                        <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomInCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomToFullExtent.png" Label="Zoom In"  />
+                        <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomOutCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomToFullExtent.png" Label="Zoom Out"  />
+                        <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomWithDrawCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomToFullExtent.png" Label="Zoom"  />
+
+
+
                     </RibbonGroup>
 
                     

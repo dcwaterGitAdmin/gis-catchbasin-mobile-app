@@ -1,4 +1,7 @@
 ﻿using CatchBasin.ViewModel.Helper;
+using Esri.ArcGISRuntime.Geometry;
+using Esri.ArcGISRuntime.Mapping;
+using Esri.ArcGISRuntime.UI.Controls;
 using MaximoServiceLibrary.model;
 using System;
 using System.Collections.Generic;
@@ -129,8 +132,73 @@ namespace CatchBasin.ViewModel.Commands
 	}
 
 
-	// Maximo Commands
-	class SyncCommand : Command
+    class ZoomInCommand : Command
+    {
+        public ZoomInCommand(MapVM mapVM) : base(mapVM)
+        {
+
+        }
+
+        public override void Execute(object parameter)
+        {
+            var viewpoint = MapVM.MapView.GetCurrentViewpoint(Esri.ArcGISRuntime.Mapping.ViewpointType.CenterAndScale);
+            var mapPoint = (MapPoint)viewpoint.TargetGeometry;
+
+
+            var newviewpoint =new Viewpoint(mapPoint,  viewpoint.TargetScale * 0.8, viewpoint.Rotation);
+            ((MapView)parameter).SetViewpoint(newviewpoint);
+        }
+
+    }
+
+
+    class ZoomOutCommand : Command
+    {
+        public ZoomOutCommand(MapVM mapVM) : base(mapVM)
+        {
+
+        }
+
+        public override void Execute(object parameter)
+        {
+            var viewpoint = MapVM.MapView.GetCurrentViewpoint(Esri.ArcGISRuntime.Mapping.ViewpointType.CenterAndScale);
+            var mapPoint = (MapPoint)viewpoint.TargetGeometry;
+
+
+            var newviewpoint = new Viewpoint(mapPoint, viewpoint.TargetScale * 1.2, viewpoint.Rotation);
+            ((MapView)parameter).SetViewpoint(newviewpoint);
+        }
+
+    }
+
+
+    class ZoomWithDrawCommand : Command
+    {
+        public ZoomWithDrawCommand(MapVM mapVM) : base(mapVM)
+        {
+
+        }
+
+        public async override void Execute(object parameter)
+        {
+
+            try
+            {
+                Esri.ArcGISRuntime.Geometry.Geometry newGeometry = await ((MapView)parameter).SketchEditor.StartAsync(Esri.ArcGISRuntime.UI.SketchCreationMode.Rectangle, false);
+                ((MapView)parameter).SetViewpointGeometryAsync(newGeometry);
+            }
+            catch (Exception e)
+            {
+
+            }
+            
+        }
+
+    }
+
+
+    // Maximo Commands
+    class SyncCommand : Command
 	{
 		public SyncCommand(MapVM mapVM) : base(mapVM)
 		{

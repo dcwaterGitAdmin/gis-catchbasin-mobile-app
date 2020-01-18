@@ -1233,7 +1233,7 @@ namespace MaximoServiceLibrary
 			else
 			{
 				MaximoUser maximoUser = AppContext.userRepository.findOneIgnoreCase(username);
-				if (maximoUser.password.Equals(password))
+				if (maximoUser != null && maximoUser.password.Equals(password))
 				{
 					mxuser = maximoUser;
 

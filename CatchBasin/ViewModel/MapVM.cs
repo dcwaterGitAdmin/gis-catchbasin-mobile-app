@@ -120,9 +120,35 @@ namespace CatchBasin.ViewModel
 
             }
         }
+        private MapView _mapView;
+        public MapView MapView {
+            get { return _mapView; }
+            set {
+                _mapView = value;
+                _mapView.GeoViewTapped += WorkorderClicked;
+            } }
 
-        public MapView MapView { get; set; }
+        private async void WorkorderClicked(object sender, GeoViewInputEventArgs e)
+        {
+            var featureLayer = GetWorkorderLayer();
+            if(featureLayer  != null)
+            {
+                IdentifyLayerResult identify = await MapView.IdentifyLayerAsync(featureLayer, e.Position, 5, false);
+                if (identify.GeoElements.Count > 0)
+                {
+                    var wonum = identify.GeoElements.First().Attributes["WONUM"].ToString();
+                    if (!string.IsNullOrEmpty(wonum))
+                    {
+                        var wo = WorkOrderListVM.WorkOrders.FirstOrDefault(w => w.wonum == wonum);
+                        if(wo!= null)
+                        {
+                            ShowWorkOrderDetail(wo);
+                        }
+                    }
+                }
+            }
 
+        }
 
         public async void MapTappedForSelectAsset(object sender, GeoViewInputEventArgs e)
         {
@@ -238,6 +264,10 @@ namespace CatchBasin.ViewModel
             TOCCommand = new TOCCommand(this);
             SketchCommand = new SketchCommand(this);
             ZoomToFullExtentCommand = new ZoomToFullExtentCommand(this);
+            ZoomInCommand = new ZoomInCommand(this);
+            ZoomOutCommand = new ZoomOutCommand(this);
+            ZoomWithDrawCommand = new ZoomWithDrawCommand(this);
+
             SyncCommand = new SyncCommand(this);
             WorkOrdersIsVisible = false;
             WorkOrdersCommand = new WorkOrdersCommand(this);
@@ -256,6 +286,8 @@ namespace CatchBasin.ViewModel
             setBaseMap();
             UpdateUserInfo();
 
+
+            
 
         }
 
@@ -392,7 +424,14 @@ namespace CatchBasin.ViewModel
                     QueryParameters queryParameters = new QueryParameters();
                     queryParameters.WhereClause = $"wonum='{wo.wonum}'";
                     await layer.SelectFeaturesAsync(queryParameters, SelectionMode.New);
-
+                    var timer = new System.Windows.Forms.Timer();
+                    timer.Interval = 1000;
+                    timer.Tick += delegate (object sender, EventArgs args)
+                    {
+                        layer.ClearSelection();
+                        timer.Stop();
+                    };
+                    timer.Start();
                 }
                 if (wo.asset != null && !String.IsNullOrEmpty(wo.asset.assettag))
                 {
@@ -402,6 +441,14 @@ namespace CatchBasin.ViewModel
                         QueryParameters queryParameters = new QueryParameters();
                         queryParameters.WhereClause = $"ASSETTAG='{wo.asset.assettag}'";
                         ((FeatureLayer)assetLayer.Layers.FirstOrDefault())?.SelectFeaturesAsync(queryParameters, SelectionMode.New);
+                        var timer = new System.Windows.Forms.Timer();
+                        timer.Interval = 1000;
+                        timer.Tick += delegate (object sender, EventArgs args)
+                        {
+                            ((FeatureLayer)assetLayer.Layers.FirstOrDefault())?.ClearSelection();
+                            timer.Stop();
+                        };
+                        timer.Start();
                     }
                 }
             }
@@ -544,6 +591,10 @@ namespace CatchBasin.ViewModel
 
         }
 
+
+        public ZoomInCommand ZoomInCommand { get; set; }
+        public ZoomOutCommand ZoomOutCommand { get; set; }
+        public ZoomWithDrawCommand ZoomWithDrawCommand { get; set; }
 
         public ZoomToFullExtentCommand ZoomToFullExtentCommand { get; set; }
         public void DoZoomToFullExtent(MapView mapView)
@@ -739,32 +790,33 @@ namespace CatchBasin.ViewModel
             Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             List<LayerDescription> layerDescriptions = new List<LayerDescription>();
-            //layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
+            layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
             
             var dquery = $"SCHEDSTART < DATE '{DateTime.Now.AddDays(1).ToShortDateString()}' AND (PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00')";
+            var date = DateTime.Now.AddDays(1).ToString("ddMMyyyy");
+
             if (((App)Application.Current).AppType == "PM")
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBWorkorders.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
-                //
+                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBWorkorders{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
             }
             else
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBInsp.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBInsp{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
 
             }
 
 
-            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
-            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
-            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
-            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
-            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
-
-            // todo:  set SyncDirection.Bidirectional
-            //layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
+            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
+            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
+            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
+            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
+            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
 
 
-            //layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
+            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
+
+
+            layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
 
             layerDescriptions.Reverse();
 
@@ -778,17 +830,34 @@ namespace CatchBasin.ViewModel
                 }
                 catch (Exception e)
                 {
-                    
+                    MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
                 }
 
                 if (localGdb == null)
                 {
-                    await GISLayerToOffline(layerDescription.url, layerDescription.layername, layerDescription.displayExpressions, layerDescription.sublayerNames, envelope, layerDescription.geodatabaseFilePath);
+                    try
+                    {
+                        await GISLayerToOffline(layerDescription.url, layerDescription.layername, layerDescription.displayExpressions, layerDescription.sublayerNames, envelope, layerDescription.geodatabaseFilePath);
+
+                    }
+                    catch (Exception e)
+                    {
+                        MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
+                    }
                 }
                 else
                 {
-                    GroupLayer layer = AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
-                    SyncronizeEditsAsync(layerDescription.url, layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
+                    try
+                    {
+                        GroupLayer layer = AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
+                        SyncronizeEditsAsync(layerDescription.url, layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
+
+                    }
+                    catch (Exception e)
+                    {
+                        MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
+                    }
+
 
                 }
             }

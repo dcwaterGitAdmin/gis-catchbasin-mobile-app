@@ -213,12 +213,12 @@ namespace CatchBasin.ViewModel
             }
             else
             {
-                // todo for test
-                LeadManIsEnabled = true;
-                SecondManIsEnabled = true;
+           
+                LeadManIsEnabled = false;
+                SecondManIsEnabled = false;
             }
 
-			// todo generate driverlist
+			
 			PropertyChanged += SettingsVM_PropertyChanged;
 
 		}
