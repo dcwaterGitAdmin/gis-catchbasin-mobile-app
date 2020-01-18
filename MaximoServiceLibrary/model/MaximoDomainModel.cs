@@ -40,8 +40,6 @@ namespace MaximoServiceLibrary.model
 		
 		public List<MaximoPersonGroup> personGroupList { get; set; }
 		
-		public string persongroup { get; set; }
-
 		public string userName { get; set; }
 		
 		public string password { get; set; }
