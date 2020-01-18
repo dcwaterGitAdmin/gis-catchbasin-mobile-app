@@ -1154,7 +1154,7 @@ namespace MaximoServiceLibrary
 				{
 					string currentPersonGroup = null;
 					MaximoUser mxuserFromMaximo = AppContext.maximoService.whoami();
-					mxuser = AppContext.userRepository.findOneIgnoreCase(username);
+                    mxuser = AppContext.userRepository.findAll().FirstOrDefault();
 					if (mxuser == null)
 					{
 						mxuser = mxuserFromMaximo;

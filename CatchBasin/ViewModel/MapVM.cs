@@ -133,9 +133,10 @@ namespace CatchBasin.ViewModel
             var featureLayer = GetWorkorderLayer();
             if(featureLayer  != null)
             {
-                IdentifyLayerResult identify = await MapView.IdentifyLayerAsync(featureLayer, e.Position, 5, false);
+                IdentifyLayerResult identify = await MapView.IdentifyLayerAsync(featureLayer, e.Position, 15, false);
                 if (identify.GeoElements.Count > 0)
                 {
+                    try { 
                     var wonum = identify.GeoElements.First().Attributes["WONUM"].ToString();
                     if (!string.IsNullOrEmpty(wonum))
                     {
@@ -144,6 +145,10 @@ namespace CatchBasin.ViewModel
                         {
                             ShowWorkOrderDetail(wo);
                         }
+                    }
+                    }catch(Exception ex)
+                    {
+                        MaximoServiceLibrary.AppContext.Log.Warn(e.ToString());
                     }
                 }
             }
@@ -608,6 +613,7 @@ namespace CatchBasin.ViewModel
         public void MakeSync()
         {
             MaximoServiceLibrary.AppContext.synchronizationService.triggerSynchronization();
+            InitializeMap();
         }
 
         private bool workOrdersIsVisible;
@@ -784,39 +790,40 @@ namespace CatchBasin.ViewModel
         private async void InitializeMap()
         {
 
+            var arcgisBaseUrl = System.Configuration.ConfigurationManager.AppSettings["ArcGISServerUrl"];
 
-           
+
 
             Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             List<LayerDescription> layerDescriptions = new List<LayerDescription>();
-            layerDescriptions.Add(new LayerDescription("CNL/NoIDs", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
+            layerDescriptions.Add(new LayerDescription("CNL/NoIDs", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
             
             var dquery = $"SCHEDSTART < DATE '{DateTime.Now.AddDays(1).ToShortDateString()}' AND (PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00')";
             var date = DateTime.Now.AddDays(1).ToString("ddMMyyyy");
 
             if (((App)Application.Current).AppType == "PM")
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBWorkorders{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBWorkorders{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
             }
             else
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBInsp{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBInsp{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
 
             }
 
 
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
 
 
-            layerDescriptions.Add(new LayerDescription("Assets", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
 
 
-            layerDescriptions.Add(new LayerDescription("Sewer Network", "https://azw-pgis02.dcwasa.com:6443/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
+            layerDescriptions.Add(new LayerDescription("Sewer Network", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
 
             layerDescriptions.Reverse();
 
@@ -842,7 +849,9 @@ namespace CatchBasin.ViewModel
                     }
                     catch (Exception e)
                     {
+
                         MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
+                        GISSyncStatus = $"Unable to create local geodatabase.";
                     }
                 }
                 else
@@ -850,12 +859,13 @@ namespace CatchBasin.ViewModel
                     try
                     {
                         GroupLayer layer = AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
-                        SyncronizeEditsAsync(layerDescription.url, layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
+                        await SyncronizeEditsAsync(layerDescription.url, layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
 
                     }
                     catch (Exception e)
                     {
                         MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
+                        GISSyncStatus = $"Unable to sync {layerDescription.layername}.";
                     }
 
 
@@ -894,7 +904,7 @@ namespace CatchBasin.ViewModel
                 if (generateGdbJob.Error != null)
                 {
                     GISSyncStatus = $"Error creating geodatabase:  : {generateGdbJob.Error.Message}";
-
+                    MaximoServiceLibrary.AppContext.Log.Warn(GISSyncStatus);
                     return;
                 }
 
@@ -902,19 +912,20 @@ namespace CatchBasin.ViewModel
                 if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
                 {
                     GISSyncStatus = $"Download Complete : {layername}";
+                    MaximoServiceLibrary.AppContext.Log.Warn(GISSyncStatus);
                     Geodatabase localGdb = await generateGdbJob.GetResultAsync();
                     AddLocalDataToMap(localGdb, layername, sublayers);
                 }
                 else if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
                 {
                     GISSyncStatus = $"Unable to create local geodatabase.";
-
+                    MaximoServiceLibrary.AppContext.Log.Warn(generateGdbJob.Messages.LastOrDefault());
 
                 }
                 else
                 {
                     GISSyncStatus = $"Download continue : {layername} {generateGdbJob.Messages.Count}";
-
+                    MaximoServiceLibrary.AppContext.Log.Warn(GISSyncStatus);
 
                 }
             };
@@ -1005,6 +1016,7 @@ namespace CatchBasin.ViewModel
                     // report success ...
                     MaximoServiceLibrary.AppContext.Log.Warn("Synchronization is complete!");
                     GISSyncStatus = $"Synchronization is complete! {layername}";
+
                     try
                     {
                         Geodatabase localGdb = await Geodatabase.OpenAsync(geodatabasePath);
@@ -1026,7 +1038,7 @@ namespace CatchBasin.ViewModel
                 else
                 {
                     GISSyncStatus = $"Sync in progress ... {layername}";
-
+                    MaximoServiceLibrary.AppContext.Log.Warn(GISSyncStatus);
                 }
             };
 

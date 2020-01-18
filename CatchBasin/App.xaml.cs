@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -58,6 +59,28 @@ namespace CatchBasin
                 // Exit application
                 this.Shutdown();
             }
+
+
+            AppDomain currentDomain = default(AppDomain);
+            currentDomain = AppDomain.CurrentDomain;
+            // Handler for unhandled exceptions.
+            currentDomain.UnhandledException += GlobalUnhandledExceptionHandler;
+            // Handler for exceptions in threads behind forms.
+            System.Windows.Forms.Application.ThreadException += GlobalThreadExceptionHandler;
+        }
+
+        private void GlobalThreadExceptionHandler(object sender, ThreadExceptionEventArgs e)
+        {
+            Exception ex = default(Exception);
+            ex = e.Exception;
+            MaximoServiceLibrary.AppContext.Log.Error(ex.Message + "\n" + ex.StackTrace);
+        }
+
+        private void GlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = default(Exception);
+            ex = (Exception)e.ExceptionObject;
+            MaximoServiceLibrary.AppContext.Log.Error(ex.Message + "\n" + ex.StackTrace);
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
