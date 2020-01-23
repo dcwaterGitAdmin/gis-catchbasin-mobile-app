@@ -54,6 +54,9 @@ namespace CatchBasin.ViewModel
             if(status == "SYNC_FINISHED")
             {
                 WorkOrderListVM.Update();
+            }else if (status == "SYNC_STARTED")
+            {
+                InitializeMap(true);
             }
             SyncStatus = $"{substatus}";
         }
@@ -143,7 +146,11 @@ namespace CatchBasin.ViewModel
                         var wo = WorkOrderListVM.WorkOrders.FirstOrDefault(w => w.wonum == wonum);
                         if(wo!= null)
                         {
-                            ShowWorkOrderDetail(wo);
+                                var index = WorkOrderListVM.WorkOrders.IndexOf(wo);
+                                if(index > -1)
+                                {
+                                    WorkOrderListVM.SelectedIndex = index;
+                                }
                         }
                     }
                     }catch(Exception ex)
@@ -203,38 +210,66 @@ namespace CatchBasin.ViewModel
                 }
 
             }
+            else
+            {
+                
+                deleteAssetFromMap(assettag);
+            }
         }
-        public async void MapTappedForCreateAsset(object sender, GeoViewInputEventArgs e)
+        public async void MapTappedForCreateAsset(MapPoint clickPoint=null)
         {
+            if( clickPoint == null)
+            {
+                if (MapView.SketchEditor.IsEnabled)
+                {
+                    MapView.SketchEditor.Stop();
+                }
+                
+                    clickPoint = await MapView.SketchEditor.StartAsync(Esri.ArcGISRuntime.UI.SketchCreationMode.Point, false) as MapPoint;
+                
+            }
+            if(clickPoint == null)
+            {
+                return;
+            }
             var user = MaximoServiceLibrary.AppContext.synchronizationService.mxuser;
             // 
-            MapView.GeoViewTapped -= MapTappedForCreateAsset;
+           
             var tag = $"N{user.userPreferences.selectedPersonGroup}{DateTime.Now.ToString("MMddyyhhmmss")}";
             var layer = GetAssetGroupLayer();
             FeatureLayer featurelayer = (FeatureLayer)layer.Layers.FirstOrDefault(__layer => __layer.Name == "Catch Basin - Cleaned by DC Water");
             if (featurelayer != null)
             {
                 var feature = featurelayer.FeatureTable.CreateFeature();
-                feature.Attributes["ASSETTAG"] = tag;
-                feature.Attributes["SUBTYPE"] = 0;
-                feature.Attributes["TOPMATRL"] = "C";
-                feature.Attributes["TOPTHICK"] = 4;
-                feature.Attributes["LOCATIONDETAIL"] = "";
-                feature.Attributes["OWNER"] = "WASA";
-                feature.Attributes["CLNRESP"] = "DC WASA";
-                feature.Attributes["ISWQI"] = "N";
-                feature.Attributes["INMS4"] = "N";
-                feature.Attributes["ISCORNRCB"] = "N";
-                feature.Attributes["BIOFLTR"] = "N";
-                feature.Attributes["HASSUMP"] = "Y";
-                feature.Attributes["HASWATERSEAL"] = "N";
+                feature.SetAttributeValue("ASSETTAG",tag);
+                feature.SetAttributeValue("SUBTYPE", 0);
+                feature.SetAttributeValue("TOPMATRL", "C");
+                feature.SetAttributeValue("TOPTHICK", 4);
+                feature.SetAttributeValue("LOCATIONDETAIL", "");
+                feature.SetAttributeValue("OWNER", "WASA");
+                feature.SetAttributeValue("CLNRESP", "DC WASA");
+                feature.SetAttributeValue("ISWQI", "N");
+                feature.SetAttributeValue("INMS4", "N");
+                feature.SetAttributeValue("ISCORNRCB", "N");
+                feature.SetAttributeValue("BIOFLTR", "N");
+                feature.SetAttributeValue("HASSUMP", "Y");
+                feature.SetAttributeValue("HASWATERSEAL", "N");
+               // feature.SetAttributeValue("LIFECYCLESTATS", "Active");
+                //feature.SetAttributeValue("CLNRESP","DC WASA");
 
 
-                feature.Geometry = (MapPoint)GeometryEngine.NormalizeCentralMeridian(e.Location);
+             
+
+                feature.Geometry = clickPoint;
                 await featurelayer.FeatureTable.AddFeatureAsync(feature);
+                
                 feature.Refresh();
                 featurelayer.SelectFeature(feature);
                 WorkOrderDetailVM.SetAsset(feature);
+            }
+            else
+            {
+                MapTappedForCreateAsset(clickPoint);
             }
         }
 
@@ -429,14 +464,7 @@ namespace CatchBasin.ViewModel
                     QueryParameters queryParameters = new QueryParameters();
                     queryParameters.WhereClause = $"wonum='{wo.wonum}'";
                     await layer.SelectFeaturesAsync(queryParameters, SelectionMode.New);
-                    var timer = new System.Windows.Forms.Timer();
-                    timer.Interval = 1000;
-                    timer.Tick += delegate (object sender, EventArgs args)
-                    {
-                        layer.ClearSelection();
-                        timer.Stop();
-                    };
-                    timer.Start();
+                   
                 }
                 if (wo.asset != null && !String.IsNullOrEmpty(wo.asset.assettag))
                 {
@@ -446,14 +474,7 @@ namespace CatchBasin.ViewModel
                         QueryParameters queryParameters = new QueryParameters();
                         queryParameters.WhereClause = $"ASSETTAG='{wo.asset.assettag}'";
                         ((FeatureLayer)assetLayer.Layers.FirstOrDefault())?.SelectFeaturesAsync(queryParameters, SelectionMode.New);
-                        var timer = new System.Windows.Forms.Timer();
-                        timer.Interval = 1000;
-                        timer.Tick += delegate (object sender, EventArgs args)
-                        {
-                            ((FeatureLayer)assetLayer.Layers.FirstOrDefault())?.ClearSelection();
-                            timer.Stop();
-                        };
-                        timer.Start();
+                       
                     }
                 }
             }
@@ -475,7 +496,7 @@ namespace CatchBasin.ViewModel
             ((FeatureLayer)assetLayer?.Layers?.FirstOrDefault())?.ClearSelection();
             WorkOrderDetailIsVisible = false;
 
-            WorkOrderListVM.SelectedIndex = -1;
+            //WorkOrderListVM.SelectedIndex = -1;
             WorkOrderDetailVM.Clear();
             WorkOrderListVM.Update();
         }
@@ -613,7 +634,7 @@ namespace CatchBasin.ViewModel
         public void MakeSync()
         {
             MaximoServiceLibrary.AppContext.synchronizationService.triggerSynchronization();
-            InitializeMap();
+            InitializeMap(true);
         }
 
         private bool workOrdersIsVisible;
@@ -787,7 +808,7 @@ namespace CatchBasin.ViewModel
                 InitializeMap();
             }
         }
-        private async void InitializeMap()
+        private async void InitializeMap(bool sync=false)
         {
 
             var arcgisBaseUrl = System.Configuration.ConfigurationManager.AppSettings["ArcGISServerUrl"];
@@ -797,35 +818,42 @@ namespace CatchBasin.ViewModel
             Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             List<LayerDescription> layerDescriptions = new List<LayerDescription>();
-            layerDescriptions.Add(new LayerDescription("CNL/NoIDs", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
+            layerDescriptions.Add(new LayerDescription("CNL/NoIDs", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
             
             var dquery = $"SCHEDSTART < DATE '{DateTime.Now.AddDays(1).ToShortDateString()}' AND (PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00')";
             var date = DateTime.Now.AddDays(1).ToString("ddMMyyyy");
 
             if (((App)Application.Current).AppType == "PM")
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBWorkorders{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\Data\\CBWorkorders{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
             }
             else
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\CBInsp{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\Data\\CBInsp{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
 
             }
 
 
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
+
+            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\Data\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
 
 
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
 
-
-            layerDescriptions.Add(new LayerDescription("Sewer Network", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
+            layerDescriptions.Add(new LayerDescription("Sewer Network", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
 
             layerDescriptions.Reverse();
+
+            if (sync)
+            {
+                layerDescriptions.Clear();
+                layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\Data\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
+
+            }
 
             foreach (LayerDescription layerDescription in layerDescriptions)
             {
@@ -859,7 +887,7 @@ namespace CatchBasin.ViewModel
                     try
                     {
                         GroupLayer layer = AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
-                        await SyncronizeEditsAsync(layerDescription.url, layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
+                         SyncronizeEditsAsync(layerDescription.url, layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
 
                     }
                     catch (Exception e)
@@ -881,9 +909,13 @@ namespace CatchBasin.ViewModel
 
             GISSyncStatus = $"Download First GIS Data Started : {layername}";
             Uri featureServiceUri = new Uri(url);
-            GeodatabaseSyncTask gdbSyncTask = await GeodatabaseSyncTask.CreateAsync(featureServiceUri);
 
+            var cred = await Esri.ArcGISRuntime.Security.AuthenticationManager.Current.GenerateCredentialAsync(featureServiceUri, "catchbasin", "DcnJLkq5xb5aCsd");
+
+            GeodatabaseSyncTask gdbSyncTask = await GeodatabaseSyncTask.CreateAsync(featureServiceUri, cred);
+            
             GenerateGeodatabaseParameters generateGdbParams = await gdbSyncTask.CreateDefaultGenerateGeodatabaseParametersAsync(envelope);
+            generateGdbParams.OutSpatialReference = new SpatialReference(26985);
             //generateGdbParams.SyncModel = SyncModel.Geodatabase;
             //generateGdbParams.ReturnAttachments = false;
             generateGdbParams.LayerOptions.Clear();
@@ -997,9 +1029,10 @@ namespace CatchBasin.ViewModel
                 RollbackOnFailure = true,
                 GeodatabaseSyncDirection = syncDirection
             };
+            var cred = await Esri.ArcGISRuntime.Security.AuthenticationManager.Current.GenerateCredentialAsync(new Uri(serviceUrl), "catchbasin", "DcnJLkq5xb5aCsd");
 
             // create a sync task with the URL of the feature service to sync
-            var syncTask = await GeodatabaseSyncTask.CreateAsync(new Uri(serviceUrl));
+            var syncTask = await GeodatabaseSyncTask.CreateAsync(new Uri(serviceUrl), cred);
 
             // open the local geodatabase
             var gdb = await Esri.ArcGISRuntime.Data.Geodatabase.OpenAsync(geodatabasePath);

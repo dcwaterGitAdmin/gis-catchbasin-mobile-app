@@ -145,7 +145,7 @@ namespace CatchBasin.ViewModel.Commands
             var mapPoint = (MapPoint)viewpoint.TargetGeometry;
 
 
-            var newviewpoint =new Viewpoint(mapPoint,  viewpoint.TargetScale * 0.8, viewpoint.Rotation);
+            var newviewpoint =new Viewpoint(mapPoint,  viewpoint.TargetScale * 0.5, viewpoint.Rotation);
             ((MapView)parameter).SetViewpoint(newviewpoint);
         }
 
@@ -165,7 +165,7 @@ namespace CatchBasin.ViewModel.Commands
             var mapPoint = (MapPoint)viewpoint.TargetGeometry;
 
 
-            var newviewpoint = new Viewpoint(mapPoint, viewpoint.TargetScale * 1.2, viewpoint.Rotation);
+            var newviewpoint = new Viewpoint(mapPoint, viewpoint.TargetScale * 1.5, viewpoint.Rotation);
             ((MapView)parameter).SetViewpoint(newviewpoint);
         }
 

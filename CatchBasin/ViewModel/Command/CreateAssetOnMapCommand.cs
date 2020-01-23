@@ -43,7 +43,7 @@ namespace CatchBasin.ViewModel.Command
             {
 
             }
-            WorkOrderDetailVM.MapVM.MapView.GeoViewTapped += WorkOrderDetailVM.MapVM.MapTappedForCreateAsset;
+           WorkOrderDetailVM.MapVM.MapTappedForCreateAsset();
         }
 
     }

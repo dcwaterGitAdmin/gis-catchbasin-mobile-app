@@ -300,6 +300,8 @@ namespace MaximoServiceLibrary
                 "labtrans," +
                 "tooltrans," +
                 "failureremark";
+
+            //selectFields = "*";
 			var request = createRequest("/os/dcw_cb_wo");
 			request.AddQueryParameter("oslc.where", where);
 			request.AddQueryParameter("oslc.select", selectFields);

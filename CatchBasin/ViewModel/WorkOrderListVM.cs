@@ -24,7 +24,7 @@ namespace CatchBasin.ViewModel
             set { workOrders = value; OnPropertyChanged("WorkOrders"); }
         }
 
-        private int selectedIndex=-1;
+        private int selectedIndex =-1;
 
         public int SelectedIndex
         {
@@ -287,7 +287,7 @@ namespace CatchBasin.ViewModel
 
             WorkOrders = wos.ToList();
             WorkOrders.Count.ToString();
-            SelectedIndex = -1;
+            //SelectedIndex = -1;
             if (MapVM.WorkOrderDetailIsVisible)
             {
                 var index =WorkOrders.Select(wo=> wo.Id).ToList().IndexOf(MapVM.WorkOrderDetailVM.MaximoWorkOrder.Id);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CatchBasin.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,16 +24,38 @@ namespace CatchBasin.View.UserControl
         public WorkOrderList()
         {
            InitializeComponent();
+           
         }
 
-		private void ListView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            ((WorkOrderListVM)this.DataContext).PropertyChanged += WorkOrderList_PropertyChanged;
+        }
+
+        private void WorkOrderList_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedIndex")
+            {
+
+
+                if (((WorkOrderListVM)this.DataContext).SelectedIndex > -1)
+                {
+                    var wo = ((WorkOrderListVM)this.DataContext).WorkOrders[((WorkOrderListVM)this.DataContext).SelectedIndex];
+                    listView.SelectedItem = wo;
+                }
+               }
+        }
+
+        private void ListView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			e.Handled = true;
 		}
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            listView.ScrollIntoView(listView.SelectedItem);
+           
         }
     }
 }

@@ -36,13 +36,9 @@ namespace CatchBasin.ViewModel.Command
         public void Execute(object parameter)
         {
 
-            try
+            if (WorkOrderDetailVM.MapVM.MapView.SketchEditor.IsEnabled)
             {
-                WorkOrderDetailVM.MapVM.MapView.GeoViewTapped -= WorkOrderDetailVM.MapVM.MapTappedForCreateAsset;
-            }
-            catch (Exception e)
-            {
-
+                WorkOrderDetailVM.MapVM.MapView.SketchEditor.Stop();
             }
 
             WorkOrderDetailVM.MapVM.MapView.GeoViewTapped += WorkOrderDetailVM.MapVM.MapTappedForSelectAsset;
