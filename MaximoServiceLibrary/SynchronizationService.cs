@@ -527,9 +527,11 @@ namespace MaximoServiceLibrary
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderProblemCode . wonum: {woFromLocal.wonum}");
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.updateWorkOrderProblemCode(woFromLocal);
-					//mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
+					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
 					//AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderProblemCode and WO re-fetched. wonum: {woFromLocal.wonum}");
+
+					mergeMaximoWorkOrderFailureReportsToLocalWorkOrder(woFromLocal, freshWorkOrderFailureReportList, woFreshFromMaximo);
 
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder . wonum: {woFromLocal.wonum}");
 					woFreshFromMaximo = AppContext.maximoService.updateWorkOrder(woFromLocal);
