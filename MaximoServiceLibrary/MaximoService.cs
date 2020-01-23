@@ -382,14 +382,12 @@ namespace MaximoServiceLibrary
 
 			// create an empty workorder
 			MaximoWorkOrderForUpdate workOrderToBePosted = new MaximoWorkOrderForUpdate();
-
 			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
             workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
             workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
             workOrderToBePosted.assetnum = maximoWorkOrder.assetnum;
             workOrderToBePosted.statusdate = maximoWorkOrder.statusdate;
-            workOrderToBePosted.problemcode = maximoWorkOrder.problemcode;
             
             // In order to not get error from maximo side in case of failed synchronization
             if (workOrderToBePosted.workorderspec != null)
@@ -437,10 +435,8 @@ namespace MaximoServiceLibrary
 
 			// create an empty workorder
 			MaximoWorkOrderForStatusUpdate workOrderToBePosted = new MaximoWorkOrderForStatusUpdate();
-
-            workOrderToBePosted.status = maximoWorkOrder.status;
-
-            workOrderToBePosted.np_statusmemo = maximoWorkOrder.np_statusmemo;
+			workOrderToBePosted.status = maximoWorkOrder.status;
+			workOrderToBePosted.np_statusmemo = maximoWorkOrder.np_statusmemo;
             
             request.AddJsonBody(workOrderToBePosted);
 
@@ -467,7 +463,45 @@ namespace MaximoServiceLibrary
             }
             return freshWorkOrder;
 		}
+	    
+	    public MaximoWorkOrder updateWorkOrderProblemCode(MaximoWorkOrder maximoWorkOrder)
+	    {
+		    AppContext.Log.Info($"[MX] update work order status : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
 
+		    var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid, false, Method.POST);
+		    request.AddHeader("x-method-override", "PATCH");
+
+		    // create an empty workorder
+		    MaximoWorkOrderForProblemCodeUpdate workOrderToBePosted = new MaximoWorkOrderForProblemCodeUpdate();
+		    workOrderToBePosted.problemcode = maximoWorkOrder.problemcode;
+            
+		    request.AddJsonBody(workOrderToBePosted);
+
+		    var response = restClient.Execute(request);
+			
+		    if (!response.IsSuccessful)
+		    {
+			    AppContext.Log.Error($"[MX] - update work order problemcode Error url : {response.ResponseUri.ToString()}");
+			    AppContext.Log.Error($"[MX] - update work order problemcode Error request body : {request.JsonSerializer.Serialize(workOrderToBePosted)}");
+			    AppContext.Log.Error($"[MX] - update work order problemcode operation response : [{response.StatusCode}] - [{response.Content}]");
+
+			    throw new Exception("update-work-order-problemcode-error : " + response.StatusCode + " - [" + response.Content + "]");
+		    }
+
+		    AppContext.Log.Info($"[MX] successfully updated work order problemcode : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
+		    MaximoWorkOrder freshWorkOrder = null;
+		    if (maximoWorkOrder.href != null)
+		    {
+			    freshWorkOrder = getWorkOrderByHref(maximoWorkOrder.href);
+		    }
+		    else if (maximoWorkOrder.workorderid != null && maximoWorkOrder.workorderid != 0)
+		    {
+			    freshWorkOrder = getWorkOrderByWorkorderid(maximoWorkOrder.workorderid);
+		    }
+		    return freshWorkOrder;
+	    }
+
+	    
 		public MaximoWorkOrder createWorkOrder(MaximoWorkOrder maximoWorkOrder)
 		{
             AppContext.Log.Info($"[MX] create work order : [{maximoWorkOrder.Id}] - [{maximoWorkOrder.workorderid}]");

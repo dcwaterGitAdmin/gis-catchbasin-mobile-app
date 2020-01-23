@@ -8,9 +8,7 @@ namespace MaximoServiceLibrary.model
 	public class MaximoWorkOrderForUpdate
 	{
 		public string remarkdesc { get; set; } 
-
-        public string problemcode { get; set; }
-
+		
         public List<MaximoWorkOrderSpec> workorderspec { get; set; }
 		
 		public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
@@ -26,6 +24,11 @@ namespace MaximoServiceLibrary.model
 		public string status { get; set; }
 
 		public string np_statusmemo { get; set; }
+	}
+
+	public class MaximoWorkOrderForProblemCodeUpdate
+	{
+		public string problemcode { get; set; }
 	}
 
 	public class MaximoWorkOrderLabtransForUpdate
