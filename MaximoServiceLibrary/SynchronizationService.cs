@@ -537,6 +537,12 @@ namespace MaximoServiceLibrary
 					AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFromLocal.wonum}");
 
+					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderStatus . wonum: {woFromLocal.wonum}");
+					woFreshFromMaximo = AppContext.maximoService.updateWorkOrderStatus(woFromLocal);
+					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
+					AppContext.workOrderRepository.upsert(woFromLocal);
+					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderStatus and WO re-fetched. wonum: {woFromLocal.wonum}");
+
 				}
 
 				//post follow up work orders

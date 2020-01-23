@@ -15,29 +15,25 @@ namespace MaximoServiceLibrary.model
 		
 		public List<MaximoWorkOrderFailureReport> failurereport { get; set; }
         public DateTime statusdate { get; set; }
-
-        public string status { get; set; }
-
-        public string np_statusmemo { get; set; }
-
+        
         public List<MaximoDocLinks> doclinks { get; set; }
         public string assetnum { get; set; }
 
     }
 
-    public class MaximoWorkOrderLabtransForUpdate
+	public class MaximoWorkOrderForStatusUpdate
+	{
+		public string status { get; set; }
+
+		public string np_statusmemo { get; set; }
+	}
+
+	public class MaximoWorkOrderLabtransForUpdate
 	{
 		public List<MaximoLabTrans> labtrans { get; set; }
         public List<MaximoToolTrans> tooltrans { get; set; }
     }
-
-	public class MaximoWorkOrderTooltransForUpdate
-	{
-		public List<MaximoToolTrans> tooltrans { get; set; }
-	}
-
-
-
+	
     // MXWO
     public class MaximoWorkOrder : MaximoBaseEntity
     {
