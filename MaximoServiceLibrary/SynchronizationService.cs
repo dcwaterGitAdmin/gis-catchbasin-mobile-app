@@ -527,14 +527,14 @@ namespace MaximoServiceLibrary
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder . wonum: {woFromLocal.wonum}");
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.updateWorkOrder(woFromLocal);
-					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
-					AppContext.workOrderRepository.upsert(woFromLocal);
+					//mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
+					//AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrder and WO re-fetched. wonum: {woFromLocal.wonum}");
 
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderStatus . wonum: {woFromLocal.wonum}");
 					woFreshFromMaximo = AppContext.maximoService.updateWorkOrderStatus(woFromLocal);
-					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
-					AppContext.workOrderRepository.upsert(woFromLocal);
+					//mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
+					//AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderStatus and WO re-fetched. wonum: {woFromLocal.wonum}");
 
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderActuals (all childs are fresh). wonum: {woFromLocal.wonum}");
