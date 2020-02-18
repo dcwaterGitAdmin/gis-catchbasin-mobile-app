@@ -1,0 +1,96 @@
+﻿<Window x:Class="CatchBasin.View.Search"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CatchBasin.View"
+        xmlns:helper="clr-namespace:CatchBasin.ViewModel.Helper"
+        mc:Ignorable="d"
+        Title="Search" Height="450" Width="300">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+        <helper:EnumMatchToBooleanConverter x:Key="enumConverter" />
+    </Window.Resources>
+    <Grid>
+        <TabControl x:Name="tabControl">
+            <TabItem Header="Lookup">
+                <Grid Background="#FFE5E5E5">
+                    <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top">
+                        <Label Content="Search In Layer :"/>
+                        <ComboBox ItemsSource="{Binding Layers}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedLayer}"/>
+                        <Label Content="Using this field :"/>
+                        <ComboBox  ItemsSource="{Binding Fields}" DisplayMemberPath="Alias"  SelectedItem="{Binding SelectedField}"/>
+                        <Label Content="For this value :"/>
+                        <TextBox Text="{Binding SearchValue,Mode=TwoWay}" />
+                        <CheckBox Content="Find all similar?" IsChecked="{Binding FindSimilar}"/>
+                        <Button Command="{Binding SearchInLayerCommand}"  Content="Search"/>
+                            <Grid Visibility="{Binding ActionVisibility, Converter={StaticResource booleanToVisibilityConverter}}" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Command="{Binding SearchZoomToCommand}"  Content="Zoom To"/>
+                                <Button Grid.Column="1" Command="{Binding SearchFlashCommand}"  Content="Highlight"/>
+                            </Grid>
+                        
+                        
+                       
+
+                    </StackPanel>
+                        <DataGrid  ItemsSource="{Binding DataTable.DefaultView}" SelectedItem="{Binding SelectedRow}"></DataGrid>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Address">
+                <Grid Background="#FFE5E5E5">
+                    <StackPanel>
+                        <Label Content="Primary Street:"/>
+                        <ComboBox ItemsSource="{Binding PrimaryStreetList}" SelectedItem="{Binding SelectedPrimaryStreet}" />
+                        <RadioButton IsChecked="{Binding Type, ConverterParameter=INTERSECTS, Converter={StaticResource enumConverter}, Mode=TwoWay}"  GroupName="Type_"  Content="Intersecting Street :"/>
+                        <ComboBox ItemsSource="{Binding IntersectingStreetList}"  SelectedItem="{Binding SelectedIntersectingStreet}" />
+                        <RadioButton  IsChecked="{Binding Type, ConverterParameter=RANGE, Converter={StaticResource enumConverter}, Mode=TwoWay}" GroupName="Type_"   Content="Primary Street Range :"/>
+                        <ComboBox ItemsSource="{Binding RangeList}" SelectedItem="{Binding SelectedRange}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Command="{Binding ZoomToStreetCoomand}" Content="Zoom To"/>
+                            <Button Grid.Column="1" Command="{Binding FlashStreetCoomand}" Content="Flash"/>
+                            <Button Grid.Column="2" Command="{Binding ReLoadStreetCoomand}" Content="Reload"/>
+                        </Grid>
+                        
+                        <ListView Height="Auto"/>
+
+
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Geocode">
+                <Grid Background="#FFE5E5E5">
+                    <DockPanel>
+                    <StackPanel DockPanel.Dock="Top">
+                        <Label Content="Address to Locate (Ex:1385 Canal) :"/>
+                        <TextBox Text="{Binding GeoCodeText}"/>
+                        <Button Content="Search" Command="{Binding GeoCodeCommand}" />
+                        <ListView Height="Auto"/>
+                            <Grid Visibility="{Binding GeoCodeActionVisibility, Converter={StaticResource booleanToVisibilityConverter}}" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Command="{Binding GeoCodeZoomToCommand}"  Content="Zoom To"/>
+                                <Button Grid.Column="1" Command="{Binding GeoCodeFlashCommand}"  Content="Highlight"/>
+                            </Grid>
+
+                        </StackPanel>
+                        <DataGrid  ItemsSource="{Binding GeoCodeDataTable.DefaultView}" SelectedItem="{Binding SelectedRow}"></DataGrid>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>

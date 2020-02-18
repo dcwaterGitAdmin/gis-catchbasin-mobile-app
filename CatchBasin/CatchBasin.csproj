@@ -118,6 +118,7 @@
     <Compile Include="ViewModel\Command\DeleteLaborCommand.cs" />
     <Compile Include="ViewModel\Command\DeleteAttachmentCommand.cs" />
     <Compile Include="ViewModel\Command\DeleteToolCommand.cs" />
+    <Compile Include="ViewModel\Command\SearchCommands.cs" />
     <Compile Include="ViewModel\Command\ShowLaborCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAttachmentCommand.cs" />
     <Compile Include="ViewModel\Command\ShowToolCommand.cs" />
@@ -133,13 +134,16 @@
     <Compile Include="ViewModel\Command\CancelCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAssetCommand.cs" />
     <Compile Include="ViewModel\CompleWorkOrderVM.cs" />
+    <Compile Include="ViewModel\Helper\AddressParser.cs" />
     <Compile Include="ViewModel\Helper\EnumMatchToBooleanConverter.cs" />
     <Compile Include="ViewModel\Helper\InverseBooleanConverter.cs" />
     <Compile Include="ViewModel\Helper\Model.cs" />
     <Compile Include="ViewModel\Helper\PasswordHelper.cs" />
     <Compile Include="ViewModel\Helper\IDetailVM.cs" />
+    <Compile Include="ViewModel\IdentifyVM.cs" />
     <Compile Include="ViewModel\LaborVM.cs" />
     <Compile Include="ViewModel\LoginVM.cs" />
+    <Compile Include="ViewModel\SearchVM.cs" />
     <Compile Include="ViewModel\SettingsVM.cs" />
     <Compile Include="ViewModel\ToolVM.cs" />
     <Compile Include="ViewModel\WorkOrderDetailVM.cs" />
@@ -147,11 +151,17 @@
     <Compile Include="View\CompleteWorkOrder.xaml.cs">
       <DependentUpon>CompleteWorkOrder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Identify.xaml.cs">
+      <DependentUpon>Identify.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Labor.xaml.cs">
       <DependentUpon>Labor.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Search.xaml.cs">
+      <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
@@ -169,6 +179,10 @@
       <DependentUpon>WorkOrderList.xaml</DependentUpon>
     </Compile>
     <Page Include="View\CompleteWorkOrder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Identify.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -190,6 +204,10 @@
     </Compile>
     <Compile Include="ViewModel\MapVM.cs" />
     <Page Include="View\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Search.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

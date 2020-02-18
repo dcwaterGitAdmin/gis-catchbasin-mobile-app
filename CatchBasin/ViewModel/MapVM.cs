@@ -56,7 +56,7 @@ namespace CatchBasin.ViewModel
                 WorkOrderListVM.Update();
             }else if (status == "SYNC_STARTED")
             {
-                InitializeMap(true);
+             
             }
             SyncStatus = $"{substatus}";
         }
@@ -175,6 +175,7 @@ namespace CatchBasin.ViewModel
             {
                 if (result.GeoElements.Count > 0)
                 {
+                    WorkOrderDetailVM.SelectAssetOnMapIsActive = false;
                     MapView.GeoViewTapped -= MapTappedForSelectAsset;
                     var element = result.GeoElements.First();
                     QueryParameters queryParameters = new QueryParameters();
@@ -218,18 +219,25 @@ namespace CatchBasin.ViewModel
         }
         public async void MapTappedForCreateAsset(MapPoint clickPoint=null)
         {
-            if( clickPoint == null)
+
+            WorkOrderDetailVM.CreateAssetOnMapIsActive = true;
+            if ( clickPoint == null)
             {
                 if (MapView.SketchEditor.IsEnabled)
                 {
                     MapView.SketchEditor.Stop();
                 }
-                
+
+             
                     clickPoint = await MapView.SketchEditor.StartAsync(Esri.ArcGISRuntime.UI.SketchCreationMode.Point, false) as MapPoint;
+              
+                  
                 
+
             }
             if(clickPoint == null)
             {
+                WorkOrderDetailVM.CreateAssetOnMapIsActive = false;
                 return;
             }
             var user = MaximoServiceLibrary.AppContext.synchronizationService.mxuser;
@@ -266,6 +274,7 @@ namespace CatchBasin.ViewModel
                 feature.Refresh();
                 featurelayer.SelectFeature(feature);
                 WorkOrderDetailVM.SetAsset(feature);
+                WorkOrderDetailVM.CreateAssetOnMapIsActive = false;
             }
             else
             {
@@ -390,8 +399,17 @@ namespace CatchBasin.ViewModel
                 if (layer != null)
                 {
                     QueryParameters queryParameters = new QueryParameters();
-                    queryParameters.WhereClause = $"wonum='{wo.wonum}'";
-                    FeatureQueryResult features = await layer.FeatureTable.QueryFeaturesAsync(queryParameters);
+                    if(wo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
+                    {
+                        queryParameters.WhereClause = $"wonum='{wo.Id}'";
+                    }
+                    else
+                    {
+                        queryParameters.WhereClause = $"wonum='{wo.wonum}'";
+
+                    }
+                    
+                    FeatureQueryResult features = await this.woFeatureTable.QueryFeaturesAsync(queryParameters);
                     MapPoint f = (MapPoint)features.First()?.Geometry;
                     MapView?.SetViewpointCenterAsync(f, 500);
                 }
@@ -435,8 +453,16 @@ namespace CatchBasin.ViewModel
                 if (layer != null)
                 {
                     QueryParameters queryParameters = new QueryParameters();
-                    queryParameters.WhereClause = $"wonum='{wo.wonum}'";
-                    FeatureQueryResult features = await layer.FeatureTable.QueryFeaturesAsync(queryParameters);
+                    if (wo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
+                    {
+                        queryParameters.WhereClause = $"wonum='{wo.Id}'";
+                    }
+                    else
+                    {
+                        queryParameters.WhereClause = $"wonum='{wo.wonum}'";
+
+                    }
+                    FeatureQueryResult features = await this.woFeatureTable.QueryFeaturesAsync(queryParameters);
                     MapPoint f = (MapPoint)features.First()?.Geometry;
                     MapView?.SetViewpointCenterAsync(f);
 
@@ -462,7 +488,15 @@ namespace CatchBasin.ViewModel
                 if (layer != null)
                 {
                     QueryParameters queryParameters = new QueryParameters();
-                    queryParameters.WhereClause = $"wonum='{wo.wonum}'";
+                    if (wo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
+                    {
+                        queryParameters.WhereClause = $"wonum='{wo.Id}'";
+                    }
+                    else
+                    {
+                        queryParameters.WhereClause = $"wonum='{wo.wonum}'";
+
+                    }
                     await layer.SelectFeaturesAsync(queryParameters, SelectionMode.New);
                    
                 }
@@ -489,7 +523,7 @@ namespace CatchBasin.ViewModel
         {
             var layer = GetWorkorderLayer();
 
-            layer?.ClearSelection();
+            //layer.
 
 
             var assetLayer = GetAssetGroupLayer();
@@ -536,13 +570,21 @@ namespace CatchBasin.ViewModel
         public bool IdentifyIsVisible
         {
             get { return identifyIsVisible; }
-            set { identifyIsVisible = value; }
+            set { identifyIsVisible = value;  OnPropertyChanged("IdentifyIsVisible"); }
         }
         public IdentifyCommand IdentifyCommand { get; set; }
         public void ShowIdentify()
         {
-            IdentifyIsVisible = !IdentifyIsVisible;
-            WorkOrderListVM.Update();
+            if (!IdentifyIsVisible)
+            {
+                IdentifyIsVisible = true;
+                Identify identify = new Identify();
+                identify.DataContext = new IdentifyVM(this);
+                identify.Topmost = true;
+
+                identify.Show();
+            }
+            
         }
 
         private bool measureIsVisible;
@@ -566,7 +608,16 @@ namespace CatchBasin.ViewModel
         public SearchCommand SearchCommand { get; set; }
         public void ShowSearch()
         {
-            SearchIsVisible = !SearchIsVisible;
+            if (!SearchIsVisible)
+            {
+                SearchIsVisible = true;
+                Search Search = new Search();
+                Search.DataContext = new SearchVM(this);
+                Search.Topmost = true;
+
+
+                Search.Show();
+            }
         }
 
         private bool tocIsVisible;
@@ -622,6 +673,15 @@ namespace CatchBasin.ViewModel
         public ZoomOutCommand ZoomOutCommand { get; set; }
         public ZoomWithDrawCommand ZoomWithDrawCommand { get; set; }
 
+        private bool zoomWithDrawIsActive;
+
+        public bool ZoomWithDrawIsActive
+        {
+            get { return zoomWithDrawIsActive; }
+            set { zoomWithDrawIsActive = value; OnPropertyChanged("ZoomWithDrawIsActive"); }
+        }
+
+
         public ZoomToFullExtentCommand ZoomToFullExtentCommand { get; set; }
         public void DoZoomToFullExtent(MapView mapView)
         {
@@ -634,7 +694,7 @@ namespace CatchBasin.ViewModel
         public void MakeSync()
         {
             MaximoServiceLibrary.AppContext.synchronizationService.triggerSynchronization();
-            InitializeMap(true);
+          
         }
 
         private bool workOrdersIsVisible;
@@ -807,98 +867,277 @@ namespace CatchBasin.ViewModel
                 Map = map;
                 InitializeMap();
             }
+
+         
         }
-        private async void InitializeMap(bool sync=false)
+
+
+        public async Task AddSewerPackage()
         {
+            MobileMapPackage mobileMapPackage;
 
-            var arcgisBaseUrl = System.Configuration.ConfigurationManager.AppSettings["ArcGISServerUrl"];
-
-
-
-            Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
-            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            List<LayerDescription> layerDescriptions = new List<LayerDescription>();
-            layerDescriptions.Add(new LayerDescription("CNL/NoIDs", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBCNLNOIDS/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBCNLNOIDS.geodatabase", new string[] { "" }, new string[] { "Newly Discovered/CNL" }));
-            
-            var dquery = $"SCHEDSTART < DATE '{DateTime.Now.AddDays(1).ToShortDateString()}' AND (PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00')";
-            var date = DateTime.Now.AddDays(1).ToString("ddMMyyyy");
-
-            if (((App)Application.Current).AppType == "PM")
+            // Check whether the mobile map package supports direct read.
+            bool isDirectReadSupported = await MobileMapPackage.IsDirectReadSupportedAsync("C:\\CatchBasin\\SEWER.mmpk");
+            if (isDirectReadSupported)
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBWorkorders/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\Data\\CBWorkorders{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                // If it does, create the mobile map package directly from the .mmpk file.
+                mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\CatchBasin\\SEWER.mmpk");
+                var _map = mobileMapPackage.Maps.First();
+                var layers = _map.OperationalLayers.ToList();
+                _map.OperationalLayers.Clear();
+                foreach (var item in layers)
+                {
+                    if(item is GroupLayer)
+                    {
+                        var grouplayer = ((GroupLayer)item);
+                        var _layers = grouplayer.Layers.Reverse().ToList();
+                        grouplayer.Layers.Clear();
+                        foreach (var _item in _layers)
+                        {
+                            grouplayer.Layers.Add(_item);
+
+                        }
+                        //grouplayer.Layers = (LayerCollection)
+                        Map.OperationalLayers.Add(grouplayer);
+                    }
+                   
+                }
+
+
             }
             else
             {
-                layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBInsp/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\Data\\CBInsp{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+                // Otherwise, unpack the mobile map package file into a directory.
+                await MobileMapPackage.UnpackAsync("C:\\CatchBasin\\SEWER.mmpk", "C:\\CatchBasin\\SEWER");
+
+                // Create the mobile map package from the unpack directory.
+                mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\CatchBasin\\SEWER");
+                var _map = mobileMapPackage.Maps.First();
+                var layers = _map.OperationalLayers.ToList();
+                _map.OperationalLayers.Clear();
+                foreach (var item in layers)
+                {
+                    Map.OperationalLayers.Add(item);
+                }
 
             }
+        }
 
+        public async Task AddCNLPackage()
+        {
+            MobileMapPackage mobileMapPackage;
 
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetNeedsJetVac/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetNeedsJetVac.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Needs Jet Vac" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetWaterQuality/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetWaterQuality.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Water Quality" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetHeavilyTravelled/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetHeavilyTravelled.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water - Heavily Travelled" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetProposed/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetProposed.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Proposed" }));
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByOthers/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBAssetCleanedByOthers.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by Others" }));
-
-            layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\Data\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
-
-
-
-            layerDescriptions.Add(new LayerDescription("Sewer Network", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBSewer/FeatureServer", SyncDirection.Download, "C:\\CatchBasin\\Data\\CBSewer.geodatabase", new string[] { "", "" }, new string[] { "Sewer Manhole", "Sewer Gravity Main" }));
-
-            layerDescriptions.Reverse();
-
-            if (sync)
+            // Check whether the mobile map package supports direct read.
+            bool isDirectReadSupported = await MobileMapPackage.IsDirectReadSupportedAsync("C:\\CatchBasin\\CNL.mmpk");
+            if (isDirectReadSupported)
             {
-                layerDescriptions.Clear();
-                layerDescriptions.Add(new LayerDescription("Assets", $"{arcgisBaseUrl}/arcgis/rest/services/Mobile/CBAssetCleanedByDCW/FeatureServer", SyncDirection.Bidirectional, "C:\\CatchBasin\\Data\\CBAssetCleanedByDCW.geodatabase", new string[] { "" }, new string[] { "Catch Basin - Cleaned by DC Water" }));
+                // If it does, create the mobile map package directly from the .mmpk file.
+                mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\CatchBasin\\CNL.mmpk");
+                var _map = mobileMapPackage.Maps.First();
+                var layers = _map.OperationalLayers.ToList();
+                _map.OperationalLayers.Clear();
+                foreach (var item in layers)
+                {
+                    Map.OperationalLayers.Add(item);
+                }
 
             }
-
-            foreach (LayerDescription layerDescription in layerDescriptions)
+            else
             {
-                Geodatabase localGdb = null;
-                try
+                // Otherwise, unpack the mobile map package file into a directory.
+                await MobileMapPackage.UnpackAsync("C:\\CatchBasin\\CNL.mmpk", "C:\\CatchBasin\\CNL");
+
+                // Create the mobile map package from the unpack directory.
+                mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\CatchBasin\\CNL");
+                var _map = mobileMapPackage.Maps.First();
+                var layers = _map.OperationalLayers.ToList();
+                _map.OperationalLayers.Clear();
+                foreach (var item in layers)
                 {
-                    localGdb = await Geodatabase.OpenAsync(layerDescription.geodatabaseFilePath);
-
-                }
-                catch (Exception e)
-                {
-                    MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
+                    Map.OperationalLayers.Add(item);
                 }
 
-                if (localGdb == null)
-                {
-                    try
-                    {
-                        await GISLayerToOffline(layerDescription.url, layerDescription.layername, layerDescription.displayExpressions, layerDescription.sublayerNames, envelope, layerDescription.geodatabaseFilePath);
-
-                    }
-                    catch (Exception e)
-                    {
-
-                        MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
-                        GISSyncStatus = $"Unable to create local geodatabase.";
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        GroupLayer layer = AddLocalDataToMap(localGdb, layerDescription.layername, layerDescription.sublayerNames);
-                         SyncronizeEditsAsync(layerDescription.url, layerDescription.geodatabaseFilePath, layerDescription.syncDirection, layerDescription.layername, layerDescription.sublayerNames, layer);
-
-                    }
-                    catch (Exception e)
-                    {
-                        MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
-                        GISSyncStatus = $"Unable to sync {layerDescription.layername}.";
-                    }
-
-
-                }
             }
+        }
+
+        public async Task AddAsssetsPackage()
+        {
+            MobileMapPackage mobileMapPackage;
+
+            // Check whether the mobile map package supports direct read.
+            bool isDirectReadSupported = await MobileMapPackage.IsDirectReadSupportedAsync("C:\\CatchBasin\\Assets.mmpk");
+            if (isDirectReadSupported)
+            {
+                // If it does, create the mobile map package directly from the .mmpk file.
+                mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\CatchBasin\\Assets.mmpk");
+                var _map = mobileMapPackage.Maps.First();
+                var layers = _map.OperationalLayers.ToList();
+                _map.OperationalLayers.Clear();
+                foreach (var item in layers)
+                {
+                    if (item is GroupLayer)
+                    {
+                        var grouplayer = ((GroupLayer)item);
+                        var _layers = grouplayer.Layers.Reverse().ToList();
+                        grouplayer.Layers.Clear();
+                        foreach (var _item in _layers)
+                        {
+                            grouplayer.Layers.Add(_item);
+
+                        }
+                        //grouplayer.Layers = (LayerCollection)
+                        Map.OperationalLayers.Add(grouplayer);
+                    }
+                }
+
+            }
+            else
+            {
+                // Otherwise, unpack the mobile map package file into a directory.
+                await MobileMapPackage.UnpackAsync("C:\\CatchBasin\\Assets.mmpk", "C:\\CatchBasin\\Assets");
+
+                // Create the mobile map package from the unpack directory.
+                mobileMapPackage = await MobileMapPackage.OpenAsync("C:\\CatchBasin\\Assets");
+                var _map = mobileMapPackage.Maps.First();
+                var layers = _map.OperationalLayers.ToList();
+                _map.OperationalLayers.Clear();
+                foreach (var item in layers)
+                {
+                    Map.OperationalLayers.Add(item);
+                }
+
+            }
+        }
+
+
+        public async Task AddWorkorderPackage()
+        {
+        
+            Geodatabase mobileGeodatabase = await Geodatabase.OpenAsync("C:\\CatchBasin\\Workorder.geodatabase");
+
+            this.woFeatureTable = mobileGeodatabase.GeodatabaseFeatureTable("WORKORDERPT");
+            
+            await this.woFeatureTable.LoadAsync();
+            this.woLayer= new FeatureLayer(this.woFeatureTable);
+            
+
+            Map.OperationalLayers.Add(this.woLayer);
+
+
+        }
+
+        public FeatureTable woFeatureTable { get; set; }
+
+        public FeatureLayer woLayer { get; set; }
+
+        private async void InitializeMap(bool sync=false)
+        {
+            await AddSewerPackage();
+            await AddAsssetsPackage();
+            await AddWorkorderPackage();
+            await AddCNLPackage();
+
+
+            GISSyncStatus = $"Started Work Order Layer Sync! ";
+
+            var arcgisBaseUrl = System.Configuration.ConfigurationManager.AppSettings["ArcGISServerUrl"];
+
+      
+            var _featureTable = new ServiceFeatureTable(new Uri($"{arcgisBaseUrl}/CBWorkorders/FeatureServer/0"));
+
+            var _featureLayer = new FeatureLayer(_featureTable);
+            var dquery = $"SCHEDSTART < DATE '{DateTime.Now.AddDays(1).ToShortDateString()}' AND (PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00')";
+            dquery = $"(PERSONGROUP = '{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}' OR PERSONGROUP = 'CB00')";
+
+            QueryParameters queryParams = new QueryParameters();
+
+          
+            queryParams.WhereClause = dquery;
+            GISSyncStatus = $"Create Parameters! ";
+            FeatureQueryResult queryResult = await _featureTable.QueryFeaturesAsync(queryParams);
+            List<Feature> features = queryResult.ToList();
+            GISSyncStatus = $"Downloaded Data! ";
+            var featureTable = this.woFeatureTable;
+
+            queryParams.WhereClause = "1=1";
+            FeatureQueryResult _queryResult = await featureTable.QueryFeaturesAsync(queryParams);
+            List<Feature> _features = _queryResult.ToList();
+            featureTable.DeleteFeaturesAsync(_features);
+            GISSyncStatus = $"Deleted Old Data! ";
+
+
+            GISSyncStatus = $"Start Add Data! ";
+            foreach (var item in features)
+            {
+                var feature = featureTable.CreateFeature();
+                foreach (var att in item.Attributes)
+                {
+                    if (att.Key != "OBJECTID" && att.Key != "GLOBALID")
+                    {
+                        feature.Attributes[att.Key] = att.Value;
+                    }
+                }
+                feature.Geometry = item.Geometry;
+                await featureTable.AddFeatureAsync(feature);
+                feature.Refresh();
+            }
+
+            GISSyncStatus = $"Finished Work Order Sync! ";
+
+
+
+            //Envelope envelope = new Envelope(375474, 120000, 422020, 152000, new SpatialReference(26985));
+            //ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            //List<LayerDescription> layerDescriptions = new List<LayerDescription>();
+
+            //var date = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd_HH-mm-ss");
+
+            //if (((App)Application.Current).AppType == "PM")
+            //{
+            //    layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/CBWorkorders/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\Data\\CBWorkorders{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+            //}
+            //else
+            //{
+            //    layerDescriptions.Add(new LayerDescription("Open Workorders", $"{arcgisBaseUrl}/CBInsp/FeatureServer", SyncDirection.Download, $"C:\\CatchBasin\\Data\\CBInsp{MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup}{date}.geodatabase", new string[] { dquery }, new string[] { "Catch Basin Workorder" }));
+
+            //}
+
+
+
+
+            //foreach (LayerDescription layerDescription in layerDescriptions)
+            //{
+            //    Geodatabase localGdb = null;
+            //    try
+            //    {
+            //        localGdb = await Geodatabase.OpenAsync(layerDescription.geodatabaseFilePath);
+
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
+            //    }
+
+            //    if (localGdb == null)
+            //    {
+            //        try
+            //        {
+            //            await GISLayerToOffline(layerDescription.url, layerDescription.layername, layerDescription.displayExpressions, layerDescription.sublayerNames, envelope, layerDescription.geodatabaseFilePath);
+
+            //        }
+            //        catch (Exception e)
+            //        {
+
+            //            MaximoServiceLibrary.AppContext.Log.Error("[GIS] " + e.ToString());
+            //            GISSyncStatus = $"Unable to create local geodatabase.";
+            //        }
+            //    }
+            //    else
+            //    {
+
+
+            //    }
+            //}
 
         }
 
@@ -916,8 +1155,10 @@ namespace CatchBasin.ViewModel
             
             GenerateGeodatabaseParameters generateGdbParams = await gdbSyncTask.CreateDefaultGenerateGeodatabaseParametersAsync(envelope);
             generateGdbParams.OutSpatialReference = new SpatialReference(26985);
-            //generateGdbParams.SyncModel = SyncModel.Geodatabase;
-            //generateGdbParams.ReturnAttachments = false;
+            //generateGdbParams.SyncModel = SyncModel.None;
+            
+
+
             generateGdbParams.LayerOptions.Clear();
             for (int i = 0; i < expression.Count(); i++)
             {
@@ -944,15 +1185,29 @@ namespace CatchBasin.ViewModel
                 if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Succeeded)
                 {
                     GISSyncStatus = $"Download Complete : {layername}";
-                    MaximoServiceLibrary.AppContext.Log.Warn(GISSyncStatus);
+                    MaximoServiceLibrary.AppContext.Log.Warn(GISSyncStatus + $" {layername}");
                     Geodatabase localGdb = await generateGdbJob.GetResultAsync();
-                    AddLocalDataToMap(localGdb, layername, sublayers);
+                    try
+                    {
+                        AddLocalDataToMap(localGdb, layername, sublayers);
+                    }catch(Exception ee)
+                    {
+                        MaximoServiceLibrary.AppContext.Log.Error(ee.ToString());
+                    }
+                  
                 }
                 else if (generateGdbJob.Status == Esri.ArcGISRuntime.Tasks.JobStatus.Failed)
                 {
-                    GISSyncStatus = $"Unable to create local geodatabase.";
-                    MaximoServiceLibrary.AppContext.Log.Warn(generateGdbJob.Messages.LastOrDefault());
+                    GISSyncStatus = $"Unable to create local geodatabase. {layername}";
+                    MaximoServiceLibrary.AppContext.Log.Warn(generateGdbJob.Messages.LastOrDefault()?.ToString());
+                    try
+                    {
+                        await GISLayerToOffline(url, layername, expression, sublayers, envelope, path);
+                    }catch(Exception e)
+                    {
 
+                    }
+                    
                 }
                 else
                 {
@@ -1081,19 +1336,21 @@ namespace CatchBasin.ViewModel
 
         public FeatureLayer GetWorkorderLayer()
         {
-            try
-            {
-                var layers = Map.OperationalLayers.Where(layer => layer.Name == "Open Workorders").ToList();
-                if (layers.Count > 0)
-                {
-                    return (FeatureLayer)((GroupLayer)layers[0]).Layers.First();
-                }
-                return null;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
+
+            return this.woLayer;
+            //try
+            //{
+            //    var layers = Map.OperationalLayers.Where(layer => layer.Name == "Open Workorders").ToList();
+            //    if (layers.Count > 0)
+            //    {
+            //        return (FeatureLayer)((GroupLayer)layers[0]).Layers.First();
+            //    }
+            //    return null;
+            //}
+            //catch (Exception e)
+            //{
+            //    return null;
+            //}
         }
 
 

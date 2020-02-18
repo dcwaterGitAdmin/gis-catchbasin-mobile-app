@@ -1,0 +1,63 @@
+﻿<Window x:Class="CatchBasin.View.Identify"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         xmlns:VM="clr-namespace:CatchBasin.ViewModel"  
+        xmlns:local="clr-namespace:CatchBasin.View"
+        mc:Ignorable="d"
+        Title="Identify" Height="500" Width="300">
+
+
+    <Grid>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" >
+                <Grid  Width="290">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0">Identify From :</Label>
+                    <ComboBox  Grid.Column="1" ItemsSource="{Binding LayerList}"
+                           DisplayMemberPath="Name"
+                           SelectedValue="{Binding SelectedLayer}"/>
+                    
+                </Grid>
+                
+                <TreeView  Height="200" ItemsSource="{Binding IdentifyLayerResults}" SelectedItemChanged="TreeView_SelectedItemChanged" x:Name="treeview">
+
+                    <TreeView.Resources>
+
+                        <HierarchicalDataTemplate ItemsSource="{Binding features}" DataType="{x:Type VM:LayerResult}">
+                            <Label Content="{Binding LayerName}"/>
+                        </HierarchicalDataTemplate>
+
+                        <DataTemplate DataType="{x:Type VM:FeatureResult}">
+                            <Label Content="{Binding DisplayValue}"/>
+                        </DataTemplate>
+
+                    </TreeView.Resources>
+
+                </TreeView>
+            </StackPanel>
+            <ListView  Width="300" ItemsSource="{Binding FeatureAttributes}">
+                <ListView.ItemTemplate>
+
+                    <DataTemplate>
+
+                        <Grid  Width="290">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"  Text="{Binding FieldName}"></TextBlock>
+                            <TextBlock  Grid.Column="1"  Text="{Binding FieldValue}"></TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+        </DockPanel>
+    </Grid>
+</Window>

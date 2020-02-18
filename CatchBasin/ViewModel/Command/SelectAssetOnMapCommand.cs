@@ -40,7 +40,7 @@ namespace CatchBasin.ViewModel.Command
             {
                 WorkOrderDetailVM.MapVM.MapView.SketchEditor.Stop();
             }
-
+            WorkOrderDetailVM.SelectAssetOnMapIsActive = true;
             WorkOrderDetailVM.MapVM.MapView.GeoViewTapped += WorkOrderDetailVM.MapVM.MapTappedForSelectAsset;
         }
 

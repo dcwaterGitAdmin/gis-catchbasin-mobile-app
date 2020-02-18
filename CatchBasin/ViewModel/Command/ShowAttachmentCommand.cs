@@ -40,7 +40,7 @@ namespace CatchBasin.ViewModel.Command
         public void Execute(object parameter)
         {
 
-			Process.Start(((MaximoDocument)parameter).description);
+			Process.Start(((MaximoDocLinks)parameter).urlname);
 			
 		}
 

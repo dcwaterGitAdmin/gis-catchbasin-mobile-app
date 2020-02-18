@@ -10,16 +10,16 @@ using System.Windows;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using log4net;
-
+using System.Net;
 
 namespace CatchBasin.ViewModel
 {
     class LoginVM : BaseVM
     {
-      
-        public LoginCommand LoginCommand { get; set; } 
 
-      
+        public LoginCommand LoginCommand { get; set; }
+
+
         private string username;
 
         public string UserName
@@ -36,26 +36,27 @@ namespace CatchBasin.ViewModel
             set { password = value; OnPropertyChanged("Password"); }
         }
 
-		private string applicationType = "PM";
+        private string applicationType = "PM";
 
-		public string ApplicationType
-		{
-			get { return applicationType; }
-			set { applicationType = value; OnPropertyChanged("ApplicationType"); }
-		}
+        public string ApplicationType
+        {
+            get { return applicationType; }
+            set { applicationType = value; OnPropertyChanged("ApplicationType"); }
+        }
 
 
 
-		public LoginVM()
+        public LoginVM()
         {
             LoginCommand = new LoginCommand(this);
-
+            UserName = "edelioglu";
+                Password = "CatchBasin98!";
 
         }
 
         public void DoLogin(Window window)
         {
-            MaximoServiceLibrary.AppContext.Log.Warn("DoLogin");
+           
             try
             {
 
@@ -63,7 +64,28 @@ namespace CatchBasin.ViewModel
                 if (loginStatus == "success")
                 {
 
-                    
+
+
+                    try
+                    {
+
+                        const string Path = "C:\\CatchBasin\\Layers.mmpk";
+                        var lastWriteTime = System.IO.File.GetLastWriteTime(Path);
+                        if ((DateTime.Now - lastWriteTime).TotalDays > 30)
+                        {
+                            using (var client = new WebClient())
+                            {
+                                client.DownloadFile(new Uri("https://geo.dcwater.com/MobileAppBaseMap/Layers.mmpk"), Path);
+                            }
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+
+
 
                     ((App)Application.Current).AppType = ApplicationType;
                     if (MaximoServiceLibrary.AppContext.inventoryRepository.findAll().Count() == 0)
@@ -74,8 +96,8 @@ namespace CatchBasin.ViewModel
 
                     var interval = Convert.ToDouble(System.Configuration.ConfigurationManager.AppSettings["SyncIntervalTime"]);
                     MaximoServiceLibrary.AppContext.synchronizationService.startSyncronizationTimer(interval);
-					
-					
+
+
                     window.Close();
                 }
                 else
@@ -83,12 +105,12 @@ namespace CatchBasin.ViewModel
                     MessageBox.Show($"Something is wrong!\n{loginStatus}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MaximoServiceLibrary.AppContext.Log.Error(e);
                 MessageBox.Show($"Something is wrong!\n{e}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+
         }
     }
 }

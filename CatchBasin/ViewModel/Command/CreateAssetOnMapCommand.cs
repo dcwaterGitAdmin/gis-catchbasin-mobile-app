@@ -37,6 +37,8 @@ namespace CatchBasin.ViewModel.Command
         {
             try
             {
+                WorkOrderDetailVM.SelectAssetOnMapIsActive = false;
+
                 WorkOrderDetailVM.MapVM.MapView.GeoViewTapped -= WorkOrderDetailVM.MapVM.MapTappedForSelectAsset;
             }
             catch (Exception e)

@@ -12,6 +12,10 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
         <helper:EnumMatchToBooleanConverter x:Key="enumConverter" />
+        <LinearGradientBrush x:Key="ActiveRibbonButtonBrush" StartPoint="0,0" EndPoint="0,1" >
+            <GradientStop Color="Red" Offset="0"/>
+            <GradientStop Color="Red" Offset="1"/>
+        </LinearGradientBrush>
     </UserControl.Resources>
     <Grid Width="320">
         <DockPanel LastChildFill="True">
@@ -68,11 +72,35 @@
                             <StackPanel   Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
                                 <TextBlock TextWrapping="Wrap" Text="{Binding AssetTag, Mode=TwoWay}" Width="189"/>
 
-                                <Button Command="{Binding SelectAssetOnMapCommand}" Visibility="{Binding NeedAssetHelper, Converter={StaticResource booleanToVisibilityConverter}}" Grid.Column="0" Width="27" Background="Transparent" BorderThickness="0">
+                                <Button Command="{Binding SelectAssetOnMapCommand}" Visibility="{Binding NeedAssetHelper, Converter={StaticResource booleanToVisibilityConverter}}" Grid.Column="0" Width="27" BorderThickness="0">
                                     <Image Source="/CatchBasin;component/Resources/Images/click.png"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectAssetOnMapIsActive}" Value="true">
+                                                    <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                    <Setter Property="BorderBrush" Value="#1482c5"/>
+                                                  
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                 </Button>
-                                <Button Command="{Binding CreateAssetOnMapCommand}" Visibility="{Binding NeedAssetHelper, Converter={StaticResource booleanToVisibilityConverter}}" Grid.Column="1"  Width="27" Background="Transparent" BorderThickness="0">
+                                <Button Command="{Binding CreateAssetOnMapCommand}" Visibility="{Binding NeedAssetHelper, Converter={StaticResource booleanToVisibilityConverter}}" Grid.Column="1" Width="27" BorderThickness="0">
                                     <Image Source="/CatchBasin;component/Resources/Images/location.png"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CreateAssetOnMapIsActive}" Value="true">
+                                                    <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                    <Setter Property="BorderBrush" Value="#1482c5"/>
+
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                 </Button>
                             </StackPanel>
 

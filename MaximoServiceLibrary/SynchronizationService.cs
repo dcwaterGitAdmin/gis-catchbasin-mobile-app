@@ -527,7 +527,8 @@ namespace MaximoServiceLibrary
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderProblemCode . wonum: {woFromLocal.wonum}");
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.updateWorkOrderProblemCode(woFromLocal);
-					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
+                    mergeMaximoWorkOrderFailureReportsToLocalWorkOrder(woFromLocal, woFromLocal.failurereport, woFreshFromMaximo);
+					//mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
 					//AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderProblemCode and WO re-fetched. wonum: {woFromLocal.wonum}");
 
@@ -1170,6 +1171,13 @@ namespace MaximoServiceLibrary
 					string currentPersonGroup = null;
 					MaximoUser mxuserFromMaximo = AppContext.maximoService.whoami();
                     mxuser = AppContext.userRepository.findAll().FirstOrDefault();
+
+                    if(mxuser?.userName != mxuserFromMaximo?.userName)
+                    {
+                        AppContext.userRepository.removeCollection();
+                        mxuser = null;
+                    }
+
 					if (mxuser == null)
 					{
 						mxuser = mxuserFromMaximo;

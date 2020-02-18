@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using CatchBasin.ViewModel.Helper;
 using Esri.ArcGISRuntime.Data;
+using Esri.ArcGISRuntime.Mapping;
 
 namespace CatchBasin.ViewModel
 {
@@ -1001,12 +1002,29 @@ namespace CatchBasin.ViewModel
             set { showAssetCommand = value; }
         }
 
+        private bool createAssetOnMapIsActive;
+
+        public bool CreateAssetOnMapIsActive
+        {
+            get { return createAssetOnMapIsActive; }
+            set { createAssetOnMapIsActive = value; OnPropertyChanged("CreateAssetOnMapIsActive"); }
+        }
+
+
         private Command.CreateAssetOnMapCommand createAssetOnMapCommand;
 
         public Command.CreateAssetOnMapCommand CreateAssetOnMapCommand
         {
             get { return createAssetOnMapCommand; }
             set { createAssetOnMapCommand = value; }
+        }
+
+        private bool selectAssetOnMapIsActive;
+
+        public bool SelectAssetOnMapIsActive
+        {
+            get { return selectAssetOnMapIsActive; }
+            set { selectAssetOnMapIsActive = value; OnPropertyChanged("SelectAssetOnMapIsActive"); }
         }
 
 
@@ -1412,7 +1430,164 @@ namespace CatchBasin.ViewModel
             OnPropertyChanged("Actuals");
         }
 
-        public void SaveWithoutHide()
+        public async void CreateWorkorderGeometry(MaximoWorkOrder asyncWo)
+        {
+            if (asyncWo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
+            {
+                if (asyncWo.asset != null)
+                {
+
+                    var layer = MapVM.GetWorkorderLayer();
+                    var featureTable = MapVM.woFeatureTable;
+                    QueryParameters queryParameters = new QueryParameters();
+                    queryParameters.WhereClause = $"wonum='{asyncWo.Id}'";
+                    FeatureQueryResult features = await featureTable.QueryFeaturesAsync(queryParameters);
+                    var feature = features.FirstOrDefault();
+                    if (feature != null)
+                    {
+                        var assetGroupLayer = MapVM.GetAssetGroupLayer();
+                        FeatureLayer featurelayer = (FeatureLayer)assetGroupLayer.Layers.FirstOrDefault(__layer => __layer.Name == "Catch Basin - Cleaned by DC Water");
+                        QueryParameters queryParametersAsset = new QueryParameters();
+                        queryParametersAsset.WhereClause = $"ASSETTAG='{asyncWo.asset.assettag}'";
+                        FeatureQueryResult assetFeatures = await featurelayer.FeatureTable.QueryFeaturesAsync(queryParametersAsset);
+                        var assetFeature = assetFeatures.FirstOrDefault();
+                        if (assetFeature != null)
+                        {
+                            feature.Geometry = assetFeature.Geometry;
+
+                            featureTable.UpdateFeatureAsync(feature);
+                        }
+                    }
+                    else
+                    {
+                        var assetGroupLayer = MapVM.GetAssetGroupLayer();
+                        FeatureLayer featurelayer = (FeatureLayer)assetGroupLayer.Layers.FirstOrDefault(__layer => __layer.Name == "Catch Basin - Cleaned by DC Water");
+                        QueryParameters queryParametersAsset = new QueryParameters();
+                        queryParametersAsset.WhereClause = $"ASSETTAG='{asyncWo.asset.assettag}'";
+                        FeatureQueryResult assetFeatures = await featurelayer.FeatureTable.QueryFeaturesAsync(queryParametersAsset);
+                        var assetFeature = assetFeatures.FirstOrDefault();
+                        if (assetFeature != null)
+                        {
+                            var newfeature = featureTable.CreateFeature();
+                            var pt = ((Esri.ArcGISRuntime.Geometry.MapPoint)assetFeature.Geometry);
+
+
+
+                             newfeature.Geometry=   new Esri.ArcGISRuntime.Geometry.MapPoint(pt.X, pt.Y, pt.SpatialReference);
+                            newfeature.SetAttributeValue("WONUM", "-");
+                            newfeature.SetAttributeValue("STATUS", "-");
+                            newfeature.SetAttributeValue("STATUSDATE", DateTime.Now);
+                            newfeature.SetAttributeValue("ESTDUR", 0.0F);
+                            newfeature.SetAttributeValue("ESTLABHRS", 0.0F);
+                            newfeature.SetAttributeValue("ESTMATCOST", 0.0F);
+                            newfeature.SetAttributeValue("ESTLABCOST", 0.0F);
+                            newfeature.SetAttributeValue("ESTTOOLCOST", 0.0F);
+                            newfeature.SetAttributeValue("ACTLABHRS", 0.0F);
+                            newfeature.SetAttributeValue("ACTMATCOST", 0.0F);
+                            newfeature.SetAttributeValue("ACTLABCOST", 0.0F);
+                            newfeature.SetAttributeValue("ACTTOOLCOST", 0.0F);
+                            newfeature.SetAttributeValue("HASCHILDREN", 0.0F);
+                            newfeature.SetAttributeValue("OUTLABCOST", 0.0F);
+                            newfeature.SetAttributeValue("OUTMATCOST", 0.0F);
+                            newfeature.SetAttributeValue("OUTTOOLCOST", 0.0F);
+                            newfeature.SetAttributeValue("HISTORYFLAG", 0.0F);
+                            newfeature.SetAttributeValue("DOWNTIME", 0.0F);
+                            newfeature.SetAttributeValue("CHARGESTORE", 0.0F);
+                            newfeature.SetAttributeValue("ESTSERVCOST", 0.0F);
+                            newfeature.SetAttributeValue("ACTSERVCOST", 0.0F);
+                            newfeature.SetAttributeValue("DISABLED", 0.0F);
+                            newfeature.SetAttributeValue("ESTATAPPRLABHRS", 0.0F);
+                            newfeature.SetAttributeValue("ESTATAPPRLABCOST", 0.0F);
+                            newfeature.SetAttributeValue("ESTATAPPRMATCOST", 0.0F);
+                            newfeature.SetAttributeValue("ESTATAPPRTOOLCOST", 0.0F);
+                            newfeature.SetAttributeValue("ESTATAPPRSERVCOST", 0.0F);
+                            newfeature.SetAttributeValue("HASFOLLOWUPWORK", 0.0F);
+                            newfeature.SetAttributeValue("WO13", 0.0F);
+                            newfeature.SetAttributeValue("WO14", 0.0F);
+                            newfeature.SetAttributeValue("WO15", 0.0F);
+                            newfeature.SetAttributeValue("WO16", 0.0F);
+                            newfeature.SetAttributeValue("WO17", 0.0F);
+                            newfeature.SetAttributeValue("WO18", 0.0F);
+                            newfeature.SetAttributeValue("WO19", 0.0F);
+                            newfeature.SetAttributeValue("WO20", 0.0F);
+                            newfeature.SetAttributeValue("ORGID", "-");
+                            newfeature.SetAttributeValue("SITEID", "-");
+                            newfeature.SetAttributeValue("ISTASK", 0.0F);
+                            newfeature.SetAttributeValue("MISSUTILITYEMERG", 0.0F);
+                            newfeature.SetAttributeValue("WATERDISCOLORED", 0.0F);
+                            newfeature.SetAttributeValue("RUN15MINUTES", 0.0F);
+                            newfeature.SetAttributeValue("PARTICLESINWATER", 0.0F);
+                            newfeature.SetAttributeValue("WATERCLOUDY", 0.0F);
+                            newfeature.SetAttributeValue("WATERODOR", 0.0F);
+                            newfeature.SetAttributeValue("WATERCAUSERASH", 0.0F);
+                            newfeature.SetAttributeValue("PERSONSEENDOCTOR", 0.0F);
+                            newfeature.SetAttributeValue("PROBLEMTHRUOUT", 0.0F);
+                            newfeature.SetAttributeValue("WATERTREATMENT", 0.0F);
+                            newfeature.SetAttributeValue("PETROLEUMODOR", 0.0F);
+                            newfeature.SetAttributeValue("WATERTASTE", 0.0F);
+                            newfeature.SetAttributeValue("SNAKELINE", 0.0F);
+                            newfeature.SetAttributeValue("JETLINE", 0.0F);
+                            newfeature.SetAttributeValue("VALIDATED", 0.0F);
+                            newfeature.SetAttributeValue("SEWERRELIEVED", 0.0F);
+                            newfeature.SetAttributeValue("SNAKETOSEWER", 0.0F);
+                            newfeature.SetAttributeValue("CLEANOUT", 0.0F);
+                            newfeature.SetAttributeValue("RUNNINGTRAP", 0.0F);
+                            newfeature.SetAttributeValue("DEBRIS", 0.0F);
+                            newfeature.SetAttributeValue("PRECIPITATION", 0.0F);
+                            newfeature.SetAttributeValue("ASBUILTREQD", 0.0F);
+                            newfeature.SetAttributeValue("ASBUILTRECD", 0.0F);
+                            newfeature.SetAttributeValue("ROWSTAMP", "-");
+                            newfeature.SetAttributeValue("HASLD", 0.0F);
+                            newfeature.SetAttributeValue("INTERRUPTIBLE", 0.0F);
+                            newfeature.SetAttributeValue("LANGCODE", "-");
+                            newfeature.SetAttributeValue("PARENTCHGSSTATUS", 0.0F);
+                            newfeature.SetAttributeValue("WOACCEPTSCHARGES", 0.0F);
+                            newfeature.SetAttributeValue("WOCLASS", "-");
+                            newfeature.SetAttributeValue("WORKORDERID", 0.0F);
+                            newfeature.SetAttributeValue("FLOWACTIONASSIST", 0.0F);
+                            newfeature.SetAttributeValue("FLOWCONTROLLED", 0.0F);
+                            newfeature.SetAttributeValue("NEWCHILDCLASS", "-");
+                            newfeature.SetAttributeValue("SUSPENDFLOW", 0.0F);
+                            newfeature.SetAttributeValue("WOISSWAP", 0.0F);
+                            newfeature.SetAttributeValue("PMCOMBPELENABLED", 0.0F);
+                            newfeature.SetAttributeValue("PMCOMBPELINPROG", 0.0F);
+                            newfeature.SetAttributeValue("DCW_LWBUDGETCHECK", 0.0F);
+                            newfeature.SetAttributeValue("DCW_SENDMATL2LW", 0.0F);
+                            newfeature.SetAttributeValue("IGNORESRMAVAIL", 0.0F);
+                            newfeature.SetAttributeValue("IGNOREDIAVAIL", 0.0F);
+                            newfeature.SetAttributeValue("NESTEDJPINPROCESS", 0.0F);
+                            newfeature.SetAttributeValue("PLUSCISMOBILE", 0.0F);
+                            newfeature.SetAttributeValue("PLUSCLOOP", 0.0F);
+                            newfeature.SetAttributeValue("INCTASKSINSCHED", 0.0F);
+                            newfeature.SetAttributeValue("REQASSTDWNTIME", 0.0F);
+                            newfeature.SetAttributeValue("APPTREQUIRED", 0.0F);
+                            newfeature.SetAttributeValue("AOS", 0.0F);
+                            newfeature.SetAttributeValue("AMS", 0.0F);
+                            newfeature.SetAttributeValue("LOS", 0.0F);
+                            newfeature.SetAttributeValue("LMS", 0.0F);
+                            newfeature.SetAttributeValue("DCW_CBASSIGNED", 0.0F);
+                       
+                            
+
+                                                                                    newfeature.Attributes["WORKTYPE"] = asyncWo.worktype;
+                            newfeature.Attributes["STATUS"] = asyncWo.status;
+                            newfeature.Attributes["WONUM"] = asyncWo.Id.ToString();
+
+
+
+
+                            await featureTable.AddFeatureAsync(newfeature);
+
+                            newfeature.Refresh();
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        public  void SaveWithoutHideAsync()
         {
             MaximoWorkOrder.wonum = WorkOrder;
             MaximoWorkOrder.description = Description;
@@ -1425,6 +1600,13 @@ namespace CatchBasin.ViewModel
             MaximoWorkOrder.tooltrans = ToolTrans.ToList();
             MaximoWorkOrder.doclink = Attachments.ToList();
 
+            var __wo = MaximoServiceLibrary.AppContext.workOrderRepository.findById(MaximoWorkOrder.Id);
+            if(__wo != null)
+            {
+                MaximoWorkOrder.startTimerDate = __wo.startTimerDate;
+            }
+            CreateWorkorderGeometry(MaximoWorkOrder);
+            
             if (MaximoWorkOrder.workorderspec != null && MaximoWorkOrder.workorderspec?.Count > 0)
             {
                 for (int i = 0; i < MaximoWorkOrder.workorderspec.Count; i++)
@@ -1826,7 +2008,7 @@ namespace CatchBasin.ViewModel
                 MapVM.AssetDetailVM.Cancel();
             }
 
-            SaveWithoutHide();
+            SaveWithoutHideAsync();
             MapVM.HideWorkOrderDetail();
         }
 
@@ -1917,7 +2099,8 @@ namespace CatchBasin.ViewModel
 
             try
 			{
-				MapVM.MapView.GeoViewTapped -= MapVM.MapTappedForSelectAsset;
+                SelectAssetOnMapIsActive = false;
+                MapVM.MapView.GeoViewTapped -= MapVM.MapTappedForSelectAsset;
 			}catch(Exception e)
 			{
 

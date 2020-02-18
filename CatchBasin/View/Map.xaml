@@ -128,15 +128,54 @@
 					</RibbonGroup>
 
 					<RibbonGroup x:Name="RibbonMapGroup" Header="Map">
-                        <RibbonButton Command="{Binding IdentifyCommand}"  LargeImageSource="/CatchBasin;component/Resources/Images/identify.png" Label="Identify" />
+                        <RibbonButton Command="{Binding IdentifyCommand}"  LargeImageSource="/CatchBasin;component/Resources/Images/identify.png" Label="Identify" >
+                            <RibbonButton.Style>
+                                <Style TargetType="RibbonButton">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IdentifyIsVisible}" Value="true">
+                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="BorderBrush" Value="#1482c5"/>
+                                            <Setter Property="CornerRadius" Value="3"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </RibbonButton.Style>
+                        </RibbonButton>
                         <RibbonButton Command="{Binding MeasureCommand}" Style="{DynamicResource MeasureStyle}" LargeImageSource="/CatchBasin;component/Resources/Images/measure.png" Label="Measure" />
-                        <RibbonButton Command="{Binding SearchCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Search.png" Label="Search"  />
+                        <RibbonButton Command="{Binding SearchCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Search.png" Label="Search"  >
+                            <RibbonButton.Style>
+                                <Style TargetType="RibbonButton">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SearchIsVisible}" Value="true">
+                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="BorderBrush" Value="#1482c5"/>
+                                            <Setter Property="CornerRadius" Value="3"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </RibbonButton.Style>
+                        </RibbonButton>
                         <RibbonButton Command="{Binding TOCCommand}"  Style="{DynamicResource TOCStyle}"  LargeImageSource="/CatchBasin;component/Resources/Images/tableOfContent.png" Label="Table of Content"  />
-                        <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding SketchCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Sketch.png" Label="Create Sketch"  />
+                        <!--<RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding SketchCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/Sketch.png" Label="Create Sketch"  />-->
                         <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomToFullExtentCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomToFullExtent.png" Label="Zoom to Full Extent"  />
                         <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomInCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomIn.png" Label="Zoom In"  />
                         <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomOutCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoomOut.png" Label="Zoom Out"  />
-                        <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomWithDrawCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoom.png" Label="Zoom"  />
+                        <RibbonButton CommandParameter="{Binding ElementName=mapView}" Command="{Binding ZoomWithDrawCommand}" LargeImageSource="/CatchBasin;component/Resources/Images/zoom.png" Label="Zoom"  >
+                            <RibbonButton.Style>
+                                <Style TargetType="RibbonButton">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ZoomWithDrawIsActive}" Value="true">
+                                            <Setter Property="Background"  Value="{DynamicResource ActiveRibbonButtonBrush}" />
+                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="BorderBrush" Value="#1482c5"/>
+                                            <Setter Property="CornerRadius" Value="3"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </RibbonButton.Style>
+                        </RibbonButton>
 
 
 

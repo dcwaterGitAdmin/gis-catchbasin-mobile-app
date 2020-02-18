@@ -105,7 +105,7 @@
                             <TextBlock Margin="3"  Text="{Binding schedstart}" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>
 
                             <TextBlock Margin="3"  Text="{Binding status}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
-                            <TextBlock Margin="3"  Text="{Binding locationdetails}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>
+                            <TextBlock Margin="3"  Text="{Binding locations_description}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>
 
                             <TextBlock Margin="3"  Text="{Binding syncronizationStatus}"   Visibility="{Binding completed, Converter={StaticResource booleanToVisibilityConverter}}"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
 

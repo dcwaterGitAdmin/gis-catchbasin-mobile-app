@@ -299,7 +299,8 @@ namespace MaximoServiceLibrary
 				"failurereport," +
                 "labtrans," +
                 "tooltrans," +
-                "failureremark";
+                "failureremark," +
+                "locations";
 
             //selectFields = "*";
 			var request = createRequest("/os/dcw_cb_wo");

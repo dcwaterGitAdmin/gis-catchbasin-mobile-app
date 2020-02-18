@@ -81,7 +81,7 @@ namespace CatchBasin.ViewModel
             NewStatus = "COMP";
             HoldIsEnabled = true;
             CancelIsEnabled = true;
-            WorkOrderDetailVM.SaveWithoutHide();
+            WorkOrderDetailVM.SaveWithoutHideAsync();
             var wo = WorkOrderDetailVM.MaximoWorkOrder;
             if (wo.worktype == "CM")
             {
@@ -129,7 +129,7 @@ namespace CatchBasin.ViewModel
                 MessageBox.Show("Memo is required", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            WorkOrderDetailVM.SaveWithoutHide();
+            WorkOrderDetailVM.SaveWithoutHideAsync();
             MaximoWorkOrder wo = WorkOrderDetailVM.MaximoWorkOrder;
 
             if (((App)Application.Current).AppType == "PM")
@@ -567,16 +567,26 @@ namespace CatchBasin.ViewModel
             wo.followups = generateFollowUps(wo);
 
             var layer = WorkOrderDetailVM.MapVM.GetWorkorderLayer();
+            var featureTable = WorkOrderDetailVM.MapVM.woFeatureTable;
             QueryParameters queryParameters = new QueryParameters();
-            queryParameters.WhereClause = $"wonum='{wo.wonum}'";
+            if(wo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
+            {
+                queryParameters.WhereClause = $"wonum='{wo.Id}'";
+
+            }
+            else
+            {
+                queryParameters.WhereClause = $"wonum='{wo.wonum}'";
+            }
+           
             if(layer != null)
             {
-                FeatureQueryResult features = await layer?.FeatureTable.QueryFeaturesAsync(queryParameters);
+                FeatureQueryResult features = await featureTable.QueryFeaturesAsync(queryParameters);
 
                 foreach (var feature in features)
                 {
                     feature.Attributes["STATUS"] = NewStatus;
-                    layer.FeatureTable.UpdateFeatureAsync(feature);
+                    featureTable.UpdateFeatureAsync(feature);
                 }
             }
             
