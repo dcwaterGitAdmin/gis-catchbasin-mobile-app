@@ -335,7 +335,7 @@ namespace MaximoServiceLibrary
 					AppContext.Log.Warn($"[MX] CONFLICT!! work order is changed both in Maximo and in local db. wonum : [{woFromMaximo.wonum}], local status : [{woFromLocal.syncronizationStatus}]");
 
 					woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-					woFromLocal.syncError = $"[MX] CONFLICT!! work order is changed both in Maximo and in local db. Maximo rowstamp : [{woFromMaximo._rowstamp}], local rowstamp : [{woFromLocal._rowstamp}]";
+					woFromLocal.syncError = $"[MX] CONFLICT!! work order is changed both in Maximo and in local db. Overwriting Maximo workorder into local db, wonum : [{woFromMaximo.wonum}]";
 				}
 			}
 
