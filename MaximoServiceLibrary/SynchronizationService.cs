@@ -219,6 +219,16 @@ namespace MaximoServiceLibrary
 
 			mergeWorkOrderFromMaximoToLocal(woFromMaximo, woFromLocal, false);
 
+			if (woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+			{
+				synchronizationDelegate("SYNC_CONFLICT", woFromLocal.syncError);
+				woFromMaximo.Id = woFromLocal.Id;
+				woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+
+				AppContext.workOrderRepository.upsert(woFromMaximo);
+				return;
+			}
+			
 			// merge work order child entities between Maximo and Local work orders
 			// todo doclinks
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
