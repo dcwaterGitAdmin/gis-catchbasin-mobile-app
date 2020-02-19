@@ -1440,7 +1440,7 @@ namespace CatchBasin.ViewModel
                     var layer = MapVM.GetWorkorderLayer();
                     var featureTable = MapVM.woFeatureTable;
                     QueryParameters queryParameters = new QueryParameters();
-                    queryParameters.WhereClause = $"wonum='{asyncWo.Id}'";
+                    queryParameters.WhereClause = $"WORKORDERID='{asyncWo.Id}'";
                     FeatureQueryResult features = await featureTable.QueryFeaturesAsync(queryParameters);
                     var feature = features.FirstOrDefault();
                     if (feature != null)
@@ -1451,12 +1451,22 @@ namespace CatchBasin.ViewModel
                         queryParametersAsset.WhereClause = $"ASSETTAG='{asyncWo.asset.assettag}'";
                         FeatureQueryResult assetFeatures = await featurelayer.FeatureTable.QueryFeaturesAsync(queryParametersAsset);
                         var assetFeature = assetFeatures.FirstOrDefault();
+                        if (assetFeature == null)
+                        {
+
+                            assetFeatures = await MapVM.assetLayer.FeatureTable.QueryFeaturesAsync(queryParametersAsset);
+                            assetFeature = assetFeatures.FirstOrDefault();
+
+
+                        }
+
                         if (assetFeature != null)
                         {
                             feature.Geometry = assetFeature.Geometry;
 
                             featureTable.UpdateFeatureAsync(feature);
                         }
+                 
                     }
                     else
                     {
@@ -1466,6 +1476,16 @@ namespace CatchBasin.ViewModel
                         queryParametersAsset.WhereClause = $"ASSETTAG='{asyncWo.asset.assettag}'";
                         FeatureQueryResult assetFeatures = await featurelayer.FeatureTable.QueryFeaturesAsync(queryParametersAsset);
                         var assetFeature = assetFeatures.FirstOrDefault();
+                        if(assetFeature == null)
+                        {
+                         
+                                assetFeatures = await MapVM.assetLayer.FeatureTable.QueryFeaturesAsync(queryParametersAsset);
+                                assetFeature = assetFeatures.FirstOrDefault();
+                               
+
+                        }
+
+
                         if (assetFeature != null)
                         {
                             var newfeature = featureTable.CreateFeature();
@@ -1569,14 +1589,14 @@ namespace CatchBasin.ViewModel
                        
                             
 
-                                                                                    newfeature.Attributes["WORKTYPE"] = asyncWo.worktype;
+                            newfeature.Attributes["WORKTYPE"] = asyncWo.worktype;
                             newfeature.Attributes["STATUS"] = asyncWo.status;
-                            newfeature.Attributes["WONUM"] = asyncWo.Id.ToString();
+                            newfeature.Attributes["WORKORDERID"] = (float)asyncWo.Id;
 
 
 
 
-                            await featureTable.AddFeatureAsync(newfeature);
+                            await layer.FeatureTable.AddFeatureAsync(newfeature);
 
                             newfeature.Refresh();
                         }

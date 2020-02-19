@@ -258,8 +258,8 @@ namespace MaximoServiceLibrary
 						   " and historyflag=0" +
 						   " and status=\"DISPTCHD\"" +
 						   " and worktype in [\"INV\",\"EMERG\",\"PM\",\"INSP\"]" +
-						   $" and persongroup in [\"{persongroup}\",\"CB00\"]";
-						//   " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
+						   $" and persongroup in [\"{persongroup}\",\"CB00\"]"+
+						   " and schedstart<=\"" + System.DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") + "\"";
 
 			string selectFields =
                 "href,"+

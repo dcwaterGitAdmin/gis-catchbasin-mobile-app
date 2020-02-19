@@ -44,6 +44,7 @@
     <ApplicationIcon>Resources\Images\interactive_maps.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27" />
     <Reference Include="System">
       <Private>True</Private>
     </Reference>
