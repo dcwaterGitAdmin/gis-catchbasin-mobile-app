@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using LocalDBLibrary.model;
 using MaximoServiceLibrary.model;
+using Timer = System.Timers.Timer;
 
 namespace MaximoServiceLibrary
 {
@@ -74,9 +76,18 @@ namespace MaximoServiceLibrary
 
 			AppContext.Log.Warn("The Elapsed event was raised ");
 
+			/*
 			Task t = new Task(() => { synchronizeInBackground(); });
 
 			t.Start();
+			*/
+			
+			ThreadStart starter = synchronizeInBackground;
+			starter += () => {
+				synchronizationDelegate("SYNC_FINISHED", "Maximo synchronization complete!");
+			};
+			Thread thread = new Thread(starter) { IsBackground = true };
+			thread.Start();
 		}
 
 		public async void synchronizeInBackground()
@@ -187,7 +198,6 @@ namespace MaximoServiceLibrary
 				}
 
 				AppContext.Log.Debug($"[MX] END to delete local work orders that are  not received from Maximo.");
-                synchronizationDelegate("SYNC_FINISHED", "Maximo synchronization complete!");
             }
             catch (Exception ex)
 			{
@@ -219,6 +229,16 @@ namespace MaximoServiceLibrary
 
 			mergeWorkOrderFromMaximoToLocal(woFromMaximo, woFromLocal, false);
 
+			if (woFromLocal.syncronizationStatus == SyncronizationStatus.CONFLICTED)
+			{
+				synchronizationDelegate("SYNC_CONFLICT", woFromLocal.syncError);
+				woFromMaximo.Id = woFromLocal.Id;
+				woFromMaximo.syncronizationStatus = SyncronizationStatus.SYNCED;
+
+				AppContext.workOrderRepository.upsert(woFromMaximo);
+				return;
+			}
+			
 			// merge work order child entities between Maximo and Local work orders
 			// todo doclinks
 			List<MaximoWorkOrderSpec> freshWorkOrderSpecList = generateFreshWorkOrderSpecList(woFromMaximo, woFromLocal);
@@ -325,7 +345,7 @@ namespace MaximoServiceLibrary
 					AppContext.Log.Warn($"[MX] CONFLICT!! work order is changed both in Maximo and in local db. wonum : [{woFromMaximo.wonum}], local status : [{woFromLocal.syncronizationStatus}]");
 
 					woFromLocal.syncronizationStatus = SyncronizationStatus.CONFLICTED;
-					woFromLocal.syncError = $"[MX] CONFLICT!! work order is changed both in Maximo and in local db. Maximo rowstamp : [{woFromMaximo._rowstamp}], local rowstamp : [{woFromLocal._rowstamp}]";
+					woFromLocal.syncError = $"[MX] CONFLICT!! work order is changed both in Maximo and in local db. Overwriting Maximo workorder into local db, wonum : [{woFromMaximo.wonum}]";
 				}
 			}
 
