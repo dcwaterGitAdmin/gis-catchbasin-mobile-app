@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using LocalDBLibrary.model;
 using MaximoServiceLibrary.model;
+using Timer = System.Timers.Timer;
 
 namespace MaximoServiceLibrary
 {
@@ -74,9 +76,18 @@ namespace MaximoServiceLibrary
 
 			AppContext.Log.Warn("The Elapsed event was raised ");
 
+			/*
 			Task t = new Task(() => { synchronizeInBackground(); });
 
 			t.Start();
+			*/
+			
+			ThreadStart starter = synchronizeInBackground;
+			starter += () => {
+				synchronizationDelegate("SYNC_FINISHED", "Maximo synchronization complete!");
+			};
+			Thread thread = new Thread(starter) { IsBackground = true };
+			thread.Start();
 		}
 
 		public async void synchronizeInBackground()
@@ -187,7 +198,6 @@ namespace MaximoServiceLibrary
 				}
 
 				AppContext.Log.Debug($"[MX] END to delete local work orders that are  not received from Maximo.");
-                synchronizationDelegate("SYNC_FINISHED", "Maximo synchronization complete!");
             }
             catch (Exception ex)
 			{
