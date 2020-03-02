@@ -1,4 +1,5 @@
 ﻿using CatchBasin.ViewModel.Helper;
+using Esri.ArcGISRuntime.Data;
 using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
 using System;
@@ -336,7 +337,7 @@ namespace CatchBasin.ViewModel
             isDirty = false;
         }
 
-        public void Save()
+        public async void Save()
         {
             Asset.eq3 = LocationDetail;
 
@@ -466,6 +467,92 @@ namespace CatchBasin.ViewModel
                 Asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
             }
             WorkOrder.asset = Asset;
+
+            if(Asset.assettag.First() == 'N')
+            {
+                var layer = workOrderDetailVM.MapVM.assetLayer;
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.WhereClause = $"ASSETTAG = '{Asset.assettag}'";
+
+                var result =await layer.FeatureTable.QueryFeaturesAsync(queryParameters);
+                var feature = result.FirstOrDefault();
+                if(feature != null)
+                {
+
+                    switch (Type)
+                    {
+                        case "UNKNOWN":
+                            feature.SetAttributeValue("SUBTYPE", 0);
+                            break;
+                        case "SINGLE":
+                            
+                            feature.SetAttributeValue("SUBTYPE", 1);
+                            break;
+                        case "DOUBLE":
+                           
+                            feature.SetAttributeValue("SUBTYPE", 2);
+                            break;
+                        case "TRIPLE":
+                            
+                            feature.SetAttributeValue("SUBTYPE", 3);
+                            break;
+                        case "GRATE":
+                           
+                            feature.SetAttributeValue("SUBTYPE", 4);
+                            break;
+                        case "QUADRUPLE":
+                            
+                            feature.SetAttributeValue("SUBTYPE", 5);
+                            break;
+                        case "ELONGATE":
+                            
+                            feature.SetAttributeValue("SUBTYPE", 6);
+                            break;
+                        case "DOUBLE GRATE":
+                            
+                            feature.SetAttributeValue("SUBTYPE", 7);
+                            break;
+                        case "FIELD DRAIN":
+                           
+                            feature.SetAttributeValue("SUBTYPE", 8);
+                            break;
+                        case "TRENCH DRAIN":
+                           
+                            feature.SetAttributeValue("SUBTYPE", 9);
+                            break;
+
+                        default:
+                            feature.SetAttributeValue("SUBTYPE", 0);
+                            break;
+                    }
+                    feature.SetAttributeValue("ASSETTAG", Asset.assettag);
+                   
+                    feature.SetAttributeValue("TOPMATRL", TopMaterial);
+                    feature.SetAttributeValue("TOPTHICK", (int)TopThickness); 
+                    feature.SetAttributeValue("GRATETY", GrateType);
+                    feature.SetAttributeValue("NUMCHAMB", (int?)NumberOfChambers);
+                    feature.SetAttributeValue("NUMTHROAT", (int?)NumberOfThroats);
+                    feature.SetAttributeValue("LOCATIONDETAIL", LocationDetail);
+                    feature.SetAttributeValue("OWNER", Owner);
+                    feature.SetAttributeValue("CLNRESP",CleaningResponsibility);
+                    feature.SetAttributeValue("ISWQI", (WaterQuality == true ? "Y" : "N"));
+                    feature.SetAttributeValue("INMS4", (InMS4 == true ? "Y" : "N"));
+                    feature.SetAttributeValue("ISCORNRCB", (CornerCB == true ? "Y" : "N"));
+                    feature.SetAttributeValue("BIOFLTR", (Biofilter == true ? "Y" : "N"));
+                    feature.SetAttributeValue("FLORESTY", FlowRestrictorType);
+                    feature.SetAttributeValue("HASSUMP", (Sump == true ? "Y" : "N"));
+                    feature.SetAttributeValue("HASWATERSEAL", (WaterSeal == true ? "Y" : "N"));
+                    await layer.FeatureTable.UpdateFeatureAsync(feature);
+                    feature.Refresh();
+                }
+                
+                
+                
+               
+                
+
+
+            }
            
             workOrderDetailVM.MaximoWorkOrder.asset = Asset;
             if (WorkOrder.Id > 0){

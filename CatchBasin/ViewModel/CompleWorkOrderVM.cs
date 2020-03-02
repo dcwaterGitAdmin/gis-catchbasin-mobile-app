@@ -571,7 +571,7 @@ namespace CatchBasin.ViewModel
             QueryParameters queryParameters = new QueryParameters();
             if(wo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
             {
-                queryParameters.WhereClause = $"wonum='{wo.Id}'";
+                queryParameters.WhereClause = $"workorderid='{wo.Id}'";
 
             }
             else

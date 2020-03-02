@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
@@ -1263,7 +1264,16 @@ namespace MaximoServiceLibrary
 					else if (!mxuser.userPreferences.selectedPersonGroup.Equals(currentPersonGroup))
 					{
 						AppContext.workOrderRepository.removeCollection();
-					}
+
+
+                        string path = "C:\\CatchBasin\\time.txt";
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                       
+
+                    }
 
 					mxuser.password = password;
 

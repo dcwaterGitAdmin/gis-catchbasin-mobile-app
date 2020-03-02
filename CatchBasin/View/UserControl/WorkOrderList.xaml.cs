@@ -35,16 +35,16 @@ namespace CatchBasin.View.UserControl
 
         private void WorkOrderList_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "SelectedIndex")
-            {
+            //if (e.PropertyName == "SelectedIndex")
+            //{
 
 
-                if (((WorkOrderListVM)this.DataContext).SelectedIndex > -1)
-                {
-                    var wo = ((WorkOrderListVM)this.DataContext).WorkOrders[((WorkOrderListVM)this.DataContext).SelectedIndex];
-                    listView.SelectedItem = wo;
-                }
-               }
+            //    if (((WorkOrderListVM)this.DataContext).SelectedIndex > -1)
+            //    {
+            //        var wo = ((WorkOrderListVM)this.DataContext).WorkOrders[((WorkOrderListVM)this.DataContext).SelectedIndex];
+            //        listView.SelectedItem = wo;
+            //    }
+            //}
         }
 
         private void ListView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)

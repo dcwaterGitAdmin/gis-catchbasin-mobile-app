@@ -50,8 +50,8 @@ namespace CatchBasin.ViewModel
         public LoginVM()
         {
             LoginCommand = new LoginCommand(this);
-            UserName = "edelioglu";
-                Password = "CatchBasin98!";
+            //UserName = "edelioglu";
+            //    Password = "CatchBasin98!";
 
         }
 
@@ -61,11 +61,12 @@ namespace CatchBasin.ViewModel
             {
                 const string Path = "C:\\CatchBasin\\Layers.mmpk";
                 var lastWriteTime = System.IO.File.GetLastWriteTime(Path);
-                if ((DateTime.Now - lastWriteTime).TotalDays > 0)
+                if ((DateTime.Now - lastWriteTime).TotalDays > 30)
                 {
                     
                     using (var client = new WebClient())
                     {
+                      
                         client.DownloadFile(new Uri("https://geo.dcwater.com/MobileAppBaseMap/Layers.mmpk"), Path);
 
 

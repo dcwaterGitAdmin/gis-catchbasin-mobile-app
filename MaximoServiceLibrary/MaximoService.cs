@@ -127,7 +127,8 @@ namespace MaximoServiceLibrary
 			if (response.ResponseStatus != ResponseStatus.Completed)
 			{
 				isOnline = false;
-                throw new Exception($"The application cannot access to Maximo {response.Content}");
+                //throw new Exception($"The application cannot access to Maximo {response.Content}");
+                return false;
 			}
 			else
 			{
