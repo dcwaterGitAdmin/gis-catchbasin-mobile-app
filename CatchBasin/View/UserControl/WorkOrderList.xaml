@@ -50,19 +50,19 @@
 								<Setter Property="Background" Value="Blue" />
 							</MultiTrigger>
 							<DataTrigger Binding="{Binding worktype}"  Value="INV">
-                                <Setter Property="Background" Value="#b1a701"></Setter>
+                                <Setter Property="Background" Value="#39A800"></Setter>
 							</DataTrigger>
 							<DataTrigger Binding="{Binding worktype}"  Value="EMERG">
-                                <Setter Property="Background" Value="#fe583f"></Setter>
+                                <Setter Property="Background" Value="#F10303"></Setter>
 							</DataTrigger>
                             <DataTrigger Binding="{Binding worktype}"  Value="PM">
-                                <Setter Property="Background" Value="#fed3a2"></Setter>
+                                <Setter Property="Background" Value="#ffffff"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding worktype}"  Value="CM">
-                                <Setter Property="Background" Value="#fed3a2"></Setter>
+                                <Setter Property="Background" Value="#ffffff"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding worktype}"  Value="INSP">
-                                <Setter Property="Background" Value="#fed3a2"></Setter>
+                                <Setter Property="Background" Value="#ffffff"></Setter>
                             </DataTrigger>
 
                         </Style.Triggers>

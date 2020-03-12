@@ -15,6 +15,9 @@ namespace CatchBasin.ViewModel
     {
         private WorkOrderDetailVM workOrderDetailVM;
 
+
+
+
         public WorkOrderDetailVM WorkOrderDetailVM
         {
             get { return workOrderDetailVM; }
@@ -214,10 +217,16 @@ namespace CatchBasin.ViewModel
             set { saveCommand = value; OnPropertyChanged("SaveCommand"); }
         }
 
-	
+        private bool isCreated;
+
+        public bool IsCreated
+        {
+            get { return isCreated; }
+            set { isCreated = value; OnPropertyChanged("IsCreated"); }
+        }
 
 
-		private bool isDirty;
+        private bool isDirty;
         MaximoAsset Asset;
         MaximoWorkOrder WorkOrder;
         public AssetDetailVM(WorkOrderDetailVM _workOrderDetailVM)
@@ -253,6 +262,14 @@ namespace CatchBasin.ViewModel
             WorkOrder = wo;
             Asset = wo.asset;
 			
+            if(wo.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
+            {
+                IsCreated = true;
+            }
+            else
+            {
+                IsCreated = false;
+            }
 
 			AssetTag = Asset.assettag;
             LocationDetail = Asset.eq3;
