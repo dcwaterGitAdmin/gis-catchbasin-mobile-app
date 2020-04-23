@@ -17,8 +17,20 @@ namespace CatchBasin.ViewModel.Helper
 		public string description { get; set; }
 	}
 
+    class StaticDomainDouble
+    {
+        public StaticDomainDouble(double _code, string _desc)
+        {
+            code = _code;
+            description = _desc;
+        }
+        public double code { get; set; }
+        public string description { get; set; }
+    }
 
-	class FilterDomain
+
+
+    class FilterDomain
 	{
 		public FilterDomain(string _label, FilterType _filterType)
 		{

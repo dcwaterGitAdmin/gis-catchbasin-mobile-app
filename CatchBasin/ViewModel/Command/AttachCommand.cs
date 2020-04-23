@@ -50,15 +50,15 @@ namespace CatchBasin.ViewModel.Command
                     maximoDocLinks.description = "CB REPAIR PHOTO";
                     maximoDocLinks.urltype = "FILE";
                     maximoDocLinks.doctype = "PHOTOS-A";
-
+                    maximoDocLinks.urlname = filename; ;
                     maximoDocLinks.documentdata = DocumentUpload(filename);
-
+                    maximoDocLinks.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                     maximoDocLinks.document = System.IO.Path.GetFileName(filename);
                     if (maximoDocLinks.document.Length > 20)
                     {
                         maximoDocLinks.document = maximoDocLinks.document.Substring(0, 20);
                     }
-                    maximoDocLinks.urlname = filename; ;
+                    maximoDocLinks.path = filename; ;
                     WorkOrderDetailVM.Attachments.Add(maximoDocLinks);
                 }
             }

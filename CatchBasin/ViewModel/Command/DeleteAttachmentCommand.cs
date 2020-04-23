@@ -38,7 +38,19 @@ namespace CatchBasin.ViewModel.Command
 
         public void Execute(object parameter)
         {
-			WorkOrderDetailVM.Attachments.Remove((MaximoDocLinks)parameter);
+            var doc = (MaximoDocLinks)parameter;
+            if (doc != null)
+            {
+                if (doc.docinfoid > 0)
+                {
+                    MessageBox.Show("You cannot delete this attachment, because it is synced. if you want to delete, please use Maximo");
+                }
+                else
+                {
+                    WorkOrderDetailVM.Attachments.Remove((MaximoDocLinks)parameter);
+                }
+            }
+			
 		
 		}
 

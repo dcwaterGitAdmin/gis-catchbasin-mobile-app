@@ -42,7 +42,11 @@
                     </StackPanel>
                     <StackPanel Visibility="{Binding DumpEstIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Label Content="Estimate of Volume of Debris Dumpted" FontWeight="Bold"/>
-                        <TextBox  Text="{Binding DumpEst, Mode=TwoWay}"/>
+                        <!--<TextBox  Text="{Binding DumpEst, Mode=TwoWay}"/>-->
+                        <ComboBox ItemsSource="{Binding DumpEstList}"
+                            DisplayMemberPath="description"
+                            SelectedValuePath="code"
+                             SelectedValue="{Binding DumpEst}"/>
                     </StackPanel>
                     <StackPanel Visibility="{Binding LocationIsVisible, Converter={StaticResource booleanToVisibilityConverter}}" Margin="0 3 0 3">
                         <Label Content="Location" FontWeight="Bold"/>

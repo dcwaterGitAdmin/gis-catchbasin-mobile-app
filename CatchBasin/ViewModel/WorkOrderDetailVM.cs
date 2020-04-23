@@ -1280,7 +1280,28 @@ namespace CatchBasin.ViewModel
             DebrisConditionTypeList.Add(new StaticDomain("50", "50%"));
             DebrisConditionTypeList.Add(new StaticDomain("25", "25%"));
             DebrisConditionTypeList.Add(new StaticDomain("0", "0% Empty"));
+
+            DumpEstList = new List<StaticDomainDouble>();
+            DumpEstList.Add(new StaticDomainDouble(100, "100%"));
+            DumpEstList.Add(new StaticDomainDouble(75, "75%"));
+            DumpEstList.Add(new StaticDomainDouble(50, "50%"));
+            DumpEstList.Add(new StaticDomainDouble(25, "25%"));
+            DumpEstList.Add(new StaticDomainDouble(0, "0%"));
+           
+            
+           
+           
+            
         }
+
+        private List<StaticDomainDouble> dumpEstList;
+
+        public List<StaticDomainDouble> DumpEstList
+        {
+            get { return dumpEstList; }
+            set { dumpEstList = value; OnPropertyChanged("DumpEstList"); }
+        }
+
 
         private void Attachments_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
