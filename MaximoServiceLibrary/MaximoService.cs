@@ -19,7 +19,7 @@ namespace MaximoServiceLibrary
     {
         //public string BASE_HOST { get; set; } = "http://localhost:8080";
         //public string BASE_HOST = "https://bpl-max-test.dcwasa.com";
-        public string BASE_HOST = "https://assetmgmt.dcwasa.com";
+        public string BASE_HOST = "https://bpl-maxsch-dev.dcwasa.com";
 
 
         private string BASE_CONTEXT_PATH { get; set; } = "/maxrest/oslc";
@@ -387,7 +387,7 @@ namespace MaximoServiceLibrary
 			workOrderToBePosted.remarkdesc = maximoWorkOrder.remarkdesc;
 			workOrderToBePosted.workorderspec = maximoWorkOrder.workorderspec;
             workOrderToBePosted.failurereport = maximoWorkOrder.failurereport;
-            workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
+            //workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
             workOrderToBePosted.assetnum = maximoWorkOrder.assetnum;
             workOrderToBePosted.statusdate = maximoWorkOrder.statusdate;
             
@@ -476,8 +476,9 @@ namespace MaximoServiceLibrary
 		    // create an empty workorder
 		    MaximoWorkOrderForProblemCodeUpdate workOrderToBePosted = new MaximoWorkOrderForProblemCodeUpdate();
 		    workOrderToBePosted.problemcode = maximoWorkOrder.problemcode;
-            
-		    request.AddJsonBody(workOrderToBePosted);
+			workOrderToBePosted.classstructureid = "1356";
+
+			request.AddJsonBody(workOrderToBePosted);
 
 		    var response = restClient.Execute(request);
 			
@@ -591,7 +592,91 @@ namespace MaximoServiceLibrary
             return freshWorkOrder;
         }
 
-        public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
+		public MaximoDocLinks createAttachment(MaximoWorkOrder maximoWorkOrder, MaximoDocLinks doc)
+		{
+			AppContext.Log.Info($"[MX] create attachment : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
+
+			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid + "/doclinks", false, Method.POST);
+			request.AddHeader("x-document-meta", "Attachments");
+			request.AddHeader("slug", doc.fileName);
+			request.AddHeader("x-document-description", doc.description);
+			request.AddHeader("custom-encoding", "base64");
+
+			request.AddParameter("text/plain", doc.documentdata, ParameterType.RequestBody);
+
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				AppContext.Log.Error($"[MX] - create attachment Error url : {response.ResponseUri.ToString()}");
+				AppContext.Log.Error($"[MX] - create attachment Error request body : {request.Parameters.FirstOrDefault(p => p.Type == ParameterType.RequestBody)}");
+				AppContext.Log.Error($"[MX] - create attachment  operation response : [{response.StatusCode}] - [{response.Content}]");
+
+				throw new Exception("create-attachment-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+
+			AppContext.Log.Info($"[MX] successfully create attachment  : [{maximoWorkOrder.wonum}] - [{maximoWorkOrder.workorderid}]");
+			string doclinkHref = null;
+
+			foreach (var responseHeader in response.Headers)
+			{
+				if (responseHeader.Name.Equals("Location"))
+				{
+					doclinkHref = responseHeader.Value.ToString();
+				}
+			}
+
+			return GetMaximoDocLinks(maximoWorkOrder, doclinkHref);
+		}
+
+		public MaximoDocLinks GetMaximoDocLinks(MaximoWorkOrder maximoWorkOrder, string doclinkHref)
+		{
+
+			char[] spearator = { '/' };
+			var list = doclinkHref.Split(spearator);
+			var identifier = list.Last();
+
+			var request = createRequest("/os/dcw_cb_wo/" + maximoWorkOrder.workorderid + "/doclinks/meta/" + identifier, false);
+
+			var response = restClient.Execute(request);
+
+			if (!response.IsSuccessful)
+			{
+				AppContext.Log.Warn("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+				throw new Exception("rest-service-error : " + response.StatusCode + " - [" + response.Content + "]");
+			}
+
+			MaximoDocLinks maximoDocLinksRestResponse = JsonConvert.DeserializeObject<MaximoDocLinks>(response.Content);
+			maximoDocLinksRestResponse.path = DownloadAttachment(maximoDocLinksRestResponse, doclinkHref);
+
+			return maximoDocLinksRestResponse;
+		}
+
+		public string DownloadAttachment(MaximoDocLinks maximoDocLinks, string url)
+		{
+			System.IO.Directory.CreateDirectory("C:\\CatchBasin\\attachments");
+			string path = $"C:\\CatchBasin\\attachments\\{maximoDocLinks.docinfoid}_{maximoDocLinks.fileName}";
+			if (!File.Exists(path))
+			{
+				try
+				{
+					using (var client = new WebClient())
+					{
+
+						client.Headers.Add(HttpRequestHeader.Cookie, $"{_jsessionid_Cookie_Name}=sessionId; {_ltpatoken2_Cookie_Name}={token};");
+						client.DownloadFileAsync(new Uri(url), path);
+					}
+				}
+				catch (Exception e)
+				{
+					AppContext.Log.Warn($"download-attachment-error : {e.ToString()}");
+				}
+			}
+			return path;
+		}
+
+
+		public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid + "/doclinks", false);
 			var response = restClient.Execute(request);
@@ -612,6 +697,7 @@ namespace MaximoServiceLibrary
 				List<MaximoDocLinks> result = new List<MaximoDocLinks>();
 				foreach (var maximoDocLinksWrapper in maximoDocLinksRestResponse.member)
 				{
+					maximoDocLinksWrapper.describedBy.path = DownloadAttachment(maximoDocLinksWrapper.describedBy, maximoDocLinksWrapper.href);
 					result.Add(maximoDocLinksWrapper.describedBy);
 				}
 				

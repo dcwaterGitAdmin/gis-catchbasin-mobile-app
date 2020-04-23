@@ -26,6 +26,11 @@ namespace MaximoServiceLibrary
 
 		public delegate void SynchronizationDelegateHandler(string status, string substatus);
 
+		public AssetGISSynchronizationDelegateHandler assetGisSynchronizationDelegateHandler;
+
+		public delegate void AssetGISSynchronizationDelegateHandler(string assettag, string assetnum);
+
+
 		public SynchronizationService()
 		{
 			synchronizationDelegate = new SynchronizationDelegateHandler(logSynchronizationStatus);
@@ -187,6 +192,14 @@ namespace MaximoServiceLibrary
 							// woFromLocal.synchronizationTime is set at the end of postWorkOrderToMaximo() method
 							if (woFromLocal.synchronizationTime == null || DateTime.Now.Date.CompareTo(woFromLocal.synchronizationTime) == 1)
 							{
+								//delete work order attachesments if downloaded to local
+								if (woFromLocal.doclink != null)
+								{
+									foreach (var maximoDocLinks in woFromLocal.doclink)
+									{
+										AppContext.attachmentFileService.deleteAttachment(maximoDocLinks);
+									}
+								}
 								AppContext.workOrderRepository.delete(woFromLocal);
 								AppContext.Log.Debug($"[MX] deleted woFromLocal. wonum: {woFromLocal.wonum}.");
 							}
@@ -246,11 +259,14 @@ namespace MaximoServiceLibrary
 			List<MaximoWorkOrderFailureReport> freshWorkOrderFailureReportList = generateFreshWorkOrderFailureReportList(woFromMaximo, woFromLocal);
 			List<MaximoLabTrans> freshWorkOrderLabTransList = generateFreshWorkOrderLabTransList(woFromMaximo, woFromLocal);
 			List<MaximoToolTrans> freshWorkOrderToolTransList = generateFreshWorkOrderToolTransList(woFromMaximo, woFromLocal);
+			List<MaximoDocLinks> freshWorkOrderDocLinksList = generateFreshWorkOrderDocLinksList(woFromMaximo, woFromLocal);
+
 
 			woFromLocal.workorderspec = freshWorkOrderSpecList;
 			woFromLocal.failurereport = freshWorkOrderFailureReportList;
 			woFromLocal.labtrans = freshWorkOrderLabTransList;
 			woFromLocal.tooltrans = freshWorkOrderToolTransList;
+			woFromLocal.doclink = freshWorkOrderDocLinksList;
 
 			synchronizeWorkOrderAsset(woFromMaximo, woFromLocal, false);
 			
@@ -432,7 +448,7 @@ namespace MaximoServiceLibrary
 			}
 
 			AppContext.Log.Info($"[MX] post asset changes to Maximo. assetnum: {assetFromLocal.assetnum}, syncronizationStatus: {assetFromLocal.syncronizationStatus}");
-			
+			synchronizationDelegate("POST_ASSET", $"posting asset: [{assetFromLocal.assettag}]");
 			if (assetFromLocal.syncronizationStatus == SyncronizationStatus.CREATED)
 			{
 				
@@ -464,8 +480,9 @@ namespace MaximoServiceLibrary
 				MaximoAsset assetFreshFromMaximo = AppContext.maximoService.updateAsset(assetFromLocal);
 				woFromLocal.asset = assetFreshFromMaximo;
 				AppContext.workOrderRepository.upsert(woFromLocal);
+				assetGisSynchronizationDelegateHandler(assetFreshFromMaximo.assettag, assetFreshFromMaximo.assetnum);
 
-			} 
+			}
 			else if (assetFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
 			{
 				if (assetFromLocal.href == null)
@@ -499,6 +516,8 @@ namespace MaximoServiceLibrary
 				MaximoAsset assetFreshFromMaximo = AppContext.maximoService.updateAsset(assetFromLocal);
 				woFromLocal.asset = assetFreshFromMaximo;
 				AppContext.workOrderRepository.upsert(woFromLocal);
+				assetGisSynchronizationDelegateHandler(assetFromLocal.assettag, assetFromLocal.assetnum);
+
 			}
 		}
 		
@@ -521,7 +540,7 @@ namespace MaximoServiceLibrary
 				AppContext.workOrderRepository.upsert(woFromLocal);
 				
 				postWorkOrderAssetToMaximo(woFromLocal);
-				
+				synchronizationDelegate("POST_WORK_ORDER", $"posting work order: [{(woFromLocal.wonum == null ? woFromLocal.Id.ToString() : woFromLocal.wonum)}]");
 				if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED && (woFromLocal.workorderid == null || woFromLocal.workorderid == 0))
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder. db Id: {woFromLocal.Id}");
@@ -530,7 +549,7 @@ namespace MaximoServiceLibrary
 					woFromLocal.failurereport = null;
 					woFromLocal.labtrans = null;
 					woFromLocal.tooltrans = null;
-					woFromLocal.doclink = null;
+					//woFromLocal.doclink = null;
 
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.createWorkOrder(woFromLocal);
 					mergeMaximoWorkOrderSpecsToLocalWorkOrder(woFromLocal, freshWorkOrderSpecList, woFreshFromMaximo);
@@ -547,28 +566,54 @@ namespace MaximoServiceLibrary
 				if (woFromLocal.syncronizationStatus == SyncronizationStatus.CREATED || woFromLocal.syncronizationStatus == SyncronizationStatus.MODIFIED)
 				{
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderProblemCode . wonum: {woFromLocal.wonum}");
+
 					MaximoWorkOrder woFreshFromMaximo = AppContext.maximoService.updateWorkOrderProblemCode(woFromLocal);
                     mergeMaximoWorkOrderFailureReportsToLocalWorkOrder(woFromLocal, woFromLocal.failurereport, woFreshFromMaximo);
-					//mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
-					//AppContext.workOrderRepository.upsert(woFromLocal);
+					
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderProblemCode and WO re-fetched. wonum: {woFromLocal.wonum}");
 
 					mergeMaximoWorkOrderFailureReportsToLocalWorkOrder(woFromLocal, freshWorkOrderFailureReportList, woFreshFromMaximo);
-
+					woFromLocal._rowstamp = woFreshFromMaximo._rowstamp;
+					AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrder . wonum: {woFromLocal.wonum}");
 					woFreshFromMaximo = AppContext.maximoService.updateWorkOrder(woFromLocal);
-					//mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
-					//AppContext.workOrderRepository.upsert(woFromLocal);
+
+					woFromLocal.remarkdesc = woFreshFromMaximo.remarkdesc;
+					woFromLocal.workorderspec = woFreshFromMaximo.workorderspec;
+					woFromLocal.failurereport = woFreshFromMaximo.failurereport;
+					//woFromLocal.doclinks = woFreshFromMaximo.doclink;
+					woFromLocal.assetnum = woFreshFromMaximo.assetnum;
+					woFromLocal.statusdate = woFreshFromMaximo.statusdate;
+					woFromLocal._rowstamp = woFreshFromMaximo._rowstamp;
+					AppContext.workOrderRepository.upsert(woFromLocal);
+
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrder and WO re-fetched. wonum: {woFromLocal.wonum}");
+
+
+					for (int i = 0; i < woFromLocal.doclink?.Count; i++)
+					{
+						if (woFromLocal.doclink[i].docinfoid == 0)
+						{
+							woFromLocal.doclink[i] = AppContext.maximoService.createAttachment(woFromLocal, woFromLocal.doclink[i]);
+						}
+					}
+
 
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderStatus . wonum: {woFromLocal.wonum}");
 					woFreshFromMaximo = AppContext.maximoService.updateWorkOrderStatus(woFromLocal);
-					//mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
-					//AppContext.workOrderRepository.upsert(woFromLocal);
+					woFromLocal.status = woFreshFromMaximo.status;
+					woFromLocal.np_statusmemo = woFreshFromMaximo.np_statusmemo;
+					woFromLocal._rowstamp = woFreshFromMaximo._rowstamp;
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderStatus and WO re-fetched. wonum: {woFromLocal.wonum}");
 
 					AppContext.Log.Debug($"[MX] Calling maximoService.updateWorkOrderActuals (all childs are fresh). wonum: {woFromLocal.wonum}");
 					woFreshFromMaximo = AppContext.maximoService.updateWorkOrderActuals(woFromLocal);
+
+					woFromLocal.labtrans = woFreshFromMaximo.labtrans;
+					woFromLocal.tooltrans = woFreshFromMaximo.tooltrans;
+					woFromLocal._rowstamp = woFreshFromMaximo._rowstamp;
+					AppContext.workOrderRepository.upsert(woFromLocal);
+
 					mergeWorkOrderFromMaximoToLocal(woFreshFromMaximo, woFromLocal, true);
 					AppContext.workOrderRepository.upsert(woFromLocal);
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrderActuals and WO re-fetched. wonum: {woFromLocal.wonum}");
@@ -609,6 +654,7 @@ namespace MaximoServiceLibrary
 					if (followupWorkOrder.syncronizationStatus == null || followupWorkOrder.syncronizationStatus != SyncronizationStatus.SYNCED)
 					{
 						followupWorkOrder.origrecordid = woFromLocal.wonum;
+						followupWorkOrder.assetnum = woFromLocal.assetnum;
 						AppContext.Log.Debug($"[MX] Calling maximoService.createWorkOrder for followupWorkOrder. wonum: {woFromLocal.wonum}, followupWorkOrder.Id: {followupWorkOrder.Id}");
 						MaximoWorkOrder fetchedFollowupWO = AppContext.maximoService.createWorkOrder(followupWorkOrder);
 						fetchedFollowupWO.syncronizationStatus = SyncronizationStatus.SYNCED;

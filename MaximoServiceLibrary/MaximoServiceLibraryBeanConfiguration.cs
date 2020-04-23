@@ -27,7 +27,9 @@ namespace MaximoServiceLibrary
 
 		public static SynchronizationService synchronizationService = new SynchronizationService();
 
-        public static ILog Log
+		public static AttachmentFileService attachmentFileService = new AttachmentFileService();
+
+		public static ILog Log
         {
             get
             {
