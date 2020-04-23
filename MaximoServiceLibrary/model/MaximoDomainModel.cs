@@ -544,8 +544,11 @@ namespace MaximoServiceLibrary.model
         public string description { get; set; }
         public string urltype { get; set; }
         public string doctype { get; set; }
+		public string fileName { get; set; }
+		[JsonIgnore]
+		public string path { get; set; }
 
-        [LiteDB.BsonIgnore]
+		[LiteDB.BsonIgnore]
         [JsonIgnore]
         public virtual BitmapImage BitmapImage
         {
@@ -553,7 +556,7 @@ namespace MaximoServiceLibrary.model
             {
                 try
                 {
-                    return new BitmapImage(new Uri(urlname));
+                    return new BitmapImage(new Uri(path));
                 }
                 catch (Exception e)
                 {

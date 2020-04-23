@@ -29,6 +29,7 @@ namespace MaximoServiceLibrary.model
 	public class MaximoWorkOrderForProblemCodeUpdate
 	{
 		public string problemcode { get; set; }
+		public string classstructureid { get; set; }
 	}
 
 	public class MaximoWorkOrderLabtransForUpdate
