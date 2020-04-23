@@ -8,13 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Ribbon;
 
 namespace CatchBasin.ViewModel
 {
     class WorkOrderListVM : BaseVM
     {
-
+        public ListView listView;
 
         private List<MaximoWorkOrder> workOrders;
 

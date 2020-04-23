@@ -12,6 +12,7 @@
     <Window.Resources>
         <vm:LoginVM x:Key="vm"/>
 		<helper:EnumMatchToBooleanConverter x:Key="enumConverter" />
+        <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
     </Window.Resources>
     <Grid DataContext="{StaticResource vm}">
         <StackPanel Margin="30">
@@ -31,7 +32,9 @@
 			</StackPanel>
 
 			<Button Margin="0,10,0,0" FontSize="24" Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=LoginWindow}">Login</Button>
-           
+
+            <TextBlock Margin="0,10,0,0" Text="{Binding ProgressText}" Visibility="{Binding ProgressIsVisible, Converter={StaticResource booleanToVisibilityConverter}}"/>
+            <ProgressBar Margin="0 10 0 0" Height="30" Value="{Binding ProgressBarValue}" Visibility="{Binding ProgressIsVisible, Converter={StaticResource booleanToVisibilityConverter}}"/>
         </StackPanel>
     </Grid>
 </Window>

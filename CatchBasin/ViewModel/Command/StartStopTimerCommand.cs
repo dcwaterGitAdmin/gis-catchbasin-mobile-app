@@ -35,31 +35,41 @@ namespace CatchBasin.ViewModel.Command
 
 		public bool CanExecute(object parameter)
 		{
-			if (parameter == null) return false;
-            if(((MaximoWorkOrder)parameter).status != "DISPTCHD") { return false; }
-			var values = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("startTimerDate", null).ToList();
-			if(values.Count > 0)
-			{
-				if(values[0].Id == ((MaximoWorkOrder)parameter).Id)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-				
-			}
-			else
-			{
-				return true;
-			}
+            return true;
 		
 		}
 
 		public void Execute(object parameter)
 		{
-			MaximoWorkOrder wo = ((MaximoWorkOrder)parameter);
+
+            if (parameter == null) return ;
+            if (((MaximoWorkOrder)parameter).status != "DISPTCHD") { return ; }
+            var values = MaximoServiceLibrary.AppContext.workOrderRepository.findNot("startTimerDate", null).ToList();
+            if (values.Count > 0)
+            {
+                if (values[0].Id == ((MaximoWorkOrder)parameter).Id)
+                {
+                    
+                }
+                else
+                {
+                    MessageBox.Show($"Wonum : {values[0].wonum} is still start timer");
+                    var woo = WorkOrderListVM.WorkOrders.Where(w => w.Id == values[0].Id).FirstOrDefault();
+                    if(woo != null)
+                    {
+                        WorkOrderListVM.listView.ScrollIntoView(woo);
+                    }
+                    
+                    return;
+                }
+
+            }
+            else
+            {
+              
+            }
+
+            MaximoWorkOrder wo = ((MaximoWorkOrder)parameter);
 			if(wo.startTimerDate == null)
 			{
 				wo.startTimerDate = DateTime.Now;

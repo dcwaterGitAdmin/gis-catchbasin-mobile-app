@@ -31,6 +31,7 @@ namespace CatchBasin.View.UserControl
         {
             base.OnApplyTemplate();
             ((WorkOrderListVM)this.DataContext).PropertyChanged += WorkOrderList_PropertyChanged;
+            ((WorkOrderListVM)this.DataContext).listView = listView;
         }
 
         private void WorkOrderList_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

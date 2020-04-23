@@ -944,6 +944,23 @@ namespace CatchBasin.ViewModel
             }
         }
 
+        private string attachmentsCount = "0";
+
+        public string AttachmentsCount
+        {
+            get { return attachmentsCount; }
+            set { attachmentsCount = value; OnPropertyChanged("AttachmentsCount"); }
+        }
+
+        private string actualsCount ="0";
+
+        public string ActualsCount
+        {
+            get { return actualsCount; }
+            set { actualsCount = value; OnPropertyChanged("ActualsCount"); }
+        }
+
+
 
         private bool actualsIsVisible;
 
@@ -1253,6 +1270,7 @@ namespace CatchBasin.ViewModel
             Attachments = new ObservableCollection<MaximoDocLinks>();
             LabTrans.CollectionChanged += LabTrans_CollectionChanged;
             ToolTrans.CollectionChanged += ToolTrans_CollectionChanged;
+            Attachments.CollectionChanged += Attachments_CollectionChanged1;
             ProblemList = MaximoServiceLibrary.AppContext.failureListRepository.Find("type", "PROBLEM")
                 .Select(x => x.failurecode[0]).ToList<FailureCode>();
             StatusList = MaximoServiceLibrary.AppContext.domainRepository.findOne("WOSTATUS").synonymdomain;
@@ -1262,6 +1280,11 @@ namespace CatchBasin.ViewModel
             DebrisConditionTypeList.Add(new StaticDomain("50", "50%"));
             DebrisConditionTypeList.Add(new StaticDomain("25", "25%"));
             DebrisConditionTypeList.Add(new StaticDomain("0", "0% Empty"));
+        }
+
+        private void Attachments_CollectionChanged1(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            AttachmentsCount = Attachments.Count.ToString();
         }
 
         private void ToolTrans_CollectionChanged(object sender,
@@ -1278,6 +1301,8 @@ namespace CatchBasin.ViewModel
             {
                 Actuals.Add(_tooltrans);
             }
+
+            ActualsCount = Actuals.Count.ToString();
         }
 
         private void LabTrans_CollectionChanged(object sender,
@@ -1294,6 +1319,7 @@ namespace CatchBasin.ViewModel
             {
                 Actuals.Add(_tooltrans);
             }
+            ActualsCount = Actuals.Count.ToString();
         }
 
         private void WorkOrderDetailVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1953,7 +1979,7 @@ namespace CatchBasin.ViewModel
                 var failureProblemCode = new MaximoWorkOrderFailureReport();
                 failureProblemCode.failurecode = Problem;
                // failureProblemCode.wonum = MaximoWorkOrder.wonum;
-                failureProblemCode.type = "PROBLEMCODE";
+                failureProblemCode.type = "PROBLEM";
                 failureProblemCode.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 MaximoWorkOrder.failurereport.Add(failureProblemCode);
             }

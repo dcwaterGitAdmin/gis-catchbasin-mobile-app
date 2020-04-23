@@ -39,8 +39,14 @@ namespace CatchBasin.ViewModel.Command
 
         public void Execute(object parameter)
         {
-
-			Process.Start(((MaximoDocLinks)parameter).urlname);
+            try
+            {
+                Process.Start(((MaximoDocLinks)parameter).urlname);
+            }catch(Exception e)
+            {
+                MaximoServiceLibrary.AppContext.Log.Error(e.ToString());
+            }
+			
 			
 		}
 

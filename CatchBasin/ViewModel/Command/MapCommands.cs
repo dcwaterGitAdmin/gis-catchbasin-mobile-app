@@ -279,6 +279,11 @@ namespace CatchBasin.ViewModel.Commands
 
         public override void Execute(object parameter)
         {
+
+            if (!MapVM.WorkOrdersIsVisible)
+            {
+                MapVM.WorkOrdersIsVisible = true;
+            }
             var wo = new MaximoWorkOrder();
             wo.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
             MaximoWorkOrderFailureReport failureProblemCode;

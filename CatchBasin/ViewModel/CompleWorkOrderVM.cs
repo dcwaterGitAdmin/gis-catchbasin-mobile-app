@@ -1357,7 +1357,7 @@ namespace CatchBasin.ViewModel
             fwo.failurereport = new List<MaximoWorkOrderFailureReport>();
             var pc = new MaximoWorkOrderFailureReport();
             pc.failurecode = "PM";
-            pc.type = "PROBLEMCODE";
+            pc.type = "PROBLEM";
             pc.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 
             var c = new MaximoWorkOrderFailureReport();
@@ -1406,7 +1406,7 @@ namespace CatchBasin.ViewModel
             var pc = new MaximoWorkOrderFailureReport();
             pc.failurecode = "PM";
             pc.failurecode = "PM";
-            pc.type = "PROBLEMCODE";
+            pc.type = "PROBLEM";
             pc.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
 
             var c = new MaximoWorkOrderFailureReport();
