@@ -112,6 +112,13 @@ namespace CatchBasin.ViewModel
             set { secondManIsEnabled = value; OnPropertyChanged("SecondManIsEnabled"); }
         }
 
+        private Command.UpdateReferenceDataCommand updateReferenceData;
+
+        public Command.UpdateReferenceDataCommand UpdateReferenceDataCommand
+        {
+            get { return updateReferenceData; }
+            set { updateReferenceData = value; OnPropertyChanged("UpdateReferenceDataCommand"); }
+        }
 
 
         private Command.SaveCommand<SettingsVM> saveCommand;
@@ -141,7 +148,8 @@ namespace CatchBasin.ViewModel
 
 			CancelCommand = new Command.CancelCommand<SettingsVM>(this);
 			SaveCommand = new Command.SaveCommand<SettingsVM>(this);
-			DriverList = new List<MaximoPerson>();
+            UpdateReferenceDataCommand = new Command.UpdateReferenceDataCommand();
+            DriverList = new List<MaximoPerson>();
 
        
 			if(AppType == "PM")

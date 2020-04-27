@@ -52,7 +52,7 @@
                             SelectedValuePath="itemnum"
                              SelectedValue="{Binding Vehicle}"/>
 
-
+                <Button Command="{Binding UpdateReferenceDataCommand}">Update Reference Data</Button>
 			</StackPanel>
 			<!--</ScrollViewer>-->
 		</DockPanel>

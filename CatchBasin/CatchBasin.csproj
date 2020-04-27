@@ -119,6 +119,7 @@
     <Compile Include="ViewModel\Command\DeleteLaborCommand.cs" />
     <Compile Include="ViewModel\Command\DeleteAttachmentCommand.cs" />
     <Compile Include="ViewModel\Command\DeleteToolCommand.cs" />
+    <Compile Include="ViewModel\Command\UpdateReferenceDataCommand.cs" />
     <Compile Include="ViewModel\Command\SearchCommands.cs" />
     <Compile Include="ViewModel\Command\ShowLaborCommand.cs" />
     <Compile Include="ViewModel\Command\ShowAttachmentCommand.cs" />

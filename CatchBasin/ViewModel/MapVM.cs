@@ -1348,8 +1348,9 @@ namespace CatchBasin.ViewModel
 						if (editResult.ObjectId > 0)
 						{
 							feature.Attributes["DISPLAYID"] = "SYNCED";
-							this.assetLayer.FeatureTable.UpdateFeatureAsync(feature);
-						}
+							await this.assetLayer.FeatureTable.UpdateFeatureAsync(feature);
+                            GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is synced";
+                        }
 						else
 						{
 							GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is failed";

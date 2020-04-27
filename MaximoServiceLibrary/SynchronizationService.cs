@@ -1184,10 +1184,12 @@ namespace MaximoServiceLibrary
 		// todo: change function name
 		public void synchronizeHelperFromMaximoToLocalDb()
 		{
-			clearHelperFromLocalDb();
+			
 
-			// get domains
-			AppContext.domainRepository.upsertList(AppContext.maximoService.getDomains());
+            // get domains
+            var domains = AppContext.maximoService.getDomains();
+            AppContext.domainRepository.removeCollection();
+            AppContext.domainRepository.upsertList(domains);
 
 
 			// get failurelist
@@ -1202,18 +1204,21 @@ namespace MaximoServiceLibrary
 			var causeCodes = string.Join(",", tempFailureLists.Select(c => c.failurelist.ToString()).ToArray<string>());
 			tempFailureLists = AppContext.maximoService.getFailureList(causeCodes);
 			failureLists.AddRange(tempFailureLists);
-			AppContext.failureListRepository.upsertList(failureLists);
+            AppContext.failureListRepository.removeCollection();
+            AppContext.failureListRepository.upsertList(failureLists);
 
 
-			// get inventories
-			AppContext.inventoryRepository.upsertList(AppContext.maximoService.getInventory());
+            // get inventories
+            var inventories = AppContext.maximoService.getInventory();
+            AppContext.inventoryRepository.removeCollection();
+            AppContext.inventoryRepository.upsertList(inventories);
 		}
 
 		public void clearHelperFromLocalDb()
 		{
 			AppContext.domainRepository.removeCollection();
-			AppContext.failureListRepository.removeCollection();
-			AppContext.inventoryRepository.removeCollection();
+            AppContext.failureListRepository.removeCollection();
+            AppContext.inventoryRepository.removeCollection();
 		}
 
 		public void updateLabors()

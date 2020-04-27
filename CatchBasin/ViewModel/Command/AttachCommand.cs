@@ -54,6 +54,8 @@ namespace CatchBasin.ViewModel.Command
                     maximoDocLinks.documentdata = DocumentUpload(filename);
                     maximoDocLinks.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                     maximoDocLinks.document = System.IO.Path.GetFileName(filename);
+                    maximoDocLinks.fileName = System.IO.Path.GetFileName(filename);
+                    
                     if (maximoDocLinks.document.Length > 20)
                     {
                         maximoDocLinks.document = maximoDocLinks.document.Substring(0, 20);
