@@ -215,7 +215,7 @@ namespace CatchBasin.ViewModel
             {
                 asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 asset.classstructureid = "1033";
-                asset.status = "Active";
+                asset.status = "ACTIVE";
                 asset.description = "CATCH-BASIN, Storm";
                 asset.failurecode = "CATCHBASIN";
                 asset.siteid = "DWS_DSS";
@@ -1967,7 +1967,7 @@ namespace CatchBasin.ViewModel
                 MaximoWorkOrder.workorderspec.Add(CBFUVAC);
 
                 var CBFUWNR = new MaximoWorkOrderSpec();
-                CBFUWNR.assetattrid = "CBFUNM";
+                CBFUWNR.assetattrid = "CBFUWNR";
                 CBFUWNR.alnvalue = WallsNeedRepair ? "Y" : "N";
                 CBFUWNR.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 MaximoWorkOrder.workorderspec.Add(CBFUWNR);
@@ -2187,7 +2187,9 @@ namespace CatchBasin.ViewModel
             DebrisCondition = null;
             DebrisConditionPC = null;
             DebrisConditionAC = null;
-
+            Problem = null;
+            Cause = null;
+            Remedy = null;
             try
 			{
                 SelectAssetOnMapIsActive = false;

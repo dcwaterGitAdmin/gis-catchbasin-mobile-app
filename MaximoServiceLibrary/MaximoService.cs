@@ -760,7 +760,15 @@ namespace MaximoServiceLibrary
 			maximoAssetForCreation.eq3 = maximoAsset.eq3;
 			maximoAssetForCreation.classstructureid = maximoAsset.classstructureid;
 			maximoAssetForCreation.siteid = maximoAsset.siteid;
-			
+
+            maximoAssetForCreation.status = maximoAsset.status;
+            maximoAssetForCreation.description = maximoAsset.description;
+            maximoAssetForCreation.failurecode = maximoAsset.failurecode;
+            maximoAssetForCreation.orgid = maximoAsset.orgid;
+            maximoAssetForCreation.plussfeatureclass = maximoAsset.plussfeatureclass;
+            maximoAssetForCreation.plussisgis = maximoAsset.plussisgis;
+
+
             if (maximoAssetForCreation.siteid == null)
             {
                 maximoAssetForCreation.siteid = "DWS_DSS";

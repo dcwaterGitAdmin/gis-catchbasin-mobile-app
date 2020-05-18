@@ -11,8 +11,14 @@ namespace MaximoServiceLibrary.model
 		public string eq3 { get; set; }
 		public string siteid { get; set; }
 		public string classstructureid { get; set; }
-		
-	}
+        public string status { get; set; }
+        public string description { get; set; }
+        public string failurecode { get; set; }
+        public string orgid { get; set; }
+        public string plussfeatureclass { get; set; }
+        public bool plussisgis { get; set; }
+
+    }
 	
 	public class MaximoAsset : MaximoBaseEntity
 	{
