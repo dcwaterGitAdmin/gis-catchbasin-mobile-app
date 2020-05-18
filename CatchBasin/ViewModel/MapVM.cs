@@ -274,13 +274,19 @@ namespace CatchBasin.ViewModel
 				feature.SetAttributeValue("HASSUMP", "Y");
 				feature.SetAttributeValue("HASWATERSEAL", "N");
 				feature.SetAttributeValue("CHANGEBY", user.userName);
-				// feature.SetAttributeValue("LIFECYCLESTATS", "Active");
-				//feature.SetAttributeValue("CLNRESP","DC WASA");
+                feature.SetAttributeValue("DESCRIPTION", "CATCH-BASIN, Storm");
+                feature.SetAttributeValue("MXSITEID", "DWS_DSS");
+                feature.SetAttributeValue("LIFECYCLESTATS", "Active");
+                feature.SetAttributeValue("INFORSRC", 3);
+                feature.SetAttributeValue("LOCTNPRECS", 3);
+                feature.SetAttributeValue("FLOWTYPE", "Storm");
+
+                //feature.SetAttributeValue("CLNRESP","DC WASA");
 
 
 
 
-				feature.Geometry = clickPoint;
+                feature.Geometry = clickPoint;
 				await featurelayer.FeatureTable.AddFeatureAsync(feature);
 
 				feature.Refresh();
@@ -1289,10 +1295,10 @@ namespace CatchBasin.ViewModel
 			{
 				return;
 			}
-			if (assettag.First() != 'N')
-			{
-				return;
-			}
+			//if (assettag.First() != 'N')
+			//{
+			//	return;
+			//}
 			GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is syncing";
 			try
 			{
@@ -1315,51 +1321,114 @@ namespace CatchBasin.ViewModel
 					feature.SetAttributeValue("MXASSETNUM", assetnum);
 					await this.assetLayer.FeatureTable.UpdateFeatureAsync(feature);
 
+                    var __onlineResult = await _featureTable.QueryFeaturesAsync(queryParams);
+                    var onlineFeature = __onlineResult.ToList().FirstOrDefault();
 
-					var newFeature = _featureTable.CreateFeature();
-					newFeature.Geometry = feature.Geometry;
+                    if(onlineFeature == null)
+                    {
+                        
+                        var newFeature = _featureTable.CreateFeature();
+                        newFeature.Geometry = feature.Geometry;
 
-					newFeature.SetAttributeValue("ASSETTAG", feature.Attributes["ASSETTAG"]);
-					newFeature.SetAttributeValue("SUBTYPE", feature.Attributes["SUBTYPE"]);
-					newFeature.SetAttributeValue("TOPMATRL", feature.Attributes["TOPMATRL"]);
-					newFeature.SetAttributeValue("TOPTHICK", feature.Attributes["TOPTHICK"]);
-					newFeature.SetAttributeValue("GRATETY", feature.Attributes["GRATETY"]);
-					newFeature.SetAttributeValue("NUMCHAMB", feature.Attributes["NUMCHAMB"]);
-					newFeature.SetAttributeValue("NUMTHROAT", feature.Attributes["NUMTHROAT"]);
-					newFeature.SetAttributeValue("LOCATIONDETAIL", feature.Attributes["LOCATIONDETAIL"]);
-					newFeature.SetAttributeValue("OWNER", feature.Attributes["OWNER"]);
-					newFeature.SetAttributeValue("CLNRESP", feature.Attributes["CLNRESP"]);
-					newFeature.SetAttributeValue("ISWQI", feature.Attributes["ISWQI"]);
-					newFeature.SetAttributeValue("INMS4", feature.Attributes["INMS4"]);
-					newFeature.SetAttributeValue("ISCORNRCB", feature.Attributes["ISCORNRCB"]);
-					newFeature.SetAttributeValue("BIOFLTR", feature.Attributes["BIOFLTR"]);
-					newFeature.SetAttributeValue("FLORESTY", feature.Attributes["FLORESTY"]);
-					newFeature.SetAttributeValue("HASSUMP", feature.Attributes["HASSUMP"]);
-					newFeature.SetAttributeValue("HASWATERSEAL", feature.Attributes["HASWATERSEAL"]);
-					newFeature.SetAttributeValue("CHANGEBY", feature.Attributes["CHANGEBY"]);
-					newFeature.SetAttributeValue("MXASSETNUM", feature.Attributes["MXASSETNUM"]);
+                        newFeature.SetAttributeValue("ASSETTAG", feature.Attributes["ASSETTAG"]);
+                        newFeature.SetAttributeValue("SUBTYPE", feature.Attributes["SUBTYPE"]);
+                        newFeature.SetAttributeValue("TOPMATRL", feature.Attributes["TOPMATRL"]);
+                        newFeature.SetAttributeValue("TOPTHICK", feature.Attributes["TOPTHICK"]);
+                        newFeature.SetAttributeValue("GRATETY", feature.Attributes["GRATETY"]);
+                        newFeature.SetAttributeValue("NUMCHAMB", feature.Attributes["NUMCHAMB"]);
+                        newFeature.SetAttributeValue("NUMTHROAT", feature.Attributes["NUMTHROAT"]);
+                        newFeature.SetAttributeValue("LOCATIONDETAIL", feature.Attributes["LOCATIONDETAIL"]);
+                        newFeature.SetAttributeValue("OWNER", feature.Attributes["OWNER"]);
+                        newFeature.SetAttributeValue("CLNRESP", feature.Attributes["CLNRESP"]);
+                        newFeature.SetAttributeValue("ISWQI", feature.Attributes["ISWQI"]);
+                        newFeature.SetAttributeValue("INMS4", feature.Attributes["INMS4"]);
+                        newFeature.SetAttributeValue("ISCORNRCB", feature.Attributes["ISCORNRCB"]);
+                        newFeature.SetAttributeValue("BIOFLTR", feature.Attributes["BIOFLTR"]);
+                        newFeature.SetAttributeValue("FLORESTY", feature.Attributes["FLORESTY"]);
+                        newFeature.SetAttributeValue("HASSUMP", feature.Attributes["HASSUMP"]);
+                        newFeature.SetAttributeValue("HASWATERSEAL", feature.Attributes["HASWATERSEAL"]);
+                        newFeature.SetAttributeValue("CHANGEBY", feature.Attributes["CHANGEBY"]);
+                        newFeature.SetAttributeValue("MXASSETNUM", feature.Attributes["MXASSETNUM"]);
+                        newFeature.SetAttributeValue("MXSITEID", feature.Attributes["MXSITEID"]);
+                        newFeature.SetAttributeValue("DESCRIPTION", feature.Attributes["DESCRIPTION"]);
+                        newFeature.SetAttributeValue("LIFECYCLESTATS", feature.Attributes["LIFECYCLESTATS"]);
+                        newFeature.SetAttributeValue("LOCTNPRECS", feature.Attributes["LOCTNPRECS"]);
+                        newFeature.SetAttributeValue("FLOWTYPE", feature.Attributes["FLOWTYPE"]);
+                        newFeature.SetAttributeValue("INFORSRC", feature.Attributes["INFORSRC"]);
 
-					await _featureTable.AddFeatureAsync(newFeature);
+                        
 
-					var editResults = await _featureTable.ApplyEditsAsync();
-					var editResult = editResults.FirstOrDefault();
-					if (editResult != null)
-					{
-						if (editResult.ObjectId > 0)
-						{
-							feature.Attributes["DISPLAYID"] = "SYNCED";
-							await this.assetLayer.FeatureTable.UpdateFeatureAsync(feature);
-                            GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is synced";
+
+                        await _featureTable.AddFeatureAsync(newFeature);
+
+                        var editResults = await _featureTable.ApplyEditsAsync();
+                        var editResult = editResults.FirstOrDefault();
+                        if (editResult != null)
+                        {
+                            if (editResult.ObjectId > 0)
+                            {
+                                feature.Attributes["DISPLAYID"] = "SYNCED";
+                                await this.assetLayer.FeatureTable.UpdateFeatureAsync(feature);
+                                GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is synced";
+                            }
+                            else
+                            {
+                                GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is failed";
+                            }
                         }
-						else
-						{
-							GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is failed";
-						}
-					}
-					else
-					{
-						GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is failed";
-					}
+                        else
+                        {
+                            GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is failed";
+                        }
+                    }
+                    else
+                    {
+                        await (onlineFeature as ArcGISFeature).LoadAsync();
+                        onlineFeature.SetAttributeValue("ASSETTAG", feature.Attributes["ASSETTAG"]);
+                        onlineFeature.SetAttributeValue("SUBTYPE", feature.Attributes["SUBTYPE"]);
+                        onlineFeature.SetAttributeValue("TOPMATRL", feature.Attributes["TOPMATRL"]);
+                        onlineFeature.SetAttributeValue("TOPTHICK", feature.Attributes["TOPTHICK"]);
+                        onlineFeature.SetAttributeValue("GRATETY", feature.Attributes["GRATETY"]);
+                        onlineFeature.SetAttributeValue("NUMCHAMB", feature.Attributes["NUMCHAMB"]);
+                        onlineFeature.SetAttributeValue("NUMTHROAT", feature.Attributes["NUMTHROAT"]);
+                        onlineFeature.SetAttributeValue("LOCATIONDETAIL", feature.Attributes["LOCATIONDETAIL"]);
+                        onlineFeature.SetAttributeValue("OWNER", feature.Attributes["OWNER"]);
+                        onlineFeature.SetAttributeValue("CLNRESP", feature.Attributes["CLNRESP"]);
+                        onlineFeature.SetAttributeValue("ISWQI", feature.Attributes["ISWQI"]);
+                        onlineFeature.SetAttributeValue("INMS4", feature.Attributes["INMS4"]);
+                        onlineFeature.SetAttributeValue("ISCORNRCB", feature.Attributes["ISCORNRCB"]);
+                        onlineFeature.SetAttributeValue("BIOFLTR", feature.Attributes["BIOFLTR"]);
+                        onlineFeature.SetAttributeValue("FLORESTY", feature.Attributes["FLORESTY"]);
+                        onlineFeature.SetAttributeValue("HASSUMP", feature.Attributes["HASSUMP"]);
+                        onlineFeature.SetAttributeValue("HASWATERSEAL", feature.Attributes["HASWATERSEAL"]);
+                        onlineFeature.SetAttributeValue("CHANGEBY", feature.Attributes["CHANGEBY"]);
+                        onlineFeature.SetAttributeValue("MXASSETNUM", feature.Attributes["MXASSETNUM"]);
+
+
+                        await _featureTable.UpdateFeatureAsync(onlineFeature);
+
+                        var editResults = await _featureTable.ApplyEditsAsync();
+                        var editResult = editResults.FirstOrDefault();
+                        if (editResult != null)
+                        {
+                            if (editResult.ObjectId > 0)
+                            {
+                                feature.Attributes["DISPLAYID"] = "SYNCED";
+                                await this.assetLayer.FeatureTable.UpdateFeatureAsync(feature);
+                                GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is synced";
+                            }
+                            else
+                            {
+                                GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is failed";
+                            }
+                        }
+                        else
+                        {
+                            GISSyncStatus = "CatchBasin (GIS) with tag (" + assettag + ")  is failed";
+                        }
+                    }
+
+                   
 
 				}
 				else
@@ -1388,7 +1457,7 @@ namespace CatchBasin.ViewModel
 
 				foreach (var item in features)
 				{
-					syncAsset(item.GetAttributeValue("ASSETTAG").ToString(), item.GetAttributeValue("MXASSETNUM").ToString());
+					syncAsset(item.GetAttributeValue("ASSETTAG")?.ToString(), item.GetAttributeValue("MXASSETNUM")?.ToString());
 				}
 			}
 			catch (Exception e)

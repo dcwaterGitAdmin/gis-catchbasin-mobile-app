@@ -209,11 +209,19 @@ namespace CatchBasin.ViewModel
             }
 
 			asset.assetnum = (string)geoElement.Attributes["MXASSETNUM"];
+            asset.assetspec = new List<MaximoAssetSpec>();
 
             if (String.IsNullOrEmpty(asset.assetnum))
             {
                 asset.syncronizationStatus = LocalDBLibrary.model.SyncronizationStatus.CREATED;
                 asset.classstructureid = "1033";
+                asset.status = "Active";
+                asset.description = "CATCH-BASIN, Storm";
+                asset.failurecode = "CATCHBASIN";
+                asset.siteid = "DWS_DSS";
+                asset.orgid = "DC_WASA";
+                asset.plussfeatureclass = "GISSCATCHBASINPT";
+                asset.plussisgis = true;
             }
             else
             {
@@ -224,7 +232,7 @@ namespace CatchBasin.ViewModel
 			asset.eq3 = (string)geoElement.Attributes["LOCATIONDETAIL"];
 
 
-			asset.assetspec = new List<MaximoAssetSpec>();
+			
 
 			var CB_SUBT = new MaximoAssetSpec();
 			CB_SUBT.assetattrid = "CB_SUBT";
@@ -340,7 +348,23 @@ namespace CatchBasin.ViewModel
 			HASWATERSEAL.alnvalue = (string)geoElement.Attributes["HASWATERSEAL"];
 			asset.assetspec.Add(HASWATERSEAL);
 
-			MaximoWorkOrder.asset = asset;
+
+            var FLOWTYPE = new MaximoAssetSpec();
+            FLOWTYPE.assetattrid = "FLOWTYPE";
+            FLOWTYPE.alnvalue = (string)geoElement.Attributes["FLOWTYPE"];
+            asset.assetspec.Add(FLOWTYPE);
+
+            var INFORSRC = new MaximoAssetSpec();
+            INFORSRC.assetattrid = "INFORSRC";
+            INFORSRC.numvalue = (int?)geoElement.Attributes["INFORSRC"];
+            asset.assetspec.Add(INFORSRC);
+
+            var LOCTNPRECS = new MaximoAssetSpec();
+            LOCTNPRECS.assetattrid = "LOCTNPRECS";
+            LOCTNPRECS.numvalue = (int?)geoElement.Attributes["LOCTNPRECS"];
+            asset.assetspec.Add(LOCTNPRECS);
+
+            MaximoWorkOrder.asset = asset;
             MaximoWorkOrder.assetnum = asset.assetnum;
 			AssetTag = asset.assettag;
             

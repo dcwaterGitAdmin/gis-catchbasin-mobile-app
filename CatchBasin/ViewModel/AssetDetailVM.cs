@@ -1,5 +1,7 @@
 ﻿using CatchBasin.ViewModel.Helper;
 using Esri.ArcGISRuntime.Data;
+using Esri.ArcGISRuntime.Geometry;
+using Esri.ArcGISRuntime.Mapping;
 using MaximoServiceLibrary;
 using MaximoServiceLibrary.model;
 using System;
@@ -285,7 +287,7 @@ namespace CatchBasin.ViewModel
                         TopMaterial = assetSpec.alnvalue;
                         break;
                     case "TOPTHICK":
-                        TopThickness = Convert.ToInt32(assetSpec.numvalue);
+                        TopThickness = assetSpec.numvalue;
                         break;
                     case "GRATETY":
                         GrateType = assetSpec.alnvalue;
@@ -485,7 +487,7 @@ namespace CatchBasin.ViewModel
             }
             WorkOrder.asset = Asset;
 
-            if(Asset.assettag.First() == 'N')
+            if(Asset.assettag.First() == 'N' && WorkOrder.asset.syncronizationStatus == LocalDBLibrary.model.SyncronizationStatus.CREATED)
             {
                 var layer = workOrderDetailVM.MapVM.assetLayer;
                 QueryParameters queryParameters = new QueryParameters();
@@ -562,13 +564,15 @@ namespace CatchBasin.ViewModel
                     await layer.FeatureTable.UpdateFeatureAsync(feature);
                     feature.Refresh();
                 }
-                
-                
-                
-               
-                
+                else
+                {
+                   await addModified(Asset);
+                }
 
-
+            }
+            else
+            {
+                await addModified(Asset);
             }
            
             workOrderDetailVM.MaximoWorkOrder.asset = Asset;
@@ -577,6 +581,176 @@ namespace CatchBasin.ViewModel
             }
             isDirty = false;
             WorkOrderDetailVM.HideAssetDetail();
+        }
+
+        public async Task addModified(MaximoAsset Asset)
+        {
+            var layer = workOrderDetailVM.MapVM.assetLayer;
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.WhereClause = $"ASSETTAG = '{Asset.assettag}'";
+
+            var result = await layer.FeatureTable.QueryFeaturesAsync(queryParameters);
+            var feature = result.FirstOrDefault();
+            if (feature != null)
+            {
+                switch (Type)
+                {
+                    case "UNKNOWN":
+                        feature.SetAttributeValue("SUBTYPE", 0);
+                        break;
+                    case "SINGLE":
+
+                        feature.SetAttributeValue("SUBTYPE", 1);
+                        break;
+                    case "DOUBLE":
+
+                        feature.SetAttributeValue("SUBTYPE", 2);
+                        break;
+                    case "TRIPLE":
+
+                        feature.SetAttributeValue("SUBTYPE", 3);
+                        break;
+                    case "GRATE":
+
+                        feature.SetAttributeValue("SUBTYPE", 4);
+                        break;
+                    case "QUADRUPLE":
+
+                        feature.SetAttributeValue("SUBTYPE", 5);
+                        break;
+                    case "ELONGATE":
+
+                        feature.SetAttributeValue("SUBTYPE", 6);
+                        break;
+                    case "DOUBLE GRATE":
+
+                        feature.SetAttributeValue("SUBTYPE", 7);
+                        break;
+                    case "FIELD DRAIN":
+
+                        feature.SetAttributeValue("SUBTYPE", 8);
+                        break;
+                    case "TRENCH DRAIN":
+
+                        feature.SetAttributeValue("SUBTYPE", 9);
+                        break;
+
+                    default:
+                        feature.SetAttributeValue("SUBTYPE", 0);
+                        break;
+                }
+                feature.SetAttributeValue("ASSETTAG", Asset.assettag);
+
+                feature.SetAttributeValue("TOPMATRL", TopMaterial);
+                feature.SetAttributeValue("TOPTHICK", (int?)(TopThickness == null ? 0.0 : TopThickness));
+                feature.SetAttributeValue("GRATETY", GrateType);
+                feature.SetAttributeValue("NUMCHAMB", (int?)NumberOfChambers == null ? 0 : NumberOfChambers);
+                feature.SetAttributeValue("NUMTHROAT", (int?)NumberOfThroats == null ? 0 : NumberOfThroats);
+                feature.SetAttributeValue("LOCATIONDETAIL", LocationDetail);
+                feature.SetAttributeValue("OWNER", Owner);
+                feature.SetAttributeValue("CLNRESP", CleaningResponsibility);
+                feature.SetAttributeValue("ISWQI", (WaterQuality == true ? "Y" : "N"));
+                feature.SetAttributeValue("INMS4", (InMS4 == true ? "Y" : "N"));
+                feature.SetAttributeValue("ISCORNRCB", (CornerCB == true ? "Y" : "N"));
+                feature.SetAttributeValue("BIOFLTR", (Biofilter == true ? "Y" : "N"));
+                feature.SetAttributeValue("FLORESTY", FlowRestrictorType);
+                feature.SetAttributeValue("HASSUMP", (Sump == true ? "Y" : "N"));
+                feature.SetAttributeValue("HASWATERSEAL", (WaterSeal == true ? "Y" : "N"));
+                await layer.FeatureTable.UpdateFeatureAsync(feature);
+                feature.Refresh();
+
+            }
+            else
+            {
+                var cbLayer = (FeatureLayer)workOrderDetailVM.MapVM.AssetsLayer.Layers.FirstOrDefault(_layer => _layer.Name == "Catch Basin - Cleaned by DC Water");
+
+                QueryParameters cbQueryParameters = new QueryParameters();
+                cbQueryParameters.WhereClause = $"ASSETTAG = '{Asset.assettag}'";
+
+                var cbResult = await cbLayer.FeatureTable.QueryFeaturesAsync(cbQueryParameters);
+                var cbFeature = cbResult.FirstOrDefault();
+
+                if (cbFeature != null)
+                {
+                    feature = layer.FeatureTable.CreateFeature();
+
+                    var mp = (MapPoint)cbFeature.Geometry;
+                    feature.Geometry = new MapPoint(mp.X,mp.Y,mp.SpatialReference);
+                    
+
+                    switch (Type)
+                    {
+                        case "UNKNOWN":
+                            feature.SetAttributeValue("SUBTYPE", 0);
+                            break;
+                        case "SINGLE":
+
+                            feature.SetAttributeValue("SUBTYPE", 1);
+                            break;
+                        case "DOUBLE":
+
+                            feature.SetAttributeValue("SUBTYPE", 2);
+                            break;
+                        case "TRIPLE":
+
+                            feature.SetAttributeValue("SUBTYPE", 3);
+                            break;
+                        case "GRATE":
+
+                            feature.SetAttributeValue("SUBTYPE", 4);
+                            break;
+                        case "QUADRUPLE":
+
+                            feature.SetAttributeValue("SUBTYPE", 5);
+                            break;
+                        case "ELONGATE":
+
+                            feature.SetAttributeValue("SUBTYPE", 6);
+                            break;
+                        case "DOUBLE GRATE":
+
+                            feature.SetAttributeValue("SUBTYPE", 7);
+                            break;
+                        case "FIELD DRAIN":
+
+                            feature.SetAttributeValue("SUBTYPE", 8);
+                            break;
+                        case "TRENCH DRAIN":
+
+                            feature.SetAttributeValue("SUBTYPE", 9);
+                            break;
+
+                        default:
+                            feature.SetAttributeValue("SUBTYPE", 0);
+                            break;
+                    }
+                    feature.SetAttributeValue("ASSETTAG", Asset.assettag);
+
+                    feature.SetAttributeValue("TOPMATRL", TopMaterial);
+                    feature.SetAttributeValue("TOPTHICK", (int?)(TopThickness == null ? 0.0 : TopThickness));
+                    feature.SetAttributeValue("GRATETY", GrateType);
+                    feature.SetAttributeValue("NUMCHAMB", (int?)NumberOfChambers == null ? 0 : NumberOfChambers);
+                    feature.SetAttributeValue("NUMTHROAT", (int?)NumberOfThroats == null ? 0 : NumberOfThroats);
+                    feature.SetAttributeValue("LOCATIONDETAIL", LocationDetail);
+                    feature.SetAttributeValue("OWNER", Owner);
+                    feature.SetAttributeValue("CLNRESP", CleaningResponsibility);
+                    feature.SetAttributeValue("ISWQI", (WaterQuality == true ? "Y" : "N"));
+                    feature.SetAttributeValue("INMS4", (InMS4 == true ? "Y" : "N"));
+                    feature.SetAttributeValue("ISCORNRCB", (CornerCB == true ? "Y" : "N"));
+                    feature.SetAttributeValue("BIOFLTR", (Biofilter == true ? "Y" : "N"));
+                    feature.SetAttributeValue("FLORESTY", FlowRestrictorType);
+                    feature.SetAttributeValue("HASSUMP", (Sump == true ? "Y" : "N"));
+                    feature.SetAttributeValue("HASWATERSEAL", (WaterSeal == true ? "Y" : "N"));
+                    feature.SetAttributeValue("CHANGEBY", MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userName);
+                    await layer.FeatureTable.AddFeatureAsync(feature);
+                    feature.Refresh();
+                }
+            }
+
+
+
+
+                
         }
 
         public void Cancel()
