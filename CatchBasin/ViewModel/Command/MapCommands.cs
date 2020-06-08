@@ -5,6 +5,7 @@ using Esri.ArcGISRuntime.UI.Controls;
 using MaximoServiceLibrary.model;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -527,9 +528,20 @@ namespace CatchBasin.ViewModel.Commands
     // GPS Commands
     class KeepGPSCommand : Command
     {
+        bool Tracking = false;
+
+
         public KeepGPSCommand(MapVM mapVM) : base(mapVM)
         {
+            Tracking = bool.Parse(ConfigurationManager.AppSettings["Tracking"]);
+           
 
+           
+        }
+
+        public override bool CanExecute(object parameter)
+        {
+            return !Tracking;
         }
 
         public override void Execute(object parameter)
@@ -541,13 +553,19 @@ namespace CatchBasin.ViewModel.Commands
 
     class ShowGPSInfoCommand : Command
     {
+        bool Tracking = false;
         public ShowGPSInfoCommand(MapVM mapVM) : base(mapVM)
         {
-
+            Tracking = bool.Parse(ConfigurationManager.AppSettings["Tracking"]);
         }
 
         public override bool CanExecute(object parameter)
         {
+            if (Tracking)
+            {
+                return !Tracking;
+            }
+
             if (parameter == null) return false;
             return ((Esri.ArcGISRuntime.UI.Controls.MapView)parameter).LocationDisplay.IsEnabled;
         }

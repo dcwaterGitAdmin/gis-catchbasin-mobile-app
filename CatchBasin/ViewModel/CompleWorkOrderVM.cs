@@ -555,7 +555,11 @@ namespace CatchBasin.ViewModel
 
 
 
-           
+            if(wo.persongroup == "CB00")
+            {
+                wo.persongroup = MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup;
+            }
+
 
             wo.status = NewStatus;
 

@@ -390,7 +390,8 @@ namespace MaximoServiceLibrary
             //workOrderToBePosted.doclinks = maximoWorkOrder.doclink;
             workOrderToBePosted.assetnum = maximoWorkOrder.assetnum;
             workOrderToBePosted.statusdate = maximoWorkOrder.statusdate;
-            
+            workOrderToBePosted.persongroup = maximoWorkOrder.persongroup;
+
             // In order to not get error from maximo side in case of failed synchronization
             if (workOrderToBePosted.workorderspec != null)
             {
@@ -675,8 +676,25 @@ namespace MaximoServiceLibrary
 			return path;
 		}
 
+        public void saveLocationToGeoeventServer(GeoEventData data, string uRL)
+        {
+            try
+            {
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
+                var request = new RestRequest(uRL);
+                request.Method = Method.POST;
+                request.JsonSerializer = new RestSharpJsonNetSerializer();
+                request.AddJsonBody(data);
 
-		public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
+                var response = restClient.Execute(request);
+            }
+            catch (Exception e)
+            {
+                AppContext.Log.Info($"GPS\t {e.ToString()}");
+            }
+        }
+
+        public List<MaximoDocLinks> getWorkOrderDocLinks(MaximoWorkOrder wo)
 		{
 			var request = createRequest("/os/dcw_cb_wo/" + wo.workorderid + "/doclinks", false);
 			var response = restClient.Execute(request);

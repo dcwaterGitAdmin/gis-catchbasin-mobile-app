@@ -16,7 +16,7 @@ namespace MaximoServiceLibrary.model
         
         public List<MaximoDocLinks> doclinks { get; set; }
         public string assetnum { get; set; }
-
+        public string persongroup { get; set; }
     }
 
 	public class MaximoWorkOrderForStatusUpdate

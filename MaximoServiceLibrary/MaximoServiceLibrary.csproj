@@ -60,6 +60,7 @@
     <Compile Include="AttachmentFileService.cs" />
     <Compile Include="MaximoService.cs" />
     <Compile Include="MaximoServiceLibraryBeanConfiguration.cs" />
+    <Compile Include="model\GeoEventData.cs" />
     <Compile Include="model\MaximoAsset.cs" />
     <Compile Include="model\MaximoDomainModel.cs" />
     <Compile Include="model\MaximoRestModel.cs" />

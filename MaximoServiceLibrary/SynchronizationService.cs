@@ -585,6 +585,7 @@ namespace MaximoServiceLibrary
 					woFromLocal.assetnum = woFreshFromMaximo.assetnum;
 					woFromLocal.statusdate = woFreshFromMaximo.statusdate;
 					woFromLocal._rowstamp = woFreshFromMaximo._rowstamp;
+                    woFromLocal.persongroup = woFreshFromMaximo.persongroup;
 					AppContext.workOrderRepository.upsert(woFromLocal);
 
 					AppContext.Log.Debug($"[MX] Called maximoService.updateWorkOrder and WO re-fetched. wonum: {woFromLocal.wonum}");

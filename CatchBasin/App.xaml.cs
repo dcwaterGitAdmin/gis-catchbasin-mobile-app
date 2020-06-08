@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -22,7 +23,37 @@ namespace CatchBasin
 
        
         public string AppType = null;
-      
+
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+
+            try
+            {
+                // Getting collection of process  
+                Process currentProcess = Process.GetCurrentProcess();
+
+                // Check with other process already running   
+                foreach (var p in Process.GetProcesses())
+                {
+
+                    if (p.Id != currentProcess.Id) // Check running process   
+                    {
+                        if (p.ProcessName.Equals(currentProcess.ProcessName) == true)
+                        {
+                            MessageBox.Show("Application instance is already running!");
+                            
+                            Shutdown();
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             log4net.Config.XmlConfigurator.Configure();

@@ -25,6 +25,7 @@ using MaximoServiceLibrary.model;
 using Esri.ArcGISRuntime.Tasks.Offline;
 using System.Net;
 using Esri.ArcGISRuntime.Portal;
+using System.Configuration;
 
 namespace CatchBasin.ViewModel
 {
@@ -137,7 +138,13 @@ namespace CatchBasin.ViewModel
 			{
 				_mapView = value;
 				_mapView.GeoViewTapped += WorkorderClicked;
-			}
+                var Tracking = bool.Parse(ConfigurationManager.AppSettings["Tracking"]);
+                if (Tracking)
+                {
+                    _mapView.LocationDisplay.IsEnabled = true;
+                    _mapView.LocationDisplay.LocationChanged += LocationChanged;
+                }
+            }
 		}
 
 		private async void WorkorderClicked(object sender, GeoViewInputEventArgs e)
@@ -302,6 +309,7 @@ namespace CatchBasin.ViewModel
 
 		public MapVM()
 		{
+            
 			if (((App)Application.Current).AppType == null)
 			{
 				new Exception("Application Type Is Not Valid!");
@@ -795,15 +803,15 @@ namespace CatchBasin.ViewModel
 
 
 		public KeepGPSCommand KeepGPSCommand { get; set; }
-		public void DoKeepGPS(MapView mapView)
+		public void DoKeepGPS(MapView _mapView)
 		{
-			mapView.LocationDisplay.IsEnabled = mapView.LocationDisplay.IsEnabled ? false : true;
-			HasGPSLocationInMap = mapView.LocationDisplay.IsEnabled;
-			if (!mapView.LocationDisplay.IsEnabled)
+            _mapView.LocationDisplay.IsEnabled = _mapView.LocationDisplay.IsEnabled ? false : true;
+			HasGPSLocationInMap = _mapView.LocationDisplay.IsEnabled;
+			if (!_mapView.LocationDisplay.IsEnabled)
 			{
-				mapView.LocationDisplay.AutoPanMode = LocationDisplayAutoPanMode.Off;
+                _mapView.LocationDisplay.AutoPanMode = LocationDisplayAutoPanMode.Off;
 				GPSLocationIsVisible = false;
-				mapView.LocationDisplay.LocationChanged -= LocationChanged;
+                _mapView.LocationDisplay.LocationChanged -= LocationChanged;
 				GPSLocation = "";
 			}
 		}
@@ -826,17 +834,17 @@ namespace CatchBasin.ViewModel
 		}
 
 		public ShowGPSInfoCommand ShowGPSInfoCommand { get; set; }
-		public void DoShowGPSInfo(MapView mapView)
+		public void DoShowGPSInfo(MapView _mapView)
 		{
 			GPSLocationIsVisible = !GPSLocationIsVisible;
 			if (GPSLocationIsVisible)
 			{
-				mapView.LocationDisplay.LocationChanged += LocationChanged;
-				LocationChanged(null, mapView.LocationDisplay.Location);
+                _mapView.LocationDisplay.LocationChanged += LocationChanged;
+				LocationChanged(null, _mapView.LocationDisplay.Location);
 			}
 			else
 			{
-				mapView.LocationDisplay.LocationChanged -= LocationChanged;
+                _mapView.LocationDisplay.LocationChanged -= LocationChanged;
 				GPSLocation = "";
 			}
 
@@ -848,6 +856,28 @@ namespace CatchBasin.ViewModel
 			if (e != null && e.Position != null)
 			{
 				GPSLocation = $"GPS x: {e.Position.X} y: {e.Position.Y}";
+                try
+                {
+                    var Tracking = bool.Parse(ConfigurationManager.AppSettings["Tracking"]);
+                    if (Tracking) {
+                    var URL = ConfigurationManager.AppSettings["TrackingAPI"];
+                    var data = new GeoEventData();
+                    data.x = e.Position.X;
+                    data.y = e.Position.Y;
+                    data.z = e.Position.Z;
+                    data.velocity = e.Velocity;
+                    data.accuracy = e.VerticalAccuracy;
+                    data.haccuracy = e.HorizontalAccuracy;
+                    data.course = e.Course;
+                    data.time = e.Timestamp;
+                    data.userid = MaximoServiceLibrary.AppContext.synchronizationService.mxuser.userPreferences.selectedPersonGroup;
+                    MaximoServiceLibrary.AppContext.maximoService.saveLocationToGeoeventServer(data, URL);
+                    }
+                }
+                catch(Exception ex)
+                {
+
+                }
 			}
 			else
 			{
@@ -1721,7 +1751,7 @@ namespace CatchBasin.ViewModel
 	}
 
 
-	public class Features
+    public class Features
 	{
 		public Features(List<Feature> _features)
 		{
