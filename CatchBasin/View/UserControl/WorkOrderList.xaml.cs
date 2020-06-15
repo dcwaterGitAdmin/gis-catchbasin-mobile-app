@@ -24,7 +24,7 @@ namespace CatchBasin.View.UserControl
         public WorkOrderList()
         {
            InitializeComponent();
-           
+      
         }
 
         public override void OnApplyTemplate()
@@ -32,20 +32,32 @@ namespace CatchBasin.View.UserControl
             base.OnApplyTemplate();
             ((WorkOrderListVM)this.DataContext).PropertyChanged += WorkOrderList_PropertyChanged;
             ((WorkOrderListVM)this.DataContext).listView = listView;
+
+            listView.Resources[SystemColors.InactiveSelectionHighlightBrushKey] = new SolidColorBrush(Color.FromRgb(36, 97, 121));
+            //listView.Resources[SystemColors.InactiveSelectionHighlightTextBrushKey] = SystemColors.HighlightTextBrush;
         }
 
         private void WorkOrderList_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            //if (e.PropertyName == "SelectedIndex")
+
+            //try
+            //{
+            //    if (e.PropertyName == "SelectedIndex")
+            //    {
+
+
+            //        if (((WorkOrderListVM)this.DataContext).SelectedIndex > -1)
+            //        {
+            //            //var wo = ((WorkOrderListVM)this.DataContext).WorkOrders[];
+            //            listView.SelectedItem = listView.Items[((WorkOrderListVM)this.DataContext).SelectedIndex];
+            //            //listView.SelectedItem = wo;
+            //        }
+            //    }
+            //}catch(Exception ex)
             //{
 
-
-            //    if (((WorkOrderListVM)this.DataContext).SelectedIndex > -1)
-            //    {
-            //        var wo = ((WorkOrderListVM)this.DataContext).WorkOrders[((WorkOrderListVM)this.DataContext).SelectedIndex];
-            //        listView.SelectedItem = wo;
-            //    }
             //}
+            
         }
 
         private void ListView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -55,8 +67,18 @@ namespace CatchBasin.View.UserControl
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            listView.ScrollIntoView(listView.SelectedItem);
+
+            var index=  ((WorkOrderListVM)this.DataContext).WorkOrders.IndexOf((MaximoServiceLibrary.model.MaximoWorkOrder)listView.SelectedItem );
+
+            if(index != ((WorkOrderListVM)this.DataContext).SelectedIndex && index >= 0)
+            {
+                ((WorkOrderListVM)this.DataContext).SelectedIndex = index;
+            }
            
+            
+            listView.SelectedItem = null;
         }
+
+
     }
 }

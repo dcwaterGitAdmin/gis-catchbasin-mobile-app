@@ -315,7 +315,11 @@ namespace MaximoServiceLibrary.model
         
         }
 
-	}
+        [JsonIgnore]
+        [LiteDB.BsonIgnore]
+        public bool isSelected { get; set; }
+
+    }
 
     public class MaximoLocations :MaximoBaseEntity
     {

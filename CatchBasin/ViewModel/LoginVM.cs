@@ -78,7 +78,7 @@ namespace CatchBasin.ViewModel
         {
             LoginCommand = new LoginCommand(this);
             //UserName = "edelioglu";
-            //    Password = "CatchBasin98!";
+            //Password = "CatchBasin98!";
 
         }
 

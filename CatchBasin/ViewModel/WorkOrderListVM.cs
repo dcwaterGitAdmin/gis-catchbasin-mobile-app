@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,7 +31,15 @@ namespace CatchBasin.ViewModel
         public int SelectedIndex
         {
             get { return selectedIndex; }
-            set { selectedIndex = value; OnPropertyChanged("SelectedIndex"); }
+
+            set {
+              
+                selectedIndex = value;
+               
+
+                OnPropertyChanged("SelectedIndex");
+                
+            }
         }
 
 		private Command.StartStopTimerCommand startStopTimerCommand;
@@ -172,19 +181,72 @@ namespace CatchBasin.ViewModel
         {
             if(e.PropertyName == "SelectedIndex")
             {
-               
-                if (this.SelectedIndex > -1)
+                var sindex = this.SelectedIndex;
+                if (sindex > -1)
                 {
-                    var wo = WorkOrders[this.SelectedIndex];
+                    var wo = WorkOrders[sindex];
                     if (MapVM.WorkOrderDetailIsVisible)
                     {
                         if (!(wo?.Id == MapVM.WorkOrderDetailVM?.MaximoWorkOrder?.Id)) {
                             showWorkOrder(wo);
+
+                            
+                        }
+
+                        foreach (var wor in WorkOrders)
+                        {
+                            wor.isSelected = false;
+                        }
+
+                        if (sindex > -1)
+                        {
+                            WorkOrders[sindex].isSelected = true;
+                            try
+                            {
+                                WorkOrders = WorkOrders.ToList();
+                                listView.ScrollIntoView(WorkOrders.Last());
+                                Thread.Sleep(300);
+                                listView.ScrollIntoView(WorkOrders[sindex]);
+                            }catch(Exception exx)
+                            {
+
+                            }
+                            
+                        }
+                        else
+                        {
+                            WorkOrders = WorkOrders.ToList();
                         }
                     }
                     else
                     {
                         showWorkOrder(wo);
+                        foreach (var wor in WorkOrders)
+                        {
+                            wor.isSelected = false;
+                        }
+
+                        if (sindex > -1)
+                        {
+                            WorkOrders[sindex].isSelected = true;
+
+                            try
+                            {
+                                WorkOrders = WorkOrders.ToList();
+                                listView.ScrollIntoView(WorkOrders.Last());
+                                Thread.Sleep(300);
+                                listView.ScrollIntoView(WorkOrders[sindex]);
+                            }
+                            catch (Exception exx)
+                            {
+
+                            }
+
+                        }
+                        else
+                        {
+                            WorkOrders = WorkOrders.ToList();
+                        }
                     }
                    
 
@@ -200,6 +262,11 @@ namespace CatchBasin.ViewModel
                             SelectedIndex = index;
                         }
                     }
+                    foreach (var wor in WorkOrders)
+                    {
+                        wor.isSelected = false;
+                    }
+                    WorkOrders = WorkOrders.ToList();
                 }
                
             }else if (e.PropertyName == "Filter" || e.PropertyName == "Order")
@@ -284,11 +351,14 @@ namespace CatchBasin.ViewModel
 					break;
 			}
 
-          
+            foreach (var wo in wos)
+            {
+                wo.isSelected = false;
+            }
 
             WorkOrders = wos.ToList();
             WorkOrders.Count.ToString();
-            //SelectedIndex = -1;
+            SelectedIndex = -1;
             if (MapVM.WorkOrderDetailIsVisible)
             {
                 var index =WorkOrders.Select(wo=> wo.Id).ToList().IndexOf(MapVM.WorkOrderDetailVM.MaximoWorkOrder.Id);

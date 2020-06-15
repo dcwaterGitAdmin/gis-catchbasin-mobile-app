@@ -10,6 +10,10 @@
              d:DesignHeight="450" d:DesignWidth="350">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+
+      
+
+
     </UserControl.Resources>
 	<Grid >
         
@@ -37,34 +41,51 @@
 
 
 
-            <ListView x:Name="listView" ItemsSource="{Binding WorkOrders}" SelectionChanged="ListView_SelectionChanged" SelectedIndex="{Binding SelectedIndex}" SelectionMode="Single" PreviewMouseRightButtonDown="ListView_PreviewMouseRightButtonDown">
+            <ListView x:Name="listView" ItemsSource="{Binding WorkOrders}" SelectionChanged="ListView_SelectionChanged" PreviewMouseRightButtonDown="ListView_PreviewMouseRightButtonDown" SelectionMode="Single" Focusable="False">
 				<ListView.Resources>
-					<Style TargetType="{x:Type ListViewItem}">
-						<Style.Triggers>
-							<MultiTrigger>
-								<MultiTrigger.Conditions>
-									<Condition Property="IsSelected" Value="true" />
-									<Condition Property="Selector.IsSelectionActive" Value="true" />
-                                   
-                                </MultiTrigger.Conditions>
-								<Setter Property="Background" Value="Blue" />
-							</MultiTrigger>
-							<DataTrigger Binding="{Binding worktype}"  Value="INV">
+                    
+                    <Style TargetType="{x:Type ListViewItem}">
+                       
+
+                        <Style.Triggers>
+
+                         
+                           
+
+
+                            <DataTrigger Binding="{Binding worktype}"  Value="INV">
                                 <Setter Property="Background" Value="#39A800"></Setter>
 							</DataTrigger>
 							<DataTrigger Binding="{Binding worktype}"  Value="EMERG">
                                 <Setter Property="Background" Value="#F10303"></Setter>
 							</DataTrigger>
-                            <DataTrigger Binding="{Binding worktype}"  Value="PM">
-                                <Setter Property="Background" Value="#ffffff"></Setter>
+                            <!--<DataTrigger Binding="{Binding worktype}"  Value="PM">
+                                <Setter Property="Background" Value="Yellow"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding worktype}"  Value="CM">
-                                <Setter Property="Background" Value="#ffffff"></Setter>
+                                <Setter Property="Background" Value="Yellow"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding worktype}"  Value="INSP">
-                                <Setter Property="Background" Value="#ffffff"></Setter>
-                            </DataTrigger>
+                                <Setter Property="Background" Value="Yellow"></Setter>
+                            </DataTrigger>-->
 
+
+                            <DataTrigger Binding="{Binding isSelected}"  Value="true">
+                                <Setter Property="Background" Value="RoyalBlue"></Setter>
+
+                            </DataTrigger>
+                            <!--<MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="true"></Condition>
+                                    <Condition Property="Selector.IsSelectionActive" Value="true" />
+
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter Property="Background" Value="Pink" />
+                                   
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>-->
+                           
                         </Style.Triggers>
 					</Style>
 
@@ -72,7 +93,7 @@
 				<ListView.ItemTemplate>
                 
                 <DataTemplate>
-
+                        
 						<Border BorderBrush="Black" BorderThickness="2">
 							<StackPanel>
 								<StackPanel.ContextMenu>
@@ -105,9 +126,25 @@
                             <TextBlock Margin="3"  Text="{Binding schedstart}" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>
 
                             <TextBlock Margin="3"  Text="{Binding status}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
-                            <TextBlock Margin="3"  Text="{Binding locations_description}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>
+                            <!--<TextBlock Margin="3"  Text="{Binding locations_description}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right"></TextBlock>-->
+                            <TextBlock Margin="3"  Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" TextAlignment="Right">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="{Binding locations_description}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding worktype}" Value="PM">
+                                                        <Setter Property="Text" Value="{Binding asset.assettag}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding worktype}" Value="INSP">
+                                                        <Setter Property="Text" Value="{Binding asset.assettag}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
 
-                            <TextBlock Margin="3"  Text="{Binding syncronizationStatus}"   Visibility="{Binding completed, Converter={StaticResource booleanToVisibilityConverter}}"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
+                                    </TextBlock>
+
+                                    <TextBlock Margin="3"  Text="{Binding syncronizationStatus}"   Visibility="{Binding completed, Converter={StaticResource booleanToVisibilityConverter}}"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"></TextBlock>
 
 
                                     <Button Command="{Binding ElementName=woList, Path=DataContext.StartStopTimerCommand}" CommandParameter="{Binding}"  Margin="3"  Grid.RowSpan="4" Grid.Row="0" Grid.Column="4" Background="Transparent" BorderThickness="0">
@@ -117,7 +154,10 @@
                         </Grid>
 							</StackPanel>
 						</Border>
-                </DataTemplate>
+
+
+                       
+                    </DataTemplate>
             </ListView.ItemTemplate>
 				
         </ListView>

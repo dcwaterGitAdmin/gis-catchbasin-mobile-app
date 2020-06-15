@@ -2109,7 +2109,7 @@ namespace CatchBasin.ViewModel
             {
                 MapVM.AssetDetailVM.Cancel();
             }
-
+          
 
             if (isDirty)
             {

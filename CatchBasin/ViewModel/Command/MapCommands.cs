@@ -480,6 +480,7 @@ namespace CatchBasin.ViewModel.Commands
             wo.createdTime = DateTime.Now;
             wo = MaximoServiceLibrary.AppContext.workOrderRepository.upsert(wo);
             MapVM.WorkOrderListVM.Update();
+           
             var nwo = MapVM.WorkOrderListVM.WorkOrders.FirstOrDefault(_wo => _wo.Id == wo.Id);
             if (nwo == null)
             {
@@ -491,7 +492,7 @@ namespace CatchBasin.ViewModel.Commands
             }
 
             MapVM.WorkOrderListVM.Update();
-
+            MapVM.WorkOrderListVM.SelectedIndex = MapVM.WorkOrderListVM.WorkOrders.Count - 1;
         }
 
     }

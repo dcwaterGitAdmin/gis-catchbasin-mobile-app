@@ -558,16 +558,13 @@ namespace CatchBasin.ViewModel
 		{
 			var layer = GetWorkorderLayer();
 
-			//layer.
-
-
 			var assetLayer = GetAssetGroupLayer();
 			((FeatureLayer)assetLayer?.Layers?.FirstOrDefault())?.ClearSelection();
 			WorkOrderDetailIsVisible = false;
 			this.assetLayer.ClearSelection();
 			this.woLayer.ClearSelection();
 
-			//WorkOrderListVM.SelectedIndex = -1;
+			WorkOrderListVM.SelectedIndex = -1;
 			WorkOrderDetailVM.Clear();
 			WorkOrderListVM.Update();
 		}
